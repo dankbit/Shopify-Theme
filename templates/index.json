@@ -160,53 +160,12 @@
     },
     "test_section_iUabHp": {
       "type": "test-section",
-      "blocks": {
-        "product_item_bafzGb": {
-          "type": "product_item",
-          "settings": {
-            "product_image": "shopify://shop_images/Main_b13ad453-477c-4ed1-9b43-81f3345adfd6.jpg",
-            "product_name": "Engraved Compass Necklace with Diamond - Gold Vermeil",
-            "price": "220",
-            "original_price": "0.00"
-          }
-        },
-        "product_item_Ba7Kdn": {
-          "type": "product_item",
-          "settings": {
-            "product_image": "shopify://shop_images/Main_b9e0da7f-db89-4d41-83f0-7f417b02831d.jpg",
-            "product_name": "Inez Initial Heart Necklace with Diamond - Gold Vermeil",
-            "price": "195",
-            "original_price": "0.00"
-          }
-        },
-        "product_item_BwAtiP": {
-          "type": "product_item",
-          "settings": {
-            "product_image": "shopify://shop_images/Main_b9e0da7f-db89-4d41-83f0-7f417b02831d.jpg",
-            "product_name": "Engraved Dot Bracelet with Diamonds - Silver",
-            "price": "203",
-            "original_price": "226"
-          }
-        },
-        "product_item_Y6HqaY": {
-          "type": "product_item",
-          "settings": {
-            "product_image": "shopify://shop_images/Main_52f8e304-92d9-4a36-82af-50df8fe31c69.jpg",
-            "product_name": "Lock & Luna charm with Round cut Moissanite - Gold Vermeil",
-            "price": "170",
-            "original_price": "0.00"
-          }
-        }
-      },
-      "block_order": [
-        "product_item_bafzGb",
-        "product_item_Ba7Kdn",
-        "product_item_BwAtiP",
-        "product_item_Y6HqaY"
-      ],
       "name": "Best Sellers",
       "settings": {
-        "title": "BEST SELLERS"
+        "title": "BEST SELLERS",
+        "collection": "automated-collection",
+        "desktop_products": 4,
+        "mobile_products": 1
       }
     }
   },
