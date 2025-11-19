@@ -53,19 +53,27 @@
       "blocks": {
         "slide_FtQ4kW": {
           "type": "slide",
-          "settings": {}
+          "settings": {
+            "slide_image": "shopify://shop_images/any-landscape-image-of-a-perfume-bottle-with-scenery.png"
+          }
         },
         "slide_CpB8Q3": {
           "type": "slide",
-          "settings": {}
+          "settings": {
+            "slide_image": "shopify://shop_images/Main_b9e0da7f-db89-4d41-83f0-7f417b02831d.jpg"
+          }
         },
         "slide_GyaipE": {
           "type": "slide",
-          "settings": {}
+          "settings": {
+            "slide_image": "shopify://shop_images/Main_52f8e304-92d9-4a36-82af-50df8fe31c69.jpg"
+          }
         },
         "slide_8qy7gi": {
           "type": "slide",
-          "settings": {}
+          "settings": {
+            "slide_image": "shopify://shop_images/Main_9129b69a-0c7b-4f66-b6cf-c4222f18028a.jpg"
+          }
         }
       },
       "block_order": [
