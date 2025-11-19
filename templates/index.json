@@ -98,11 +98,19 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "featured_product_ud_FiNkBA": {
+      "type": "featured-product-ud",
+      "name": "Featured Product Utsav",
+      "settings": {
+        "product": "the-compare-at-price-snowboard"
+      }
     }
   },
   "order": [
     "image_banner",
     "slideshow_LGJh3n",
-    "featured_collection_kKGVkH"
+    "featured_collection_kKGVkH",
+    "featured_product_ud_FiNkBA"
   ]
 }
