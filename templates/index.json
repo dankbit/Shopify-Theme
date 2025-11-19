@@ -108,54 +108,10 @@
     },
     "announcement_ud_DgdWjQ": {
       "type": "announcement-ud",
-      "blocks": {
-        "announcement_Lnt4ef": {
-          "type": "announcement",
-          "settings": {
-            "message": "Free shipping on orders over $50"
-          }
-        },
-        "announcement_JbHGD6": {
-          "type": "announcement",
-          "settings": {
-            "message": "Sign up for our newsletter for 10% off"
-          }
-        },
-        "social_icon_XPzEVi": {
-          "type": "social_icon",
-          "settings": {
-            "icon": "facebook",
-            "label": "Facebook",
-            "link": "https://facebook.com"
-          }
-        },
-        "social_icon_kyNPfG": {
-          "type": "social_icon",
-          "settings": {
-            "icon": "instagram",
-            "label": "Instagram",
-            "link": "https://instagram.com"
-          }
-        },
-        "social_icon_WdjYLq": {
-          "type": "social_icon",
-          "settings": {
-            "icon": "twitter",
-            "label": "Twitter",
-            "link": "https://twitter.com"
-          }
-        }
-      },
-      "block_order": [
-        "announcement_Lnt4ef",
-        "announcement_JbHGD6",
-        "social_icon_XPzEVi",
-        "social_icon_kyNPfG",
-        "social_icon_WdjYLq"
-      ],
       "name": "Announcement Bar Ud",
       "settings": {
-        "background_color": "#000000",
+        "message": "Welcome to our store",
+        "background_color": "#b31a1a",
         "text_color": "#ffffff"
       }
     }
