@@ -1,101 +1,23 @@
 {% comment %}
-Announcement Bar Section
-Displays swipable announcement messages on the left with social icons on the right
+Simple Announcement Bar Section
+Displays a single announcement message in the center
 {% endcomment %}
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
 <div class="announcement-bar-container">
-  <!-- Announcement Messages (Left Side) -->
-  <div class="announcements-section">
-    <div class="swiper announcement-swiper">
-      <div class="swiper-wrapper">
-        {% for block in section.blocks %}
-          {% if block.type == "announcement" %}
-            <div class="swiper-slide announcement-slide">
-              <p>{{ block.settings.message }}</p>
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-
-    <button class="nav-btn swiper-button-prev" aria-label="Previous announcement">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-      </svg>
-    </button>
-
-    <button class="nav-btn swiper-button-next" aria-label="Next announcement">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Social Icons (Right Side) -->
-  <div class="social-icons">
-    {% for block in section.blocks %}
-      {% if block.type == "social_icon" %}
-        <a 
-          href="{{ block.settings.link }}" 
-          class="social-link"
-          title="{{ block.settings.label }}"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
-            {% case block.settings.icon %}
-              {% when "facebook" %}
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              {% when "instagram" %}
-                <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.117.63c-.779.297-1.561.769-2.126 1.334-.565.565-1.037 1.347-1.334 2.126-.297.788-.5 1.658-.56 2.936C.015 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.263 2.148.56 2.936.297.779.769 1.561 1.334 2.126.565.565 1.347 1.037 2.126 1.334.788.297 1.659.5 2.936.56 1.28.057 1.687.072 4.947.072s3.667-.015 4.947-.072c1.277-.06 2.148-.263 2.936-.56.79-.297 1.561-.769 2.126-1.334.565-.565 1.037-1.347 1.334-2.126.297-.788.5-1.659.56-2.936.057-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.263-2.148-.56-2.936-.297-.779-.769-1.561-1.334-2.126-.565-.565-1.347-1.037-2.126-1.334-.788-.297-1.659-.5-2.936-.56C15.667.015 15.26 0 12 0zm0 2.16c3.203 0 3.585.009 4.849.070 1.171.054 1.805.244 2.227.408.561.217 1.003.48 1.441.919.44.439.702.88.919 1.441.164.422.354 1.056.408 2.227.061 1.264.07 1.646.07 4.849s-.009 3.585-.07 4.849c-.054 1.171-.244 1.805-.408 2.227-.217.561-.48 1.003-.919 1.441-.439.44-.88.702-1.441.919-.422.164-1.056.354-2.227.408-1.264.061-1.646.07-4.849.07s-3.585-.009-4.849-.07c-1.171-.054-1.805-.244-2.227-.408-.561-.217-1.003-.48-1.441-.919-.44-.439-.702-.88-.919-1.441-.164-.422-.354-1.056-.408-2.227-.061-1.264-.07-1.646-.07-4.849s.009-3.585.07-4.849c.054-1.171.244-1.805.408-2.227.217-.561.48-1.003.919-1.441.439-.44.88-.702 1.441-.919.422-.164 1.056-.354 2.227-.408 1.264-.061 1.646-.07 4.849-.07z"/>
-              {% when "twitter" %}
-                <path d="M23.953 4.57a10 10 0 002.856-3.92 9.86 9.86 0 01-2.836.856 4.88 4.88 0 00-8.526-4.44c-1.537.773-2.536 2.37-2.536 4.144 0 .416.05.824.15 1.221-4.04-.196-7.612-2.138-10.025-5.076a4.88 4.88 0 001.51 6.537 4.865 4.865 0 01-2.212-.616v.06a4.88 4.88 0 003.91 4.779 4.88 4.88 0 01-2.202.084 4.888 4.888 0 004.563 3.396 9.86 9.86 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-            {% endcase %}
-          </svg>
-        </a>
-      {% endif %}
-    {% endfor %}
-  </div>
+  <p class="announcement-message">{{ section.settings.message }}</p>
 </div>
 
 <style>
   .announcement-bar-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0;
+    justify-content: center;
     background-color: {{ section.settings.background_color }};
     color: {{ section.settings.text_color }};
     padding: 12px 20px;
   }
 
-  /* Announcements Section */
-  .announcements-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex: 0 0 auto;
-  }
-
-  .announcement-swiper {
-    position: relative;
-    width: 300px;
-    height: 40px;
-  }
-
-  .announcement-swiper .swiper-wrapper {
-    height: 100%;
-  }
-
-  .announcement-slide {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .announcement-slide p {
+  .announcement-message {
     margin: 0;
     font-size: 14px;
     font-weight: 500;
@@ -103,83 +25,12 @@ Displays swipable announcement messages on the left with social icons on the rig
     text-align: center;
   }
 
-  /* Navigation Buttons */
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background-color: transparent;
-    border: none;
-    color: {{ section.settings.text_color }};
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-    padding: 0;
-    flex-shrink: 0;
-  }
-
-  .nav-btn:hover {
-    opacity: 0.7;
-  }
-
-  .nav-btn svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Social Icons */
-  .social-icons {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    flex: 0 0 auto;
-  }
-
-  .social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    color: {{ section.settings.text_color }};
-    text-decoration: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .social-link:hover {
-    opacity: 0.7;
-  }
-
-  .social-icon {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* Responsive Design */
   @media (max-width: 768px) {
     .announcement-bar-container {
-      flex-direction: column;
-      gap: 15px;
-      padding: 15px 20px;
+      padding: 10px 20px;
     }
 
-    .announcements-section {
-      width: 100%;
-      gap: 10px;
-    }
-
-    .announcement-swiper {
-      flex: 1;
-      width: 100%;
-    }
-
-    .social-icons {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .announcement-slide p {
+    .announcement-message {
       font-size: 12px;
     }
   }
@@ -211,6 +62,12 @@ Displays swipable announcement messages on the left with social icons on the rig
   "class": "section",
   "settings": [
     {
+      "type": "text",
+      "id": "message",
+      "label": "Announcement Message",
+      "default": "Welcome to our store"
+    },
+    {
       "type": "color",
       "id": "background_color",
       "label": "Background Color",
@@ -221,101 +78,6 @@ Displays swipable announcement messages on the left with social icons on the rig
       "id": "text_color",
       "label": "Text Color",
       "default": "#ffffff"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "announcement",
-      "name": "Announcement",
-      "settings": [
-        {
-          "type": "text",
-          "id": "message",
-          "label": "Message",
-          "default": "Welcome to our store"
-        }
-      ]
-    },
-    {
-      "type": "social_icon",
-      "name": "Social Icon",
-      "settings": [
-        {
-          "type": "select",
-          "id": "icon",
-          "label": "Icon",
-          "options": [
-            {
-              "value": "facebook",
-              "label": "Facebook"
-            },
-            {
-              "value": "instagram",
-              "label": "Instagram"
-            },
-            {
-              "value": "twitter",
-              "label": "Twitter"
-            }
-          ],
-          "default": "facebook"
-        },
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Label",
-          "default": "Facebook"
-        },
-        {
-          "type": "text",
-          "id": "link",
-          "label": "Link",
-          "default": "https://facebook.com"
-        }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "Announcement Bar",
-      "blocks": [
-        {
-          "type": "announcement",
-          "settings": {
-            "message": "Free shipping on orders over $50"
-          }
-        },
-        {
-          "type": "announcement",
-          "settings": {
-            "message": "Sign up for our newsletter for 10% off"
-          }
-        },
-        {
-          "type": "social_icon",
-          "settings": {
-            "icon": "facebook",
-            "label": "Facebook",
-            "link": "https://facebook.com"
-          }
-        },
-        {
-          "type": "social_icon",
-          "settings": {
-            "icon": "instagram",
-            "label": "Instagram",
-            "link": "https://instagram.com"
-          }
-        },
-        {
-          "type": "social_icon",
-          "settings": {
-            "icon": "twitter",
-            "label": "Twitter",
-            "link": "https://twitter.com"
-          }
-        }
-      ]
     }
   ]
 }
