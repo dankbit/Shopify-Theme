@@ -87,10 +87,22 @@
         "button_text_left": "Prev",
         "button_text_right": "Next"
       }
+    },
+    "featured_collection_kKGVkH": {
+      "type": "featured-collection",
+      "name": "Featured Collection",
+      "settings": {
+        "collection": "automated-collection",
+        "products_limit": 8,
+        "title": "Featured Collection",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
     "image_banner",
-    "slideshow_LGJh3n"
+    "slideshow_LGJh3n",
+    "featured_collection_kKGVkH"
   ]
 }
