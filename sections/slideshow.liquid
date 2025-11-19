@@ -1,178 +1,130 @@
 {% comment %}
-Image Slider Section
+Simple Image Slider Section
 {% endcomment %}
 
-<div class="slider-section" style="
-  padding-top: {{ section.settings.padding_top_mobile }}px;
-  padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
-  background-color: {{ section.settings.background_color }};
-">
-  <div class="main" style="
-    width: {{ section.settings.slider_width_mobile }}%;
-    height: {{ section.settings.slider_height_mobile }}px;
-    margin: auto;
-  ">
+<div class="slider-wrapper">
+  <div class="main">
     {% for block in section.blocks %}
       {% if block.settings.slide_image != blank %}
         <img 
           class="slide" 
-          src="{{ block.settings.slide_image | image_url: width: 1200 }}" 
+          src="{{ block.settings.slide_image | img_url: '1200x' }}" 
           alt="{{ block.settings.slide_image.alt | escape }}"
-          width="1200"
-          height="600"
-          loading="lazy"
           {{ block.shopify_attributes }}
         >
       {% else %}
         <img 
           class="slide" 
-          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Crect fill='%23cccccc' width='1200' height='600'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23666666' text-anchor='middle' dominant-baseline='middle'%3ESlide {{ forloop.index }}%3C/text%3E%3C/svg%3E"
+          src="https://via.placeholder.com/1000x600/cccccc/666666?text=Slide+{{ forloop.index }}" 
           alt="Slide {{ forloop.index }}"
-          width="1200"
-          height="600"
           {{ block.shopify_attributes }}
         >
       {% endif %}
     {% endfor %}
     
-    {% if section.settings.show_nav_buttons %}
-      <div class="nav" style="
-        bottom: {{ section.settings.nav_position_bottom }}px;
-      ">
-        <button class="slider-btn prev-btn" onclick="goPrev{{ section.id }}()" style="
-          background-color: {{ section.settings.button_bg_color }};
-          color: {{ section.settings.button_text_color }};
-          border-radius: {{ section.settings.button_border_radius }}px;
-          padding: {{ section.settings.button_padding_y }}px {{ section.settings.button_padding_x }}px;
-          font-size: {{ section.settings.button_font_size }}px;
-        ">
-          {{ section.settings.prev_button_text | default: "Prev" }}
-        </button>
-        <button class="slider-btn next-btn" onclick="goNext{{ section.id }}()" style="
-          background-color: {{ section.settings.button_bg_color }};
-          color: {{ section.settings.button_text_color }};
-          border-radius: {{ section.settings.button_border_radius }}px;
-          padding: {{ section.settings.button_padding_y }}px {{ section.settings.button_padding_x }}px;
-          font-size: {{ section.settings.button_font_size }}px;
-        ">
-          {{ section.settings.next_button_text | default: "Next" }}
-        </button>
-      </div>
-    {% endif %}
+    <div class="nav">
+      <button class="prev-btn">Prev</button>
+      <button class="next-btn">Next</button>
+    </div>
   </div>
 </div>
 
 <style>
-  .slider-section {
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .slider-wrapper {
     width: 100%;
+    padding: 50px 0;
   }
 
   .main {
+    width: 70%;
+    height: 600px;
+    margin: auto;
     position: relative;
     overflow: hidden;
-    border-radius: {{ section.settings.slider_border_radius }}px;
   }
 
   .slide {
     height: 100%;
     width: 100%;
     position: absolute;
-    transition: {{ section.settings.transition_speed }}s;
-    object-fit: {{ section.settings.image_fit }};
+    transition: 1s;
+    object-fit: cover;
   }
 
   .nav {
     position: absolute;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: {{ section.settings.button_gap }}px;
+    gap: 20px;
     z-index: 10;
   }
 
-  .slider-btn {
-    border: {{ section.settings.button_border_width }}px solid {{ section.settings.button_border_color }};
+  .nav button {
+    padding: 10px 30px;
+    background-color: #000;
+    color: #fff;
+    border: none;
     cursor: pointer;
-    font-weight: {{ section.settings.button_font_weight }};
-    text-transform: {{ section.settings.button_text_transform }};
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    border-radius: 5px;
   }
 
-  .slider-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    background-color: {{ section.settings.button_hover_bg_color }};
-    color: {{ section.settings.button_hover_text_color }};
+  .nav button:hover {
+    background-color: #333;
   }
 
-  .slider-btn:active {
-    transform: translateY(0);
-  }
-
-  /* Tablet Styles */
-  @media (min-width: 768px) {
+  @media (max-width: 768px) {
     .main {
-      width: {{ section.settings.slider_width_mobile | times: 1.1 }}% !important;
-      height: {{ section.settings.slider_height_mobile | times: 1.2 }}px !important;
-    }
-
-    .slider-section {
-      padding-top: {{ section.settings.padding_top_mobile | times: 1.2 }}px !important;
-      padding-bottom: {{ section.settings.padding_bottom_mobile | times: 1.2 }}px !important;
-    }
-  }
-
-  /* Desktop Styles */
-  @media (min-width: 1024px) {
-    .main {
-      width: {{ section.settings.slider_width_desktop }}% !important;
-      height: {{ section.settings.slider_height_desktop }}px !important;
-    }
-
-    .slider-section {
-      padding-top: {{ section.settings.padding_top_desktop }}px !important;
-      padding-bottom: {{ section.settings.padding_bottom_desktop }}px !important;
+      width: 90%;
+      height: 400px;
     }
   }
 </style>
 
 <script>
 (function() {
-  const slides{{ section.id }} = document.querySelectorAll('#shopify-section-{{ section.id }} .slide');
-  let counter{{ section.id }} = 0;
+  const section = document.querySelector('#shopify-section-{{ section.id }}');
+  const slides = section.querySelectorAll('.slide');
+  const prevBtn = section.querySelector('.prev-btn');
+  const nextBtn = section.querySelector('.next-btn');
+  let counter = 0;
 
-  slides{{ section.id }}.forEach((slide, index) => {
+  slides.forEach((slide, index) => {
     slide.style.left = `${index * 100}%`;
   });
 
-  window.goNext{{ section.id }} = () => {
-    counter{{ section.id }}++;
-    if(counter{{ section.id }} >= slides{{ section.id }}.length) {
-      counter{{ section.id }} = 0;
+  const goNext = () => {
+    counter++;
+    if(counter >= slides.length) {
+      counter = 0;
     }
-    slideImage{{ section.id }}();
+    slideImage();
   }
 
-  window.goPrev{{ section.id }} = () => {
-    counter{{ section.id }}--;
-    if(counter{{ section.id }} < 0) {
-      counter{{ section.id }} = slides{{ section.id }}.length - 1;
+  const goPrev = () => {
+    counter--;
+    if(counter < 0) {
+      counter = slides.length - 1;
     }
-    slideImage{{ section.id }}();
+    slideImage();
   }
 
-  const slideImage{{ section.id }} = () => {
-    slides{{ section.id }}.forEach((slide) => {
-      slide.style.transform = `translateX(-${counter{{ section.id }} * 100}%)`;
+  const slideImage = () => {
+    slides.forEach((slide) => {
+      slide.style.transform = `translateX(-${counter * 100}%)`;
     });
   }
 
-  {% if section.settings.autoplay %}
-    setInterval(() => {
-      window.goNext{{ section.id }}();
-    }, {{ section.settings.autoplay_speed }}000);
-  {% endif %}
+  nextBtn.addEventListener('click', goNext);
+  prevBtn.addEventListener('click', goPrev);
 })();
 </script>
 
@@ -181,318 +133,6 @@ Image Slider Section
   "name": "Image Slider",
   "tag": "section",
   "class": "section",
-  "settings": [
-    {
-      "type": "header",
-      "content": "Slider Dimensions - Mobile"
-    },
-    {
-      "type": "range",
-      "id": "slider_width_mobile",
-      "min": 80,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "label": "Slider Width (Mobile)",
-      "default": 90
-    },
-    {
-      "type": "range",
-      "id": "slider_height_mobile",
-      "min": 300,
-      "max": 700,
-      "step": 50,
-      "unit": "px",
-      "label": "Slider Height (Mobile)",
-      "default": 400
-    },
-    {
-      "type": "header",
-      "content": "Slider Dimensions - Desktop"
-    },
-    {
-      "type": "range",
-      "id": "slider_width_desktop",
-      "min": 50,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "label": "Slider Width (Desktop)",
-      "default": 70
-    },
-    {
-      "type": "range",
-      "id": "slider_height_desktop",
-      "min": 400,
-      "max": 900,
-      "step": 50,
-      "unit": "px",
-      "label": "Slider Height (Desktop)",
-      "default": 600
-    },
-    {
-      "type": "header",
-      "content": "Slider Settings"
-    },
-    {
-      "type": "range",
-      "id": "transition_speed",
-      "min": 0.3,
-      "max": 2,
-      "step": 0.1,
-      "label": "Transition Speed (seconds)",
-      "default": 1
-    },
-    {
-      "type": "select",
-      "id": "image_fit",
-      "label": "Image Fit",
-      "options": [
-        { "value": "cover", "label": "Cover (Fill)" },
-        { "value": "contain", "label": "Contain (Fit)" },
-        { "value": "fill", "label": "Fill (Stretch)" }
-      ],
-      "default": "cover"
-    },
-    {
-      "type": "range",
-      "id": "slider_border_radius",
-      "min": 0,
-      "max": 30,
-      "step": 2,
-      "unit": "px",
-      "label": "Slider Border Radius",
-      "default": 0
-    },
-    {
-      "type": "header",
-      "content": "Autoplay"
-    },
-    {
-      "type": "checkbox",
-      "id": "autoplay",
-      "label": "Enable Autoplay",
-      "default": false
-    },
-    {
-      "type": "range",
-      "id": "autoplay_speed",
-      "min": 2,
-      "max": 10,
-      "step": 1,
-      "unit": "sec",
-      "label": "Autoplay Speed",
-      "default": 5
-    },
-    {
-      "type": "header",
-      "content": "Navigation Buttons"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_nav_buttons",
-      "label": "Show Navigation Buttons",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "prev_button_text",
-      "label": "Previous Button Text",
-      "default": "Prev"
-    },
-    {
-      "type": "text",
-      "id": "next_button_text",
-      "label": "Next Button Text",
-      "default": "Next"
-    },
-    {
-      "type": "range",
-      "id": "nav_position_bottom",
-      "min": 10,
-      "max": 100,
-      "step": 5,
-      "unit": "px",
-      "label": "Button Position from Bottom",
-      "default": 30
-    },
-    {
-      "type": "range",
-      "id": "button_gap",
-      "min": 10,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Gap Between Buttons",
-      "default": 20
-    },
-    {
-      "type": "header",
-      "content": "Button Styling"
-    },
-    {
-      "type": "color",
-      "id": "button_bg_color",
-      "label": "Button Background Color",
-      "default": "#2d5a3d"
-    },
-    {
-      "type": "color",
-      "id": "button_text_color",
-      "label": "Button Text Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "button_hover_bg_color",
-      "label": "Button Hover Background",
-      "default": "#1f4029"
-    },
-    {
-      "type": "color",
-      "id": "button_hover_text_color",
-      "label": "Button Hover Text Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "button_border_color",
-      "label": "Button Border Color",
-      "default": "#2d5a3d"
-    },
-    {
-      "type": "range",
-      "id": "button_border_width",
-      "min": 0,
-      "max": 5,
-      "step": 1,
-      "unit": "px",
-      "label": "Button Border Width",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "button_border_radius",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Button Border Radius",
-      "default": 25
-    },
-    {
-      "type": "range",
-      "id": "button_padding_x",
-      "min": 15,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Button Horizontal Padding",
-      "default": 30
-    },
-    {
-      "type": "range",
-      "id": "button_padding_y",
-      "min": 8,
-      "max": 25,
-      "step": 1,
-      "unit": "px",
-      "label": "Button Vertical Padding",
-      "default": 12
-    },
-    {
-      "type": "range",
-      "id": "button_font_size",
-      "min": 12,
-      "max": 20,
-      "step": 1,
-      "unit": "px",
-      "label": "Button Font Size",
-      "default": 16
-    },
-    {
-      "type": "select",
-      "id": "button_font_weight",
-      "label": "Button Font Weight",
-      "options": [
-        { "value": "400", "label": "Normal" },
-        { "value": "500", "label": "Medium" },
-        { "value": "600", "label": "Semi Bold" },
-        { "value": "700", "label": "Bold" }
-      ],
-      "default": "600"
-    },
-    {
-      "type": "select",
-      "id": "button_text_transform",
-      "label": "Button Text Transform",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "uppercase", "label": "Uppercase" },
-        { "value": "lowercase", "label": "Lowercase" },
-        { "value": "capitalize", "label": "Capitalize" }
-      ],
-      "default": "uppercase"
-    },
-    {
-      "type": "header",
-      "content": "Section Spacing - Mobile"
-    },
-    {
-      "type": "range",
-      "id": "padding_top_mobile",
-      "min": 0,
-      "max": 120,
-      "step": 10,
-      "unit": "px",
-      "label": "Top Padding (Mobile)",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom_mobile",
-      "min": 0,
-      "max": 120,
-      "step": 10,
-      "unit": "px",
-      "label": "Bottom Padding (Mobile)",
-      "default": 40
-    },
-    {
-      "type": "header",
-      "content": "Section Spacing - Desktop"
-    },
-    {
-      "type": "range",
-      "id": "padding_top_desktop",
-      "min": 0,
-      "max": 200,
-      "step": 10,
-      "unit": "px",
-      "label": "Top Padding (Desktop)",
-      "default": 70
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom_desktop",
-      "min": 0,
-      "max": 200,
-      "step": 10,
-      "unit": "px",
-      "label": "Bottom Padding (Desktop)",
-      "default": 70
-    },
-    {
-      "type": "header",
-      "content": "Colors"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Section Background Color",
-      "default": "#ffffff"
-    }
-  ],
   "blocks": [
     {
       "type": "slide",
@@ -501,8 +141,7 @@ Image Slider Section
         {
           "type": "image_picker",
           "id": "slide_image",
-          "label": "Slide Image",
-          "info": "Recommended size: 1200x600px"
+          "label": "Slide Image"
         }
       ]
     }
