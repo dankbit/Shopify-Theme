@@ -114,6 +114,49 @@
         "background_color": "#b31a1a",
         "text_color": "#ffffff"
       }
+    },
+    "faq_accordion_yHyz3L": {
+      "type": "faq-accordion",
+      "blocks": {
+        "faq_item_ptBR8j": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "We offer a 30-day return policy for all items in original condition with the receipt. Please contact our customer service team for more information."
+          }
+        },
+        "faq_item_KHYamE": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer shipping worldwide?",
+            "answer": "Yes, we ship to over 150 countries worldwide. Shipping costs and delivery times vary by location. You can calculate shipping costs at checkout."
+          }
+        },
+        "faq_item_QtMb8g": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "Once your order ships, you'll receive a tracking number via email. You can use this number to track your package on the carrier's website."
+          }
+        },
+        "faq_item_9mH6xm": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What payment methods do you accept?",
+            "answer": "We accept all major credit cards, PayPal, Apple Pay, and Google Pay. All transactions are secured with SSL encryption."
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_ptBR8j",
+        "faq_item_KHYamE",
+        "faq_item_QtMb8g",
+        "faq_item_9mH6xm"
+      ],
+      "name": "FAQ Accordion",
+      "settings": {
+        "title": "Frequently Asked Questions"
+      }
     }
   },
   "order": [
@@ -121,6 +164,7 @@
     "slideshow_LGJh3n",
     "featured_collection_kKGVkH",
     "featured_product_ud_FiNkBA",
-    "announcement_ud_DgdWjQ"
+    "announcement_ud_DgdWjQ",
+    "faq_accordion_yHyz3L"
   ]
 }
