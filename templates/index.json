@@ -77,7 +77,7 @@
       ],
       "name": "Custom Image Slideshow (Swiper)",
       "settings": {
-        "section_width": "contained",
+        "section_width": "full",
         "section_height": 600
       }
     }
