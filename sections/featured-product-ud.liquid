@@ -1,0 +1,338 @@
+{% comment %}
+Featured Product Section
+Displays a single product with image gallery, variants, and add to cart
+{% endcomment %}
+
+<div class="featured-product-container">
+  <div class="product-gallery">
+    <!-- Main Product Image -->
+    <div class="main-image-wrapper">
+      <img 
+        id="mainImage" 
+        class="main-image" 
+        src="{{ section.settings.product.featured_image | image_url: width: 600 }}" 
+        alt="{{ section.settings.product.featured_image.alt }}"
+        width="600"
+        height="600"
+      >
+    </div>
+
+    <!-- Thumbnail Gallery -->
+    <div class="thumbnail-gallery">
+      {% for image in section.settings.product.images %}
+        <img 
+          class="thumbnail {% if forloop.first %}active{% endif %}" 
+          src="{{ image | image_url: width: 100 }}" 
+          alt="{{ image.alt }}"
+          width="100"
+          height="100"
+          data-full-src="{{ image | image_url: width: 600 }}"
+        >
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Product Details -->
+  <div class="product-details">
+    <h1 class="product-title">{{ section.settings.product.title }}</h1>
+    
+    <!-- Price -->
+    <div class="price-section">
+      {% if section.settings.product.compare_at_price %}
+        <span class="original-price">{{ section.settings.product.compare_at_price | money }}</span>
+      {% endif %}
+      <span class="current-price">{{ section.settings.product.price | money }}</span>
+    </div>
+
+    <!-- Variant Selection -->
+    <form id="productForm" action="/cart/add" method="post">
+      {% if section.settings.product.has_only_default_variant %}
+        <!-- No variants, just show add to cart -->
+      {% else %}
+        <!-- Variant Options -->
+        {% for option in section.settings.product.options_with_values %}
+          <div class="variant-group">
+            <label class="variant-label">{{ option.name }}</label>
+            <div class="variant-options">
+              {% for value in option.values %}
+                <input 
+                  type="radio" 
+                  id="option-{{ option.name }}-{{ value }}" 
+                  name="options[{{ option.name }}]" 
+                  value="{{ value }}"
+                  {% if forloop.first %}checked{% endif %}
+                  class="variant-input"
+                >
+                <label for="option-{{ option.name }}-{{ value }}" class="variant-option">
+                  {{ value }}
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Hidden Product ID -->
+      <input type="hidden" name="id" id="variantId" value="{{ section.settings.product.selected_or_first_available_variant.id }}">
+
+      <!-- Add to Cart Button -->
+      <button 
+        type="submit" 
+        class="add-to-cart-btn"
+        {% unless section.settings.product.available %}disabled{% endunless %}
+      >
+        {% if section.settings.product.available %}
+          Add to Cart
+        {% else %}
+          Sold Out
+        {% endif %}
+      </button>
+    </form>
+
+    <!-- Product Description -->
+    {% if section.settings.product.description != blank %}
+      <div class="product-description">
+        {{ section.settings.product.description | strip_html | truncatewords: 30 }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .featured-product-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  /* Gallery Section */
+  .product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .main-image-wrapper {
+    width: 100%;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  .thumbnail-gallery {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+  }
+
+  .thumbnail {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    object-fit: cover;
+    transition: border-color 0.3s ease;
+  }
+
+  .thumbnail:hover {
+    border-color: #999;
+  }
+
+  .thumbnail.active {
+    border-color: #000;
+  }
+
+  /* Product Details */
+  .product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .product-title {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .price-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .original-price {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .current-price {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  /* Variant Selection */
+  .variant-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .variant-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .variant-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .variant-input {
+    display: none;
+  }
+
+  .variant-option {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+
+  .variant-input:checked + .variant-option {
+    border-color: #000;
+    background-color: #000;
+    color: #fff;
+  }
+
+  .variant-option:hover {
+    border-color: #999;
+  }
+
+  /* Add to Cart Button */
+  .add-to-cart-btn {
+    padding: 16px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .add-to-cart-btn:hover:not(:disabled) {
+    background-color: #333;
+  }
+
+  .add-to-cart-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  /* Product Description */
+  .product-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .featured-product-container {
+      grid-template-columns: 1fr;
+      gap: 30px;
+      padding: 20px;
+    }
+
+    .product-title {
+      font-size: 24px;
+    }
+
+    .current-price {
+      font-size: 20px;
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+    }
+  }
+</style>
+
+<script>
+(function() {
+  // Thumbnail Click Handler
+  const thumbnails = document.querySelectorAll('.thumbnail');
+  const mainImage = document.getElementById('mainImage');
+
+  thumbnails.forEach(thumbnail => {
+    thumbnail.addEventListener('click', function() {
+      // Update main image
+      mainImage.src = this.dataset.fullSrc;
+      mainImage.alt = this.alt;
+
+      // Update active state
+      thumbnails.forEach(thumb => thumb.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Variant Selection Handler
+  const form = document.getElementById('productForm');
+  const variantInputs = document.querySelectorAll('.variant-input');
+  const variantIdInput = document.getElementById('variantId');
+
+  variantInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      // Here you would typically fetch available variants
+      // For now, we'll just update the hidden variant ID
+      console.log('Variant selected:', this.name, this.value);
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Featured Product UD",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Select Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Product Utsav"
+    }
+  ]
+}
+{% endschema %}
