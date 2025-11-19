@@ -163,9 +163,16 @@
       "name": "Best Sellers",
       "settings": {
         "title": "BEST SELLERS",
+        "title_alignment": "left",
+        "title_font_size_desktop": 28,
+        "title_font_size_mobile": 22,
+        "title_color_desktop": "#000000",
+        "title_color_mobile": "#000000",
+        "section_width": 1200,
+        "products_per_row_desktop": 4,
+        "products_per_row_mobile": 1,
         "collection": "automated-collection",
-        "desktop_products": 4,
-        "mobile_products": 1
+        "products_limit": 8
       }
     }
   },
