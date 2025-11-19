@@ -35,9 +35,11 @@
         <div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="Slide {{ forloop.index }} of {{ section.blocks.size }}">
           {% if block.settings.image %}
             <img
-              src="{{ block.settings.image | img_url: '2048x2048' }}"
+              src="{{ block.settings.image | image_url: width: 2048, height: 2048 }}"
               alt="{{ block.settings.image.alt | escape }}"
               class="slide-image"
+              width="2048"
+              height="2048"
               style="{% if block.settings.image_height %}height: {{ block.settings.image_height }}px;{% endif %}"
             />
           {% else %}
@@ -60,7 +62,7 @@
     <div class="swiper-pagination" role="tablist" aria-label="Slide pagination"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" async></script>
   <script>
     (function(){
       var root = document.getElementById('custom-swiper-{{ section.id }}');
@@ -121,7 +123,7 @@
 
   {% schema %}
   {
-    "name": "Custom Image Slideshow (Swiper)",
+    "name": "Image Slideshow",
     "settings": [
       {
         "type": "select",
@@ -137,8 +139,7 @@
         "id": "section_height",
         "label": "Section height in px",
         "info": "Leave empty to use default. Enter a number like 520.",
-        "min": 200,
-        "max": 1200
+        "default": 520,
       }
     ],
     "blocks": [
@@ -155,11 +156,9 @@
             "type": "number",
             "id": "image_height",
             "label": "Image height in px",
-            "info": "Optional override for this slide. Leave empty to inherit section height.",
-            "min": 100,
-            "max": 2000
+            "info": "Optional override for this slide. Leave empty to inherit section height."
           }
-        ]
+             ]
       }
     ],
     "max_blocks": 3,
