@@ -165,7 +165,7 @@ Simple Featured Collection Section
   {% comment %} Mobile: 2 columns {% endcomment %}
   @media (max-width: 640px) {
     .products-grid {
-      grid-template-columns: repeat({{ section.settings.products_mobile }}, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
     }
 
@@ -189,7 +189,7 @@ Simple Featured Collection Section
   {% comment %} Desktop: 4 columns {% endcomment %}
   @media (min-width: 1025px) {
     .products-grid {
-      grid-template-columns: repeat({{ section.settings.products_desktop }}, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 </style>
@@ -218,28 +218,6 @@ Simple Featured Collection Section
       "step": 1,
       "label": "Number of Products to Show",
       "default": 8
-    },
-    {
-      "type": "header",
-      "content": "Responsive Columns"
-    },
-    {
-      "type": "range",
-      "id": "products_mobile",
-      "min": 1,
-      "max": 2,
-      "step": 1,
-      "label": "Products per row (Mobile)",
-      "default": 2
-    },
-    {
-      "type": "range",
-      "id": "products_desktop",
-      "min": 3,
-      "max": 6,
-      "step": 1,
-      "label": "Products per row (Desktop)",
-      "default": 4
     },
     {
       "type": "header",
