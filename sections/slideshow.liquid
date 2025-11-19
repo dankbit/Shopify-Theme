@@ -1,36 +1,174 @@
-{%- style -%}
-  .bg-color {
-    background-color: {{ section.settings.bg_color }};
-  }
-{%- endstyle -%}
+<section
+  id="custom-swiper-{{ section.id }}"
+  class="custom-swiper {% if section.settings.section_width == 'contained' %}swiper-contained{% else %}swiper-full{% endif %}"
+  aria-label="Image slideshow"
+>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+  <style>
+    #custom-swiper-{{ section.id }} { position: relative; width: 100%; overflow: hidden; }
+    #custom-swiper-{{ section.id }}.swiper-contained { max-width: 1400px; margin: 0 auto; }
+    #custom-swiper-{{ section.id }} .swiper { width: 100%; }
+    #custom-swiper-{{ section.id }} .swiper-slide { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    #custom-swiper-{{ section.id }} .slide-image { width: 100%; height: var(--section-height, 520px); object-fit: cover; display:block; }
+    @media (max-width: 1024px) {
+      #custom-swiper-{{ section.id }} .slide-image { height: calc(var(--section-height,520px) * 0.7); }
+    }
+    @media (max-width: 640px) {
+      #custom-swiper-{{ section.id }} .slide-image { height: calc(var(--section-height,520px) * 0.6); }
+    }
+    #custom-swiper-{{ section.id }} .swiper-button { background: rgba(0,0,0,0.55); border-radius: 999px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:#fff; border:none; cursor:pointer; }
+    #custom-swiper-{{ section.id }} .swiper-button:active { transform: scale(0.98); }
+    #custom-swiper-{{ section.id }} .controls-center { position: absolute; left:50%; transform: translateX(-50%); bottom:28px; display:flex; align-items:center; gap:14px; z-index:30; pointer-events:auto; }
+    #custom-swiper-{{ section.id }} .fraction-display { color:#fff; font-weight:600; font-size:14px; min-width:56px; text-align:center; pointer-events:none; }
+    #custom-swiper-{{ section.id }} .swiper-pagination { position: absolute; left:50%; transform: translateX(-50%); bottom:8px; display:flex; gap:8px; z-index:30; }
+    #custom-swiper-{{ section.id }} .swiper-pagination-bullet { width:8px; height:8px; opacity:0.9; background: rgba(255,255,255,0.55); border-radius:999px; }
+    #custom-swiper-{{ section.id }} .swiper-pagination-bullet.swiper-pagination-bullet-active { background: white; transform: scale(1.25); }
+    #custom-swiper-{{ section.id }}.single-slide .controls-center,
+    #custom-swiper-{{ section.id }}.single-slide .swiper-pagination { display:none; }
+    #custom-swiper-{{ section.id }} .swiper-button:focus,
+    #custom-swiper-{{ section.id }} .swiper-pagination-bullet:focus { outline:2px solid rgba(255,255,255,0.9); outline-offset:2px; }
+  </style>
 
-<h3 class="bg-color">{{ section.settings.heading_test }}</h3>
+  <div class="swiper" data-swiper>
+    <div class="swiper-wrapper">
+      {% for block in section.blocks %}
+        <div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="Slide {{ forloop.index }} of {{ section.blocks.size }}">
+          {% if block.settings.image %}
+            <img
+              src="{{ block.settings.image | img_url: '2048x2048' }}"
+              alt="{{ block.settings.image.alt | escape }}"
+              class="slide-image"
+              style="{% if block.settings.image_height %}height: {{ block.settings.image_height }}px;{% endif %}"
+            />
+          {% else %}
+            <div style="width:100%;height:var(--section-height,520px);background:transparent;"></div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
 
-{% schema %}
+    <div class="controls-center" aria-hidden="false">
+      <button class="swiper-prev swiper-button" type="button" aria-label="Previous slide">
+        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <div class="fraction-display" aria-live="polite"><span data-current>1</span><span> / </span><span data-total>{{ section.blocks.size }}</span></div>
+      <button class="swiper-next swiper-button" type="button" aria-label="Next slide">
+        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      </button>
+    </div>
+
+    <div class="swiper-pagination" role="tablist" aria-label="Slide pagination"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script>
+    (function(){
+      var root = document.getElementById('custom-swiper-{{ section.id }}');
+      if (!root) return;
+
+      var sHeight = {{ section.settings.section_height | default: 'null' }};
+      if (sHeight && !isNaN(sHeight)) { root.style.setProperty('--section-height', sHeight + 'px'); }
+
+      var swiperEl = root.querySelector('[data-swiper]');
+      var slides = swiperEl.querySelectorAll('.swiper-slide');
+      var total = slides.length;
+      if (total < 2) { root.classList.add('single-slide'); }
+
+      var currentDisplay = root.querySelector('[data-current]');
+      var totalDisplay = root.querySelector('[data-total]');
+      if (totalDisplay) totalDisplay.textContent = total;
+
+      var swiper = new Swiper(swiperEl, {
+        loop: false,
+        slidesPerView: 1,
+        spaceBetween: 0,
+        grabCursor: true,
+        pagination: {
+          el: root.querySelector('.swiper-pagination'),
+          clickable: true,
+          bulletClass: 'swiper-pagination-bullet',
+          bulletActiveClass: 'swiper-pagination-bullet-active'
+        },
+        navigation: {
+          prevEl: root.querySelector('.swiper-prev'),
+          nextEl: root.querySelector('.swiper-next')
+        },
+        a11y: {
+          enabled: true,
+          prevSlideMessage: 'Previous slide',
+          nextSlideMessage: 'Next slide'
+        },
+        on: {
+          init: function() {
+            if (currentDisplay) currentDisplay.textContent = (this.realIndex || 0) + 1;
+          },
+          slideChange: function() {
+            if (currentDisplay) currentDisplay.textContent = (this.realIndex || 0) + 1;
+          }
+        }
+      });
+
+      window.addEventListener('resize', function(){ swiper.update(); });
+
+      document.addEventListener('shopify:section:load', function(evt) {
+        if (!evt.detail) return;
+        if (String(evt.detail.sectionId) === String('{{ section.id }}')) {
+          setTimeout(function(){ swiper.update(); }, 60);
+        }
+      });
+    })();
+  </script>
+
+  {% schema %}
   {
-    "name": "Test Section",
-    "tag": "section",
-    "class": "",
+    "name": "Custom Image Slideshow (Swiper)",
     "settings": [
       {
-        "type": "text",
-        "id": "heading_test",
-        "label": "Heading Test"
+        "type": "select",
+        "id": "section_width",
+        "label": "Section width",
+        "options": [
+          { "value": "full", "label": "Full width" },
+          { "value": "contained", "label": "Contained (centered)" }
+        ]
       },
       {
-      "type" : "color",
-      "id" : "bg_color",
-      "label" : "Background Color",
-      "default": "#e9e9e9"
+        "type": "number",
+        "id": "section_height",
+        "label": "Section height in px",
+        "info": "Leave empty to use default. Enter a number like 520.",
+        "min": 200,
+        "max": 1200
       }
-      
     ],
+    "blocks": [
+      {
+        "type": "image_slide",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Slide image"
+          },
+          {
+            "type": "number",
+            "id": "image_height",
+            "label": "Image height in px",
+            "info": "Optional override for this slide. Leave empty to inherit section height.",
+            "min": 100,
+            "max": 2000
+          }
+        ]
+      }
+    ],
+    "max_blocks": 3,
     "presets": [
       {
-        "name": "Test Section",
-        "settings": {
-        }
+        "name": "Custom Image Slideshow (Swiper)",
+        "category": "Hero"
       }
     ]
   }
-{% endschema %}
+  {% endschema %}
+</section>
