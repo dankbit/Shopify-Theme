@@ -1,0 +1,231 @@
+{% comment %}
+FAQ Accordion Section
+Displays 4 frequently asked questions with expandable answers
+{% endcomment %}
+
+<div class="faq-container">
+  <h2 class="faq-title">{{ section.settings.title }}</h2>
+
+  <div class="accordion">
+    {% for block in section.blocks %}
+      {% if block.type == "faq_item" %}
+        <div class="accordion-item">
+          <button class="accordion-header" data-index="{{ forloop.index0 }}">
+            <span class="accordion-title">{{ block.settings.question }}</span>
+            <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              {{ block.settings.answer }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .faq-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+
+  .faq-title {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #000;
+  }
+
+  .accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .accordion-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .accordion-header {
+    width: 100%;
+    padding: 16px 20px;
+    background-color: #f5f5f5;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  .accordion-header:hover {
+    background-color: #efefef;
+  }
+
+  .accordion-header.active {
+    background-color: #000;
+    color: #fff;
+  }
+
+  .accordion-title {
+    text-align: left;
+    flex: 1;
+  }
+
+  .accordion-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-left: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  .accordion-header.active .accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .accordion-content.active {
+    max-height: 500px;
+  }
+
+  .accordion-body {
+    padding: 20px;
+    background-color: #fff;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .faq-container {
+      padding: 15px;
+    }
+
+    .faq-title {
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+
+    .accordion-header {
+      padding: 14px 16px;
+      font-size: 15px;
+    }
+
+    .accordion-body {
+      padding: 16px;
+      font-size: 13px;
+    }
+  }
+</style>
+
+<script>
+(function() {
+  const headers = document.querySelectorAll('.accordion-header');
+
+  headers.forEach(header => {
+    header.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const isActive = this.classList.contains('active');
+
+      // Close all other items
+      headers.forEach(h => {
+        h.classList.remove('active');
+        h.nextElementSibling.classList.remove('active');
+      });
+
+      // Toggle current item
+      if (!isActive) {
+        this.classList.add('active');
+        content.classList.add('active');
+      }
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Frequently Asked Questions"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is your return policy?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "We offer a 30-day return policy for all items. Please contact our customer service team for more information."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "We offer a 30-day return policy for all items in original condition with the receipt. Please contact our customer service team for more information."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer shipping worldwide?",
+            "answer": "Yes, we ship to over 150 countries worldwide. Shipping costs and delivery times vary by location. You can calculate shipping costs at checkout."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "Once your order ships, you'll receive a tracking number via email. You can use this number to track your package on the carrier's website."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What payment methods do you accept?",
+            "answer": "We accept all major credit cards, PayPal, Apple Pay, and Google Pay. All transactions are secured with SSL encryption."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
