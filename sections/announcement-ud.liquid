@@ -3,20 +3,16 @@ Announcement Bar Section
 Displays swipable announcement messages on the left with social icons on the right
 {% endcomment %}
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
 <div class="announcement-bar-container">
   <!-- Announcement Messages (Left Side) -->
   <div class="announcements-section">
-    <button class="nav-btn prev-btn" aria-label="Previous announcement">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-      </svg>
-    </button>
-
-    <div class="announcements-wrapper">
-      <div class="announcements-slider">
+    <div class="swiper announcement-swiper">
+      <div class="swiper-wrapper">
         {% for block in section.blocks %}
           {% if block.type == "announcement" %}
-            <div class="announcement-slide {% if forloop.first %}active{% endif %}">
+            <div class="swiper-slide announcement-slide">
               <p>{{ block.settings.message }}</p>
             </div>
           {% endif %}
@@ -24,7 +20,13 @@ Displays swipable announcement messages on the left with social icons on the rig
       </div>
     </div>
 
-    <button class="nav-btn next-btn" aria-label="Next announcement">
+    <button class="nav-btn swiper-button-prev" aria-label="Previous announcement">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+
+    <button class="nav-btn swiper-button-next" aria-label="Next announcement">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
       </svg>
@@ -77,37 +79,20 @@ Displays swipable announcement messages on the left with social icons on the rig
     flex: 0 0 auto;
   }
 
-  .announcements-wrapper {
+  .announcement-swiper {
     position: relative;
-    min-height: 40px;
-    min-width: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    width: 300px;
+    height: 40px;
   }
 
-  .announcements-slider {
-    position: relative;
-    width: 100%;
+  .announcement-swiper .swiper-wrapper {
     height: 100%;
-    display: flex;
-    align-items: center;
   }
 
   .announcement-slide {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    pointer-events: none;
-  }
-
-  .announcement-slide.active {
-    opacity: 1;
-    position: relative;
-    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .announcement-slide p {
@@ -115,6 +100,7 @@ Displays swipable announcement messages on the left with social icons on the rig
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.3px;
+    text-align: center;
   }
 
   /* Navigation Buttons */
@@ -130,6 +116,7 @@ Displays swipable announcement messages on the left with social icons on the rig
     cursor: pointer;
     transition: opacity 0.3s ease;
     padding: 0;
+    flex-shrink: 0;
   }
 
   .nav-btn:hover {
@@ -182,9 +169,9 @@ Displays swipable announcement messages on the left with social icons on the rig
       gap: 10px;
     }
 
-    .announcements-wrapper {
+    .announcement-swiper {
       flex: 1;
-      min-width: auto;
+      width: 100%;
     }
 
     .social-icons {
@@ -198,56 +185,22 @@ Displays swipable announcement messages on the left with social icons on the rig
   }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+
 <script>
 (function() {
-  const slides = document.querySelectorAll('.announcement-slide');
-  const prevBtn = document.querySelector('.prev-btn');
-  const nextBtn = document.querySelector('.next-btn');
-  let currentIndex = 0;
-  let autoplayTimer;
-
-  const showSlide = (index) => {
-    // Remove active class from all slides
-    slides.forEach(slide => slide.classList.remove('active'));
-
-    // Add active class to current slide
-    if (slides[index]) {
-      slides[index].classList.add('active');
+  // Initialize Swiper
+  const swiper = new Swiper('.announcement-swiper', {
+    loop: true,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
     }
-
-    currentIndex = index;
-  };
-
-  const nextSlide = () => {
-    let next = (currentIndex + 1) % slides.length;
-    showSlide(next);
-    resetAutoplay();
-  };
-
-  const prevSlide = () => {
-    let prev = (currentIndex - 1 + slides.length) % slides.length;
-    showSlide(prev);
-    resetAutoplay();
-  };
-
-  const resetAutoplay = () => {
-    clearTimeout(autoplayTimer);
-    startAutoplay();
-  };
-
-  const startAutoplay = () => {
-    autoplayTimer = setTimeout(nextSlide, 5000); // Change slide every 5 seconds
-  };
-
-  // Initialize
-  if (slides.length > 0) {
-    showSlide(0);
-    startAutoplay();
-
-    // Button click handlers
-    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-  }
+  });
 })();
 </script>
 
