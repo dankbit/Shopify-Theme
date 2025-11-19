@@ -23,8 +23,8 @@ Simple Image Slider Section
     {% endfor %}
     
     <div class="nav">
-      <button class="prev-btn">{{section.settings.button_text}}</button>
-      <button class="next-btn">{{section.settings.button_text}}</button>
+      <button class="prev-btn">{{section.settings.button_text_left}}</button>
+      <button class="next-btn">{{section.settings.button_text_right}}</button>
     </div>
   </div>
 </div>
@@ -136,8 +136,13 @@ Simple Image Slider Section
   "settings": [
     {
         "type": "text",
-        "id": "button_text",
-        "label": "Button Text",
+        "id": "button_text_left",
+        "label": "Button Text Left",
+    },
+    {
+        "type": "text",
+        "id": "button_text_right",
+        "label": "Button Text Right",
     }
   ],
   "blocks": [
