@@ -47,9 +47,40 @@
         "mobile_content_alignment": "center",
         "show_text_below": false
       }
+    },
+    "slideshow_Gkkn4j": {
+      "type": "slideshow",
+      "blocks": {
+        "slide_iFBihg": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/any-landscape-image-of-a-perfume-bottle-with-scenery.png"
+          }
+        },
+        "slide_MtiQ7R": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Main_d624f226-0a89-4fe1-b333-0d1548b43c06.jpg"
+          }
+        },
+        "slide_UgE3JV": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/any-landscape-image-of-a-perfume-bottle-with-scenery.png"
+          }
+        }
+      },
+      "block_order": [
+        "slide_iFBihg",
+        "slide_MtiQ7R",
+        "slide_UgE3JV"
+      ],
+      "name": "Simple JS Slider",
+      "settings": {}
     }
   },
   "order": [
-    "image_banner"
+    "image_banner",
+    "slideshow_Gkkn4j"
   ]
 }
