@@ -16,16 +16,16 @@
     @media (max-width: 640px) {
       #custom-swiper-{{ section.id }} .slide-image { height: calc(var(--section-height,520px) * 0.6); }
     }
-    #custom-swiper-{{ section.id }} .swiper-button { background: rgba(0,0,0,0.55); border-radius: 999px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:#fff; border:none; cursor:pointer; }
-    #custom-swiper-{{ section.id }} .swiper-button:active { transform: scale(0.98); }
-    #custom-swiper-{{ section.id }} .controls-center { position: absolute; left:50%; transform: translateX(-50%); bottom:28px; display:flex; align-items:center; gap:14px; z-index:30; pointer-events:auto; }
+    #custom-swiper-{{ section.id }} .swiper-button-custom { background: rgba(0,0,0,0.55); border-radius: 999px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:#fff; border:none; cursor:pointer; z-index:40; }
+    #custom-swiper-{{ section.id }} .swiper-button-custom:active { transform: scale(0.98); }
+    #custom-swiper-{{ section.id }} .controls-center { position: absolute; left:50%; transform: translateX(-50%); bottom:28px; display:flex; align-items:center; gap:14px; z-index:40; pointer-events:auto; }
     #custom-swiper-{{ section.id }} .fraction-display { color:#fff; font-weight:600; font-size:14px; min-width:56px; text-align:center; pointer-events:none; }
-    #custom-swiper-{{ section.id }} .swiper-pagination { position: absolute; left:50%; transform: translateX(-50%); bottom:8px; display:flex; gap:8px; z-index:30; }
+    #custom-swiper-{{ section.id }} .swiper-pagination { position: absolute; left:50%; transform: translateX(-50%); bottom:8px; display:flex; gap:8px; z-index:40; }
     #custom-swiper-{{ section.id }} .swiper-pagination-bullet { width:8px; height:8px; opacity:0.9; background: rgba(255,255,255,0.55); border-radius:999px; }
     #custom-swiper-{{ section.id }} .swiper-pagination-bullet.swiper-pagination-bullet-active { background: white; transform: scale(1.25); }
     #custom-swiper-{{ section.id }}.single-slide .controls-center,
     #custom-swiper-{{ section.id }}.single-slide .swiper-pagination { display:none; }
-    #custom-swiper-{{ section.id }} .swiper-button:focus,
+    #custom-swiper-{{ section.id }} .swiper-button-custom:focus,
     #custom-swiper-{{ section.id }} .swiper-pagination-bullet:focus { outline:2px solid rgba(255,255,255,0.9); outline-offset:2px; }
   </style>
 
@@ -37,9 +37,9 @@
             <img
               src="{{ block.settings.image | image_url: width: 2048, height: 2048 }}"
               alt="{{ block.settings.image.alt | escape }}"
-              class="slide-image"
               width="2048"
               height="2048"
+              class="slide-image"
               style="{% if block.settings.image_height %}height: {{ block.settings.image_height }}px;{% endif %}"
             />
           {% else %}
@@ -50,11 +50,11 @@
     </div>
 
     <div class="controls-center" aria-hidden="false">
-      <button class="swiper-prev swiper-button" type="button" aria-label="Previous slide">
+      <button id="custom-swiper-{{ section.id }}-prev" class="swiper-prev swiper-button-custom" type="button" aria-label="Previous slide">
         <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
       </button>
       <div class="fraction-display" aria-live="polite"><span data-current>1</span><span> / </span><span data-total>{{ section.blocks.size }}</span></div>
-      <button class="swiper-next swiper-button" type="button" aria-label="Next slide">
+      <button id="custom-swiper-{{ section.id }}-next" class="swiper-next swiper-button-custom" type="button" aria-label="Next slide">
         <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
       </button>
     </div>
@@ -62,7 +62,7 @@
     <div class="swiper-pagination" role="tablist" aria-label="Slide pagination"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" defer></script>
   <script>
     (function(){
       var root = document.getElementById('custom-swiper-{{ section.id }}');
@@ -80,6 +80,9 @@
       var totalDisplay = root.querySelector('[data-total]');
       if (totalDisplay) totalDisplay.textContent = total;
 
+      var prevSelector = '#custom-swiper-{{ section.id }}-prev';
+      var nextSelector = '#custom-swiper-{{ section.id }}-next';
+
       var swiper = new Swiper(swiperEl, {
         loop: false,
         slidesPerView: 1,
@@ -92,8 +95,8 @@
           bulletActiveClass: 'swiper-pagination-bullet-active'
         },
         navigation: {
-          prevEl: root.querySelector('.swiper-prev'),
-          nextEl: root.querySelector('.swiper-next')
+          prevEl: prevSelector,
+          nextEl: nextSelector
         },
         a11y: {
           enabled: true,
@@ -110,6 +113,19 @@
         }
       });
 
+      var prevBtn = root.querySelector(prevSelector);
+      var nextBtn = root.querySelector(nextSelector);
+      if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', function(e){
+          if (!swiper || typeof swiper.slidePrev !== 'function') return;
+          swiper.slidePrev();
+        });
+        nextBtn.addEventListener('click', function(e){
+          if (!swiper || typeof swiper.slideNext !== 'function') return;
+          swiper.slideNext();
+        });
+      }
+
       window.addEventListener('resize', function(){ swiper.update(); });
 
       document.addEventListener('shopify:section:load', function(evt) {
@@ -123,7 +139,7 @@
 
   {% schema %}
   {
-    "name": "Image Slideshow",
+    "name": "Utsav Image Slider",
     "settings": [
       {
         "type": "select",
@@ -138,8 +154,7 @@
         "type": "number",
         "id": "section_height",
         "label": "Section height in px",
-        "info": "Leave empty to use default. Enter a number like 520.",
-        "default": 520,
+        "info": "Leave empty to use default. Enter a number like 520."
       }
     ],
     "blocks": [
@@ -158,13 +173,13 @@
             "label": "Image height in px",
             "info": "Optional override for this slide. Leave empty to inherit section height."
           }
-             ]
+        ]
       }
     ],
     "max_blocks": 3,
     "presets": [
       {
-        "name": "Custom Image Slideshow (Swiper)",
+        "name": "Image Slide1show",
         "category": "Hero"
       }
     ]
