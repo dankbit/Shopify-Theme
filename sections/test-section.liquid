@@ -1,45 +1,49 @@
 {% comment %}
 Best Sellers Section
-Displays a carousel of best-selling products with images, titles, and prices
+Displays products from a selected collection in a responsive carousel
 {% endcomment %}
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-<div class="best-sellers-container">
+<div class="best-sellers-container" data-desktop-products="{{ section.settings.desktop_products }}" data-mobile-products="{{ section.settings.mobile_products }}">
   <h2 class="section-title">{{ section.settings.title }}</h2>
 
-  <div class="swiper best-sellers-swiper">
-    <div class="swiper-wrapper">
-      {% for block in section.blocks %}
-        {% if block.type == "product_item" %}
+  {% if section.settings.collection != blank %}
+    <div class="swiper best-sellers-swiper">
+      <div class="swiper-wrapper">
+        {% for product in section.settings.collection.products %}
           <div class="swiper-slide product-slide">
             <div class="product-image-wrapper">
               <img 
                 class="product-image" 
-                src="{{ block.settings.product_image | image_url: width: 300 }}" 
-                alt="{{ block.settings.product_name }}"
+                src="{{ product.featured_image | image_url: width: 300 }}" 
+                alt="{{ product.title }}"
                 width="300"
                 height="300"
               >
             </div>
             <div class="product-info">
-              <h3 class="product-name">{{ block.settings.product_name }}</h3>
+              <h3 class="product-name">{{ product.title }}</h3>
               <div class="product-pricing">
-                {% if block.settings.original_price != blank %}
-                  <span class="original-price">${{ block.settings.original_price }}</span>
+                {% if product.compare_at_price %}
+                  <span class="original-price">{{ product.compare_at_price | money }}</span>
                 {% endif %}
-                <span class="current-price">${{ block.settings.price }}</span>
+                <span class="current-price">{{ product.price | money }}</span>
               </div>
             </div>
           </div>
-        {% endif %}
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
 
-    <!-- Navigation Arrows -->
-    <button class="swiper-button-prev best-sellers-prev" aria-label="Previous product"></button>
-    <button class="swiper-button-next best-sellers-next" aria-label="Next product"></button>
-  </div>
+      <!-- Navigation Arrows -->
+      <button class="swiper-button-prev best-sellers-prev" aria-label="Previous product"></button>
+      <button class="swiper-button-next best-sellers-next" aria-label="Next product"></button>
+    </div>
+  {% else %}
+    <div class="no-collection-message">
+      <p>Please select a collection to display products</p>
+    </div>
+  {% endif %}
 </div>
 
 <style>
@@ -53,6 +57,13 @@ Displays a carousel of best-selling products with images, titles, and prices
     font-weight: 700;
     margin-bottom: 30px;
     color: #000;
+  }
+
+  .no-collection-message {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 16px;
+    color: #999;
   }
 
   .best-sellers-swiper {
@@ -194,9 +205,14 @@ Displays a carousel of best-selling products with images, titles, and prices
 
 <script>
 (function() {
-  // Initialize Swiper
+  // Get settings from data attributes
+  const container = document.querySelector('.best-sellers-container');
+  const desktopProducts = parseInt(container.dataset.desktopProducts) || 4;
+  const mobileProducts = parseInt(container.dataset.mobileProducts) || 1;
+
+  // Initialize Swiper with responsive settings
   const swiper = new Swiper('.best-sellers-swiper', {
-    slidesPerView: 1,
+    slidesPerView: mobileProducts,
     spaceBetween: 20,
     loop: true,
     navigation: {
@@ -213,7 +229,7 @@ Displays a carousel of best-selling products with images, titles, and prices
         spaceBetween: 20
       },
       1024: {
-        slidesPerView: 4,
+        slidesPerView: desktopProducts,
         spaceBetween: 20
       }
     }
@@ -232,73 +248,29 @@ Displays a carousel of best-selling products with images, titles, and prices
       "id": "title",
       "label": "Section Title",
       "default": "BEST SELLERS"
-    }
-  ],
-  "blocks": [
+    },
     {
-      "type": "product_item",
-      "name": "Product",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "product_image",
-          "label": "Product Image"
-        },
-        {
-          "type": "text",
-          "id": "product_name",
-          "label": "Product Name",
-          "default": "Product Name"
-        },
-        {
-          "type": "text",
-          "id": "price",
-          "label": "Price",
-          "default": "0.00"
-        },
-        {
-          "type": "text",
-          "id": "original_price",
-          "label": "Original Price (Optional)",
-          "default": "0.00"
-        }
-      ]
-    }
-  ],
-  "presets": [
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
     {
-      "name": "Best Sellers",
-      "blocks": [
-        {
-          "type": "product_item",
-          "settings": {
-            "product_name": "Engraved Compass Necklace with Diamond - Gold Vermeil",
-            "price": "220"
-          }
-        },
-        {
-          "type": "product_item",
-          "settings": {
-            "product_name": "Inez Initial Heart Necklace with Diamond - Gold Vermeil",
-            "price": "195"
-          }
-        },
-        {
-          "type": "product_item",
-          "settings": {
-            "product_name": "Engraved Dot Bracelet with Diamonds - Silver",
-            "price": "203",
-            "original_price": "226"
-          }
-        },
-        {
-          "type": "product_item",
-          "settings": {
-            "product_name": "Lock & Luna charm with Round cut Moissanite - Gold Vermeil",
-            "price": "170"
-          }
-        }
-      ]
+      "type": "range",
+      "id": "desktop_products",
+      "label": "Products to show on Desktop",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_products",
+      "label": "Products to show on Mobile",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 1
     }
   ]
 }
