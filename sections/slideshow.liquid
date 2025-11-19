@@ -1,186 +1,113 @@
-<section
-  id="custom-swiper-{{ section.id }}"
-  class="custom-swiper {% if section.settings.section_width == 'contained' %}swiper-contained{% else %}swiper-full{% endif %}"
-  aria-label="Image slideshow"
->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
-  <style>
-    #custom-swiper-{{ section.id }} { position: relative; width: 100%; overflow: hidden; }
-    #custom-swiper-{{ section.id }}.swiper-contained { max-width: 1400px; margin: 0 auto; }
-    #custom-swiper-{{ section.id }} .swiper { width: 100%; }
-    #custom-swiper-{{ section.id }} .swiper-slide { display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    #custom-swiper-{{ section.id }} .slide-image { width: 100%; height: var(--section-height, 520px); object-fit: cover; display:block; }
-    @media (max-width: 1024px) {
-      #custom-swiper-{{ section.id }} .slide-image { height: calc(var(--section-height,520px) * 0.7); }
-    }
-    @media (max-width: 640px) {
-      #custom-swiper-{{ section.id }} .slide-image { height: calc(var(--section-height,520px) * 0.6); }
-    }
-    #custom-swiper-{{ section.id }} .swiper-button-custom { background: rgba(0,0,0,0.55); border-radius: 999px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:#fff; border:none; cursor:pointer; z-index:40; }
-    #custom-swiper-{{ section.id }} .swiper-button-custom:active { transform: scale(0.98); }
-    #custom-swiper-{{ section.id }} .controls-center { position: absolute; left:50%; transform: translateX(-50%); bottom:28px; display:flex; align-items:center; gap:14px; z-index:40; pointer-events:auto; }
-    #custom-swiper-{{ section.id }} .fraction-display { color:#fff; font-weight:600; font-size:14px; min-width:56px; text-align:center; pointer-events:none; }
-    #custom-swiper-{{ section.id }} .swiper-pagination { position: absolute; left:50%; transform: translateX(-50%); bottom:8px; display:flex; gap:8px; z-index:40; }
-    #custom-swiper-{{ section.id }} .swiper-pagination-bullet { width:8px; height:8px; opacity:0.9; background: rgba(255,255,255,0.55); border-radius:999px; }
-    #custom-swiper-{{ section.id }} .swiper-pagination-bullet.swiper-pagination-bullet-active { background: white; transform: scale(1.25); }
-    #custom-swiper-{{ section.id }}.single-slide .controls-center,
-    #custom-swiper-{{ section.id }}.single-slide .swiper-pagination { display:none; }
-    #custom-swiper-{{ section.id }} .swiper-button-custom:focus,
-    #custom-swiper-{{ section.id }} .swiper-pagination-bullet:focus { outline:2px solid rgba(255,255,255,0.9); outline-offset:2px; }
-  </style>
+<section id="custom-slider-{{ section.id }}">
+  <div class="main">
+    {% for block in section.blocks %}
+      {% if block.settings.image != blank %}
+        <img
+          class="slide"
+          src="{{ block.settings.image | image_url: width: 1000, height: 600 }}"
+          alt="{{ block.settings.image.alt | escape }}"
+          width="1000"
+          height="600"
+          loading="lazy"
+        >
+      {% endif %}
+    {% endfor %}
 
-  <div class="swiper" data-swiper>
-    <div class="swiper-wrapper">
-      {% for block in section.blocks %}
-        <div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="Slide {{ forloop.index }} of {{ section.blocks.size }}">
-          {% if block.settings.image %}
-            <img
-              src="{{ block.settings.image | image_url: width: 2048, height: 2048 }}"
-              alt="{{ block.settings.image.alt | escape }}"
-              width="2048"
-              height="2048"
-              class="slide-image"
-              style="{% if block.settings.image_height %}height: {{ block.settings.image_height }}px;{% endif %}"
-            />
-          {% else %}
-            <div style="width:100%;height:var(--section-height,520px);background:transparent;"></div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-
-    <div class="controls-center" aria-hidden="false">
-      <button id="custom-swiper-{{ section.id }}-prev" class="swiper-prev swiper-button-custom" type="button" aria-label="Previous slide">
-        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    <div class="nav">
+      <button onclick="goPrev_{{ section.id }}()">
+        Prev
       </button>
-      <div class="fraction-display" aria-live="polite"><span data-current>1</span><span> / </span><span data-total>{{ section.blocks.size }}</span></div>
-      <button id="custom-swiper-{{ section.id }}-next" class="swiper-next swiper-button-custom" type="button" aria-label="Next slide">
-        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      <button onclick="goNext_{{ section.id }}()">
+        Next
       </button>
     </div>
-
-    <div class="swiper-pagination" role="tablist" aria-label="Slide pagination"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" defer></script>
+  <style>
+    #custom-slider-{{ section.id }} * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    
+    #custom-slider-{{ section.id }} .main {
+      width: 70%;
+      height: 600px;
+      margin-top: 70px;
+      margin: auto;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #custom-slider-{{ section.id }} .slide {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      transition: 1s;
+    }
+  </style>
+
   <script>
-    (function(){
-      var root = document.getElementById('custom-swiper-{{ section.id }}');
+    (function() {
+      const root = document.getElementById('custom-slider-{{ section.id }}');
       if (!root) return;
 
-      var sHeight = {{ section.settings.section_height | default: 'null' }};
-      if (sHeight && !isNaN(sHeight)) { root.style.setProperty('--section-height', sHeight + 'px'); }
+      const slides = root.querySelectorAll('.slide');
+      let counter = 0;
 
-      var swiperEl = root.querySelector('[data-swiper]');
-      var slides = swiperEl.querySelectorAll('.swiper-slide');
-      var total = slides.length;
-      if (total < 2) { root.classList.add('single-slide'); }
+      slides.forEach(
+        (slide, index) => {
+          slide.style.left = `${index * 100}%`;
+        }
+      );
 
-      var currentDisplay = root.querySelector('[data-current]');
-      var totalDisplay = root.querySelector('[data-total]');
-      if (totalDisplay) totalDisplay.textContent = total;
-
-      var prevSelector = '#custom-swiper-{{ section.id }}-prev';
-      var nextSelector = '#custom-swiper-{{ section.id }}-next';
-
-      var swiper = new Swiper(swiperEl, {
-        loop: false,
-        slidesPerView: 1,
-        spaceBetween: 0,
-        grabCursor: true,
-        pagination: {
-          el: root.querySelector('.swiper-pagination'),
-          clickable: true,
-          bulletClass: 'swiper-pagination-bullet',
-          bulletActiveClass: 'swiper-pagination-bullet-active'
-        },
-        navigation: {
-          prevEl: prevSelector,
-          nextEl: nextSelector
-        },
-        a11y: {
-          enabled: true,
-          prevSlideMessage: 'Previous slide',
-          nextSlideMessage: 'Next slide'
-        },
-        on: {
-          init: function() {
-            if (currentDisplay) currentDisplay.textContent = (this.realIndex || 0) + 1;
-          },
-          slideChange: function() {
-            if (currentDisplay) currentDisplay.textContent = (this.realIndex || 0) + 1;
+      const slideImage = () => {
+        slides.forEach(
+          (slide) => {
+            slide.style.transform = `translateX(-${counter * 100}%)`;
           }
+        );
+      };
+
+      window.goNext_{{ section.id }} = () => {
+        counter++;
+        if (counter >= slides.length) {
+          counter = 0;
         }
-      });
+        slideImage();
+      };
 
-      var prevBtn = root.querySelector(prevSelector);
-      var nextBtn = root.querySelector(nextSelector);
-      if (prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', function(e){
-          if (!swiper || typeof swiper.slidePrev !== 'function') return;
-          swiper.slidePrev();
-        });
-        nextBtn.addEventListener('click', function(e){
-          if (!swiper || typeof swiper.slideNext !== 'function') return;
-          swiper.slideNext();
-        });
-      }
-
-      window.addEventListener('resize', function(){ swiper.update(); });
-
-      document.addEventListener('shopify:section:load', function(evt) {
-        if (!evt.detail) return;
-        if (String(evt.detail.sectionId) === String('{{ section.id }}')) {
-          setTimeout(function(){ swiper.update(); }, 60);
+      window.goPrev_{{ section.id }} = () => {
+        counter--;
+        if (counter < 0) {
+          counter = slides.length - 1;
         }
-      });
+        slideImage();
+      };
     })();
   </script>
 
   {% schema %}
   {
-    "name": "Utsav Image Slider",
-    "settings": [
-      {
-        "type": "select",
-        "id": "section_width",
-        "label": "Section width",
-        "options": [
-          { "value": "full", "label": "Full width" },
-          { "value": "contained", "label": "Contained (centered)" }
-        ]
-      },
-      {
-        "type": "number",
-        "id": "section_height",
-        "label": "Section height in px",
-        "info": "Leave empty to use default. Enter a number like 520."
-      }
-    ],
+    "name": "Simple JS Slider",
+    "settings": [],
     "blocks": [
       {
-        "type": "image_slide",
-        "name": "Image",
+        "type": "slide",
+        "name": "Slide",
         "settings": [
           {
             "type": "image_picker",
             "id": "image",
             "label": "Slide image"
-          },
-          {
-            "type": "number",
-            "id": "image_height",
-            "label": "Image height in px",
-            "info": "Optional override for this slide. Leave empty to inherit section height."
           }
         ]
       }
     ],
-    "max_blocks": 3,
+    "max_blocks": 4,
     "presets": [
       {
-        "name": "Image Slide1show",
-        "category": "Hero"
+        "name": "Simple JS Slider"
       }
     ]
   }
