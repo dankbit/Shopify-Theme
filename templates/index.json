@@ -198,7 +198,7 @@
         "variant_picker_cP6TJg": {
           "type": "variant_picker",
           "settings": {
-            "font_size_desktop": 14,
+            "font_size_desktop": 12,
             "font_size_mobile": 13,
             "margin_top": 10,
             "margin_bottom": 20
