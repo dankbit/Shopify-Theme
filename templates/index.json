@@ -53,7 +53,7 @@
       "name": "Image Slider",
       "settings": {
         "products_per_view_mobile": 2,
-        "products_per_view_desktop": 3,
+        "products_per_view_desktop": 4,
         "title": "Customer Favs",
         "collection": "automated-collection",
         "padding_top_desktop": 40,
