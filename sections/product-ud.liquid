@@ -1,3 +1,7 @@
+{% comment %}
+  Custom Product Main Section
+  - Fixed Schema Error: Text block margin default updated to match step size.
+{% endcomment %}
 
 {%- assign product_target = section.settings.featured_product | default: product -%}
 
@@ -35,21 +39,20 @@
               {% if product_target.media.size > 0 %}
                 {% for media in product_target.media %}
                   <div class="slide product-slide" data-media-id="{{ media.id }}">
-                    <img src="{{ media | image_url: width: 1200 }}" 
+                    <img src="{{ media | image_url: width: 800 }}" 
                         alt="{{ media.alt | escape }}" 
                         loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                        width="400px" height="400px">
+                        width="100%" height="100%">
                   </div>
                 {% endfor %}
               {% else %}
-                <!-- Placeholder if no images -->
                 <div class="slide product-slide">
                    {{ 'product-1' | placeholder_svg_tag }}
                 </div>
               {% endif %}
             </div>
 
-            <!-- Navigation Arrows (Absolute) -->
+            <!-- Navigation Arrows -->
             <button class="slider-arrow prev-btn" aria-label="Previous image">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
@@ -57,7 +60,7 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
 
-            <!-- Slide Counter (e.g. 9/10) -->
+            <!-- Slide Counter -->
             <div class="slide-counter">
               <span class="current-slide">1</span> / <span class="total-slides">{{ product_target.media.size | default: 1 }}</span>
             </div>
@@ -81,26 +84,26 @@
           <input type="hidden" name="id" value="{{ product_target.selected_or_first_available_variant.id }}">
           
           {% for block in section.blocks %}
-            <div class="product-block block-{{ block.type }}" {{ block.shopify_attributes }}>
+            {% comment %} 
+              Apply Block Settings via CSS Variables
+            {% endcomment %}
+            <div class="product-block block-{{ block.type }}" 
+                 {{ block.shopify_attributes }}
+                 style="
+                   --block-fs-mobile: {{ block.settings.font_size_mobile }}px;
+                   --block-fs-desktop: {{ block.settings.font_size_desktop }}px;
+                   --block-mt: {{ block.settings.margin_top }}px;
+                   --block-mb: {{ block.settings.margin_bottom }}px;
+                 "
+            >
               
               {% case block.type %}
                 
                 {% when '@app' %}
                   {% render block %}
 
-                {% when 'text' %}
-                  <div class="product-text-block" style="font-size: {{ block.settings.text_size }}px; color: {{ block.settings.text_color }};">
-                    {{ block.settings.text }}
-                  </div>
-
                 {% when 'title' %}
                   <h1 class="product-title">{{ product_target.title }}</h1>
-
-                {% when 'rating' %}
-                  <div class="product-rating">
-                    <span class="stars">★★★★★</span>
-                    <span class="rating-count">5.0 (5)</span>
-                  </div>
 
                 {% when 'price' %}
                   <div class="product-price-wrapper" id="price-{{ section.id }}">
@@ -110,11 +113,6 @@
                     </s>
                   </div>
                   <div class="tax-note">Tax included. <a href="#">Shipping</a> calculated at checkout.</div>
-
-                {% when 'description' %}
-                  <div class="product-description rte">
-                    {{ product_target.description }}
-                  </div>
 
                 {% when 'variant_picker' %}
                   {% unless product_target.has_only_default_variant %}
@@ -158,6 +156,22 @@
                     {% endif %}
                   </div>
 
+                {% when 'description' %}
+                  <div class="product-description rte">
+                    {{ product_target.description }}
+                  </div>
+
+                {% when 'rating' %}
+                  <div class="product-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-count">5.0 (5)</span>
+                  </div>
+
+                {% when 'text' %}
+                  <div class="product-text-block" style="color: {{ block.settings.text_color }};">
+                    {{ block.settings.text }}
+                  </div>
+
                 {% when 'trust_badge' %}
                   <div class="trust-badge-box">
                     <div class="trust-icon">
@@ -173,7 +187,6 @@
       </div>
     </div>
   
-    <!-- JSON Data for Variants -->
     <script type="application/json" id="ProductVariants-{{ section.id }}">
       {{ product_target.variants | json }}
     </script>
@@ -185,7 +198,6 @@
   {% endif %}
 </div>
 
-
 {% schema %}
 {
   "name": "Custom Product Main",
@@ -194,92 +206,20 @@
       "type": "product",
       "id": "featured_product",
       "label": "Select Product",
-      "info": "If blank, uses the product assigned to the page (for Product Templates)."
+      "info": "If blank, uses the product assigned to the page."
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "Section Padding"
     },
-    {
-      "type": "range",
-      "id": "padding_top_desktop",
-      "min": 0,
-      "max": 100,
-      "step": 10,
-      "unit": "px",
-      "label": "Top Padding (Desktop)",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom_desktop",
-      "min": 0,
-      "max": 100,
-      "step": 10,
-      "unit": "px",
-      "label": "Bottom Padding (Desktop)",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "padding_top_mobile",
-      "min": 0,
-      "max": 60,
-      "step": 5,
-      "unit": "px",
-      "label": "Top Padding (Mobile)",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom_mobile",
-      "min": 0,
-      "max": 60,
-      "step": 5,
-      "unit": "px",
-      "label": "Bottom Padding (Mobile)",
-      "default": 20
-    },
-    {
-        "type": "range",
-        "id": "padding_left_desktop",
-        "min": 0,
-        "max": 100,
-        "step": 10,
-        "unit": "px",
-        "label": "Left Padding (Desktop)",
-        "default": 40
-    },
-    {
-        "type": "range",
-        "id": "padding_right_desktop",
-        "min": 0,
-        "max": 100,
-        "step": 10,
-        "unit": "px",
-        "label": "Right Padding (Desktop)",
-        "default": 40
-    },
-    {
-        "type": "range",
-        "id": "padding_left_mobile",
-        "min": 0,
-        "max": 60,
-        "step": 5,
-        "unit": "px",
-        "label": "Left Padding (Mobile)",
-        "default": 20
-    },
-    {
-        "type": "range",
-        "id": "padding_right_mobile",
-        "min": 0,
-        "max": 60,
-        "step": 5,
-        "unit": "px",
-        "label": "Right Padding (Mobile)",
-        "default": 20
-    }
+    { "type": "range", "id": "padding_top_desktop", "min": 0, "max": 100, "step": 10, "unit": "px", "label": "Top (Desktop)", "default": 40 },
+    { "type": "range", "id": "padding_bottom_desktop", "min": 0, "max": 100, "step": 10, "unit": "px", "label": "Bottom (Desktop)", "default": 40 },
+    { "type": "range", "id": "padding_left_desktop", "min": 0, "max": 100, "step": 10, "unit": "px", "label": "Left (Desktop)", "default": 40 },
+    { "type": "range", "id": "padding_right_desktop", "min": 0, "max": 100, "step": 10, "unit": "px", "label": "Right (Desktop)", "default": 40 },
+    { "type": "range", "id": "padding_top_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Top (Mobile)", "default": 20 },
+    { "type": "range", "id": "padding_bottom_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Bottom (Mobile)", "default": 20 },
+    { "type": "range", "id": "padding_left_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Left (Mobile)", "default": 20 },
+    { "type": "range", "id": "padding_right_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Right (Mobile)", "default": 20 }
   ],
   "blocks": [
     {
@@ -288,84 +228,102 @@
     {
       "type": "title",
       "name": "Title",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "font_size_desktop", "min": 14, "max": 60, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 32 },
+        { "type": "range", "id": "font_size_mobile", "min": 12, "max": 40, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 24 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 10 }
+      ]
     },
     {
       "type": "price",
       "name": "Price",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "font_size_desktop", "min": 12, "max": 40, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 24 },
+        { "type": "range", "id": "font_size_mobile", "min": 12, "max": 30, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 20 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 10 }
+      ]
     },
     {
       "type": "variant_picker",
       "name": "Variant Picker",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "font_size_desktop", "min": 10, "max": 24, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 14 },
+        { "type": "range", "id": "font_size_mobile", "min": 10, "max": 20, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 13 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 10 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 20 }
+      ]
     },
     {
       "type": "quantity_selector",
       "name": "Quantity Selector",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "font_size_desktop", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 16 },
+        { "type": "range", "id": "font_size_mobile", "min": 12, "max": 20, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 16 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 20 }
+      ]
     },
     {
       "type": "buy_buttons",
       "name": "Buy Buttons",
       "limit": 1,
       "settings": [
-        {
-          "type": "checkbox",
-          "id": "show_dynamic_checkout",
-          "default": true,
-          "label": "Show dynamic checkout buttons"
-        }
+        { "type": "checkbox", "id": "show_dynamic_checkout", "default": true, "label": "Show dynamic checkout buttons" },
+        { "type": "range", "id": "font_size_desktop", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 14 },
+        { "type": "range", "id": "font_size_mobile", "min": 12, "max": 20, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 14 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 20 }
       ]
     },
     {
       "type": "description",
       "name": "Description",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "font_size_desktop", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 16 },
+        { "type": "range", "id": "font_size_mobile", "min": 12, "max": 20, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 15 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 20 }
+      ]
     },
     {
       "type": "rating",
       "name": "Rating",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "font_size_desktop", "min": 10, "max": 20, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 14 },
+        { "type": "range", "id": "font_size_mobile", "min": 10, "max": 18, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 14 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 10 }
+      ]
     },
     {
       "type": "text",
       "name": "Text / Metafield",
       "settings": [
-        {
-          "type": "richtext",
-          "id": "text",
-          "default": "<p>Share information about your brand.</p>",
-          "label": "Text"
-        },
-        {
-          "type": "color",
-          "id": "text_color",
-          "label": "Text Color",
-          "default": "#000000"
-        },
-        {
-          "type": "range",
-          "id": "text_size",
-          "min": 12,
-          "max": 24,
-          "step": 1,
-          "unit": "px",
-          "label": "Font Size",
-          "default": 16
-        }
+        { "type": "richtext", "id": "text", "default": "<p>Share information about your brand.</p>", "label": "Text" },
+        { "type": "color", "id": "text_color", "label": "Text Color", "default": "#000000" },
+        { "type": "range", "id": "font_size_desktop", "min": 12, "max": 60, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 16 },
+        { "type": "range", "id": "font_size_mobile", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 14 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 15 }
       ]
     },
     {
       "type": "trust_badge",
       "name": "Trust Badge Box",
       "settings": [
-        {
-          "type": "text",
-          "id": "text",
-          "default": "100% Secure Checkout · 30 Days Risk-Free Trial",
-          "label": "Text"
-        }
+        { "type": "text", "id": "text", "default": "100% Secure Checkout · 30 Days Risk-Free Trial", "label": "Text" },
+        { "type": "range", "id": "font_size_desktop", "min": 10, "max": 20, "step": 1, "unit": "px", "label": "Font Size (Desktop)", "default": 13 },
+        { "type": "range", "id": "font_size_mobile", "min": 10, "max": 18, "step": 1, "unit": "px", "label": "Font Size (Mobile)", "default": 12 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Top", "default": 20 },
+        { "type": "range", "id": "margin_bottom", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Margin Bottom", "default": 20 }
       ]
     }
   ],
@@ -398,20 +356,55 @@
       align-items: flex-start;
     }
     .product-media-column {
-      width: 55%;
+      width: 50%;
       position: sticky;
       top: 20px;
+      display: flex;
+      justify-content: center;
     }
     .product-info-column {
-      width: 45%;
+      width: 50%;
       padding-left: 2rem;
     }
   }
 
-  /* --- Left Column: Media (Slider) --- */
+  /* --- Global Block Styles (CSS Variables) --- */
+  .product-block {
+    margin-top: var(--block-mt);
+    margin-bottom: var(--block-mb);
+    font-size: var(--block-fs-mobile); /* Default Mobile Font Size */
+  }
+
+  @media (min-width: 768px) {
+    .product-block {
+      font-size: var(--block-fs-desktop);
+    }
+  }
+
+  /* Specific Text Block Overrides */
+  .product-title {
+    font-size: inherit; /* Inherits from .product-block */
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+  }
+
+  .product-price-wrapper {
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .product-text-block {
+    font-size: inherit;
+  }
+
+  /* --- Left Column: Media --- */
   .product-gallery-container {
     position: relative;
     width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
   .main-slider-wrapper {
@@ -420,7 +413,7 @@
     overflow: hidden;
     border-radius: 8px;
     background: #f5f5f5;
-    aspect-ratio: 1 / 1; /* Square images like reference */
+    aspect-ratio: 1 / 1;
   }
 
   .main-slider-track {
@@ -439,7 +432,7 @@
   .product-slide img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Or cover, depending on preference */
+    object-fit: contain; 
     display: block;
   }
   
@@ -449,7 +442,6 @@
     background: #eee;
   }
 
-  /* Navigation Arrows */
   .slider-arrow {
     position: absolute;
     top: 50%;
@@ -473,14 +465,13 @@
     transform: translateY(-50%) scale(1.05);
   }
 
-  .prev-btn { left: 20px; }
-  .next-btn { right: 20px; }
+  .prev-btn { left: 10px; }
+  .next-btn { right: 10px; }
 
-  /* Slide Counter (9/10) */
   .slide-counter {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 15px;
+    right: 15px;
     background: white;
     padding: 4px 12px;
     border-radius: 20px;
@@ -490,20 +481,19 @@
     border: 1px solid #eee;
   }
 
-  /* Thumbnails */
   .thumbnails-wrapper {
     display: flex;
     gap: 10px;
     margin-top: 15px;
     overflow-x: auto;
     padding-bottom: 5px;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
   }
   .thumbnails-wrapper::-webkit-scrollbar { display: none; }
 
   .thumbnail-btn {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border: 2px solid transparent;
     border-radius: 4px;
     padding: 0;
@@ -524,35 +514,15 @@
     opacity: 1;
   }
 
-  /* --- Right Column: Details --- */
-  .product-block {
-    margin-bottom: 1.5rem;
-  }
-
-  /* Title */
-  .product-title {
-    font-size: 32px;
-    margin: 0 0 10px 0;
-    line-height: 1.2;
-  }
-
-  /* Rating */
+  /* --- Component Styles --- */
   .product-rating {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
-    font-size: 14px;
+    font-size: inherit;
   }
-  .stars { color: #1a4e38; /* Dark green like screenshot */ }
+  .stars { color: #1a4e38; }
 
-  /* Price */
-  .product-price-wrapper {
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
   .price-regular {
     font-weight: 600;
     color: #1a4e38;
@@ -560,24 +530,23 @@
   .price-compare {
     color: #777;
     text-decoration: line-through;
-    font-size: 18px;
+    font-size: 0.8em; /* Relative to main price */
   }
   .price-compare.hidden { display: none; }
+  
   .tax-note {
     font-size: 12px;
     color: #666;
     margin-top: 5px;
   }
 
-  /* Description */
   .product-description {
-    font-size: 16px;
+    font-size: inherit;
     line-height: 1.6;
     color: #333;
-    margin-bottom: 20px;
   }
 
-  /* Variant Picker (Pills) */
+  /* Variant Picker */
   .variant-picker fieldset {
     border: none;
     padding: 0;
@@ -586,7 +555,7 @@
   .option-label {
     font-weight: 600;
     margin-bottom: 10px;
-    font-size: 14px;
+    font-size: inherit;
     display: block;
   }
   .option-values {
@@ -600,7 +569,7 @@
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 14px;
+    font-size: inherit;
     min-width: 60px;
     text-align: center;
     color: #333;
@@ -609,7 +578,7 @@
     border-color: #000;
     background-color: #fff;
     color: #000;
-    box-shadow: 0 0 0 1px #000; /* Thick border look */
+    box-shadow: 0 0 0 1px #000;
   }
   .visually-hidden {
     position: absolute;
@@ -618,7 +587,7 @@
     height: 0;
   }
 
-  /* Quantity Selector */
+  /* Quantity Selector - FIXED */
   .quantity-wrapper {
     display: flex;
     border: 1px solid #000;
@@ -626,7 +595,6 @@
     height: 48px;
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 20px;
   }
   .qty-btn {
     background: none;
@@ -635,14 +603,20 @@
     font-size: 20px;
     cursor: pointer;
     color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Ensures buttons don't disappear */
   }
   .qty-input {
     flex: 1;
+    min-width: 0; /* Fixes flexbox input width issues */
     border: none;
     text-align: center;
-    font-size: 16px;
+    font-size: inherit;
     appearance: none;
     -moz-appearance: textfield;
+    padding: 0;
   }
   .qty-input::-webkit-outer-spin-button,
   .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -664,34 +638,32 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background 0.2s;
-    font-size: 14px;
+    font-size: inherit;
     letter-spacing: 1px;
   }
   .btn-add-to-cart:hover {
     background: #f5f5f5;
   }
   
-  /* Dynamic checkout (Buy it now) */
   .shopify-payment-button__button {
     border-radius: 4px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
+    width: 100%;
   }
 
   /* Trust Badge Box */
   .trust-badge-box {
-    background-color: #e8f5e9; /* Light green */
+    background-color: #e8f5e9;
     padding: 15px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 20px;
   }
   .trust-icon { color: #000; }
-  .trust-text { font-size: 13px; font-weight: 500; }
-
+  .trust-text { font-size: inherit; font-weight: 500; }
 </style>
 
 <script>
@@ -699,11 +671,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const sectionId = "{{ section.id }}";
   const section = document.querySelector(`#shopify-section-${sectionId}`);
   
-  // Safety check if product exists
   if (!section.querySelector('.product-main-wrapper')) return;
 
-  // --- 1. CAROUSEL LOGIC (Adapted from previous request) ---
-  const track = section.querySelector('.main-slider-track');
+  // --- 1. CAROUSEL LOGIC ---
   const slides = section.querySelectorAll('.product-slide');
   const prevBtn = section.querySelector('.prev-btn');
   const nextBtn = section.querySelector('.next-btn');
@@ -719,15 +689,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function updateCarousel() {
-    // Move Track
     slides.forEach((slide) => {
       slide.style.transform = `translateX(-${counter * 100}%)`;
     });
-
-    // Update Counter Text
     if(currentSlideEl) currentSlideEl.textContent = counter + 1;
-
-    // Update Thumbnails
     thumbnails.forEach((thumb, index) => {
       if(index === counter) {
         thumb.classList.add('active');
@@ -740,44 +705,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function goNext() {
     counter++;
-    if(counter >= totalSlides) {
-      counter = 0;
-    }
+    if(counter >= totalSlides) counter = 0;
     updateCarousel();
   }
 
   function goPrev() {
     counter--;
-    if(counter < 0) {
-      counter = totalSlides - 1;
-    }
+    if(counter < 0) counter = totalSlides - 1;
     updateCarousel();
   }
 
-  // Event Listeners
   if(prevBtn && nextBtn) {
     nextBtn.addEventListener('click', goNext);
     prevBtn.addEventListener('click', goPrev);
   }
 
-  // Thumbnail Click
   thumbnails.forEach(thumb => {
     thumb.addEventListener('click', function() {
-      const index = parseInt(this.dataset.index);
-      counter = index;
+      counter = parseInt(this.dataset.index);
       updateCarousel();
     });
   });
 
 
-  // --- 2. VARIANT & PRICE LOGIC ---
+  // --- 2. VARIANT LOGIC ---
   const jsonScript = document.getElementById(`ProductVariants-${sectionId}`);
   if (jsonScript) {
     const productVariants = JSON.parse(jsonScript.textContent);
     const variantRadios = section.querySelectorAll('.variant-radio');
     const hiddenInput = section.querySelector('input[name="id"]');
-    
-    // Elements to update
     const priceRegular = section.querySelector('.price-regular');
     const priceCompare = section.querySelector('.price-compare');
     const addToCartBtn = section.querySelector('.btn-add-to-cart');
@@ -792,19 +748,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateProductInfo() {
       const selectedOptions = getSelectedOptions();
-      
-      // Find matching variant
       const currentVariant = productVariants.find(variant => {
-        return variant.options.every((optionValue, index) => {
-          return optionValue === selectedOptions[index];
-        });
+        return variant.options.every((optionValue, index) => optionValue === selectedOptions[index]);
       });
 
       if (currentVariant) {
-        // 1. Update ID
         hiddenInput.value = currentVariant.id;
-
-        // 2. Update Price
+        
         if(priceRegular) priceRegular.textContent = formatMoney(currentVariant.price);
         
         if (currentVariant.compare_at_price > currentVariant.price) {
@@ -816,18 +766,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if(priceCompare) priceCompare.classList.add('hidden');
         }
 
-        // 3. Update Button Status
         if (addToCartBtn) {
             if (currentVariant.available) {
-            addToCartBtn.textContent = 'Add to cart';
-            addToCartBtn.disabled = false;
+              addToCartBtn.textContent = 'Add to cart';
+              addToCartBtn.disabled = false;
             } else {
-            addToCartBtn.textContent = 'Sold Out';
-            addToCartBtn.disabled = true;
+              addToCartBtn.textContent = 'Sold Out';
+              addToCartBtn.disabled = true;
             }
         }
 
-        // 4. Switch Image (If variant has specific image)
         if (currentVariant.featured_media) {
           const mediaId = currentVariant.featured_media.id;
           const slideIndex = Array.from(slides).findIndex(slide => slide.dataset.mediaId == mediaId);
@@ -837,8 +785,8 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
 
+        window.history.replaceState({}, '', `?variant=${currentVariant.id}`);
       } else {
-        // Variant doesn't exist
         if (addToCartBtn) {
             addToCartBtn.textContent = 'Unavailable';
             addToCartBtn.disabled = true;
@@ -846,17 +794,14 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // Helper: Format Money
     function formatMoney(cents) {
       return '$' + (cents / 100).toFixed(2);
     }
 
-    // Listen for changes
     variantRadios.forEach(radio => {
       radio.addEventListener('change', updateProductInfo);
     });
   }
-
 
   // --- 3. QUANTITY LOGIC ---
   const qtyInput = section.querySelector('.qty-input');
@@ -872,6 +817,5 @@ document.addEventListener('DOMContentLoaded', function() {
       if(val > 1) qtyInput.value = val - 1;
     });
   }
-
 });
 </script>
