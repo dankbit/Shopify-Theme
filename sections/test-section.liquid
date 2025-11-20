@@ -449,39 +449,44 @@
   .customer-faves__wrapper {
     position: relative;
     width: 100%;
+    display: flex;
+    align-items: center;
   }
 
   /* Carousel */
   .customer-faves__carousel {
+    flex: 1;
     width: 100%;
     overflow: visible;
   }
 
   .swiper-wrapper {
     display: flex;
-    gap: {{ section.settings.gap_between_products_mobile }}px;
-  }
-
-  @media (min-width: 768px) {
-    .swiper-wrapper {
-      gap: {{ section.settings.gap_between_products_desktop }}px;
-    }
   }
 
   .swiper-slide {
     flex-shrink: 0;
-    width: calc(100% - {{ section.settings.gap_between_products_mobile }}px);
   }
 
+  /* Mobile - 1 product per row */
+  .swiper-slide {
+    width: 100%;
+    margin-right: {{ section.settings.gap_between_products_mobile }}px;
+  }
+
+  /* Tablet - 2 products per row */
   @media (min-width: 768px) {
     .swiper-slide {
-      width: calc((100% / {{ section.settings.products_per_row_tablet }}) - ({{ section.settings.gap_between_products_desktop }}px * ({{ section.settings.products_per_row_tablet }} - 1) / {{ section.settings.products_per_row_tablet }}));
+      width: calc(50% - ({{ section.settings.gap_between_products_desktop }}px / 2));
+      margin-right: {{ section.settings.gap_between_products_desktop }}px;
     }
   }
 
+  /* Desktop - 4 products per row */
   @media (min-width: 1024px) {
     .swiper-slide {
-      width: calc((100% / {{ section.settings.products_per_row_desktop }}) - ({{ section.settings.gap_between_products_desktop }}px * ({{ section.settings.products_per_row_desktop }} - 1) / {{ section.settings.products_per_row_desktop }}));
+      width: calc(25% - ({{ section.settings.gap_between_products_desktop }}px * 0.75));
+      margin-right: {{ section.settings.gap_between_products_desktop }}px;
     }
   }
 
@@ -575,6 +580,7 @@
     z-index: 10;
     min-width: 40px;
     height: 40px;
+    flex-shrink: 0;
   }
 
   .customer-faves__arrow svg {
@@ -583,11 +589,21 @@
   }
 
   .customer-faves__arrow--left {
-    left: 0;
+    left: -50px;
   }
 
   .customer-faves__arrow--right {
-    right: 0;
+    right: -50px;
+  }
+
+  @media (max-width: 767px) {
+    .customer-faves__arrow--left {
+      left: 0;
+    }
+
+    .customer-faves__arrow--right {
+      right: 0;
+    }
   }
 
   .customer-faves__arrow:hover:not(:disabled) {
@@ -615,7 +631,7 @@
     if (!swiperContainer) return;
 
     const swiper = new Swiper('.customer-faves__carousel', {
-      slidesPerView: {{ section.settings.products_per_row_mobile }},
+      slidesPerView: 1,
       spaceBetween: {{ section.settings.gap_between_products_mobile }},
       loop: false,
       navigation: {
