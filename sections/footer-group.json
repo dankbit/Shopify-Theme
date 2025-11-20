@@ -11,6 +11,14 @@
   "name": "t:sections.footer.name",
   "type": "footer",
   "sections": {
+    "custom_cart_drawer_JEeJMP": {
+      "type": "custom-cart-drawer",
+      "name": "Custom Cart Drawer",
+      "settings": {
+        "upsell_title": "You may also like",
+        "upsell_collection": "automated-collection"
+      }
+    },
     "footer": {
       "type": "footer",
       "settings": {
@@ -30,6 +38,7 @@
     }
   },
   "order": [
+    "custom_cart_drawer_JEeJMP",
     "footer"
   ]
 }

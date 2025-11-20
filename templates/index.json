@@ -86,76 +86,6 @@
         "text_color": "#ffffff"
       }
     },
-    "test_section_iUabHp": {
-      "type": "test-section",
-      "disabled": true,
-      "name": "Best Sellers",
-      "settings": {
-        "title": "BEST SELLERS",
-        "collection": "automated-collection",
-        "products_per_row_desktop": 4,
-        "products_per_row_tablet": 2,
-        "products_per_row_mobile": 1,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40,
-        "padding_left_desktop": 40,
-        "padding_right_desktop": 40,
-        "padding_top_mobile": 20,
-        "padding_bottom_mobile": 20,
-        "padding_left_mobile": 15,
-        "padding_right_mobile": 15,
-        "title_font_size_desktop": 28,
-        "title_font_size_mobile": 22,
-        "product_title_font_size_desktop": 16,
-        "product_title_font_size_mobile": 12,
-        "price_font_size_desktop": 14,
-        "price_font_size_mobile": 12,
-        "title_color": "#000000",
-        "product_title_color": "#000000",
-        "price_color": "#000000",
-        "arrow_color": "#000000",
-        "background_color": "#ffffff",
-        "show_title": true,
-        "show_price": true,
-        "gap_between_products_desktop": 20,
-        "gap_between_products_mobile": 10
-      }
-    },
-    "test_section_Lkj3W8": {
-      "type": "test-section",
-      "disabled": true,
-      "name": "Customer Faves",
-      "settings": {
-        "title": "Customer Faves",
-        "collection": "automated-collection",
-        "products_per_row_desktop": 4,
-        "products_per_row_tablet": 2,
-        "products_per_row_mobile": 1,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40,
-        "padding_left_desktop": 40,
-        "padding_right_desktop": 40,
-        "padding_top_mobile": 20,
-        "padding_bottom_mobile": 20,
-        "padding_left_mobile": 15,
-        "padding_right_mobile": 15,
-        "title_font_size_desktop": 32,
-        "title_font_size_mobile": 20,
-        "product_title_font_size_desktop": 16,
-        "product_title_font_size_mobile": 12,
-        "price_font_size_desktop": 14,
-        "price_font_size_mobile": 12,
-        "title_color": "#000000",
-        "product_title_color": "#000000",
-        "price_color": "#000000",
-        "arrow_color": "#000000",
-        "background_color": "#ffffff",
-        "show_title": true,
-        "show_price": true,
-        "gap_between_products_desktop": 20,
-        "gap_between_products_mobile": 10
-      }
-    },
     "product_ud_KBgTgt": {
       "type": "product-ud",
       "blocks": {
@@ -274,8 +204,6 @@
     "image_banner",
     "slideshow_LGJh3n",
     "announcement_ud_DgdWjQ",
-    "test_section_iUabHp",
-    "test_section_Lkj3W8",
     "product_ud_KBgTgt"
   ]
 }
