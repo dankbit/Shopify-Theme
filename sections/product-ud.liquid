@@ -1,7 +1,10 @@
 {% comment %}
   Custom Product Main Section
   Replicates a clean, high-conversion product page with carousel and blocks.
+  Allows manual product selection or defaults to current product.
 {% endcomment %}
+
+{%- assign product_target = section.settings.featured_product | default: product -%}
 
 <div class="custom-product-section" 
      id="shopify-section-{{ section.id }}"
@@ -24,159 +27,180 @@
     }
   {% endstyle %}
 
-  <div class="product-main-wrapper">
-    
-    <!-- LEFT COLUMN: Product Media -->
-    <div class="product-media-column">
-      <div class="product-gallery-container">
-        
-        <!-- Main Slider Wrapper -->
-        <div class="main-slider-wrapper">
-          <div class="main-slider-track">
-            {% for media in product.media %}
-              <div class="slide product-slide" data-media-id="{{ media.id }}">
-                <img src="{{ media | image_url: width: 1200 }}" 
-                     alt="{{ media.alt | escape }}" 
-                     loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                     width="100%" height="100%">
-              </div>
+  {% if product_target != blank %}
+    <div class="product-main-wrapper">
+      
+      <!-- LEFT COLUMN: Product Media -->
+      <div class="product-media-column">
+        <div class="product-gallery-container">
+          
+          <!-- Main Slider Wrapper -->
+          <div class="main-slider-wrapper">
+            <div class="main-slider-track">
+              {% if product_target.media.size > 0 %}
+                {% for media in product_target.media %}
+                  <div class="slide product-slide" data-media-id="{{ media.id }}">
+                    <img src="{{ media | image_url: width: 1200 }}" 
+                        alt="{{ media.alt | escape }}" 
+                        loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                        width="100%" height="100%">
+                  </div>
+                {% endfor %}
+              {% else %}
+                <!-- Placeholder if no images -->
+                <div class="slide product-slide">
+                   {{ 'product-1' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Navigation Arrows (Absolute) -->
+            <button class="slider-arrow prev-btn" aria-label="Previous image">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="slider-arrow next-btn" aria-label="Next image">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+
+            <!-- Slide Counter (e.g. 9/10) -->
+            <div class="slide-counter">
+              <span class="current-slide">1</span> / <span class="total-slides">{{ product_target.media.size | default: 1 }}</span>
+            </div>
+          </div>
+
+          <!-- Thumbnails -->
+          <div class="thumbnails-wrapper">
+            {% for media in product_target.media %}
+              <button class="thumbnail-btn {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+                <img src="{{ media | image_url: width: 150, height: 150, crop: 'center' }}" alt="{{ media.alt }}">
+              </button>
             {% endfor %}
           </div>
 
-          <!-- Navigation Arrows (Absolute) -->
-          <button class="slider-arrow prev-btn" aria-label="Previous image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-          <button class="slider-arrow next-btn" aria-label="Next image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
-
-          <!-- Slide Counter (e.g. 9/10) -->
-          <div class="slide-counter">
-            <span class="current-slide">1</span> / <span class="total-slides">{{ product.media.size }}</span>
-          </div>
         </div>
+      </div>
 
-        <!-- Thumbnails -->
-        <div class="thumbnails-wrapper">
-          {% for media in product.media %}
-            <button class="thumbnail-btn {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
-              <img src="{{ media | image_url: width: 150, height: 150, crop: 'center' }}" alt="{{ media.alt }}">
-            </button>
+      <!-- RIGHT COLUMN: Product Details -->
+      <div class="product-info-column">
+        {% form 'product', product_target, id: 'product-form-id', class: 'product-form' %}
+          <input type="hidden" name="id" value="{{ product_target.selected_or_first_available_variant.id }}">
+          
+          {% for block in section.blocks %}
+            <div class="product-block block-{{ block.type }}" {{ block.shopify_attributes }}>
+              
+              {% case block.type %}
+                
+                {% when '@app' %}
+                  {% render block %}
+
+                {% when 'text' %}
+                  <div class="product-text-block" style="font-size: {{ block.settings.text_size }}px; color: {{ block.settings.text_color }};">
+                    {{ block.settings.text }}
+                  </div>
+
+                {% when 'title' %}
+                  <h1 class="product-title">{{ product_target.title }}</h1>
+
+                {% when 'rating' %}
+                  <div class="product-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-count">5.0 (5)</span>
+                  </div>
+
+                {% when 'price' %}
+                  <div class="product-price-wrapper" id="price-{{ section.id }}">
+                    <span class="price-regular">{{ product_target.selected_or_first_available_variant.price | money }}</span>
+                    <s class="price-compare {% unless product_target.selected_or_first_available_variant.compare_at_price > product_target.selected_or_first_available_variant.price %}hidden{% endunless %}">
+                      {{ product_target.selected_or_first_available_variant.compare_at_price | money }}
+                    </s>
+                  </div>
+                  <div class="tax-note">Tax included. <a href="#">Shipping</a> calculated at checkout.</div>
+
+                {% when 'description' %}
+                  <div class="product-description rte">
+                    {{ product_target.description }}
+                  </div>
+
+                {% when 'variant_picker' %}
+                  {% unless product_target.has_only_default_variant %}
+                    <div class="variant-picker">
+                      {% for option in product_target.options_with_values %}
+                        <fieldset class="js-product-option">
+                          <legend class="option-label">{{ option.name }}</legend>
+                          <div class="option-values">
+                            {% for value in option.values %}
+                              <input type="radio" 
+                                    id="Option-{{ section.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}"
+                                    name="options[{{ option.name | escape }}]"
+                                    value="{{ value | escape }}"
+                                    {% if option.selected_value == value %}checked{% endif %}
+                                    class="visually-hidden variant-radio"
+                              >
+                              <label for="Option-{{ section.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}" class="variant-pill">
+                                {{ value }}
+                              </label>
+                            {% endfor %}
+                          </div>
+                        </fieldset>
+                      {% endfor %}
+                    </div>
+                  {% endunless %}
+
+                {% when 'quantity_selector' %}
+                  <div class="quantity-wrapper">
+                    <button type="button" class="qty-btn minus">-</button>
+                    <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                    <button type="button" class="qty-btn plus">+</button>
+                  </div>
+
+                {% when 'buy_buttons' %}
+                  <div class="product-actions">
+                    <button type="submit" name="add" class="btn-add-to-cart">
+                      Add to cart
+                    </button>
+                    {% if block.settings.show_dynamic_checkout %}
+                      {{ form | payment_button }}
+                    {% endif %}
+                  </div>
+
+                {% when 'trust_badge' %}
+                  <div class="trust-badge-box">
+                    <div class="trust-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    </div>
+                    <div class="trust-text">{{ block.settings.text }}</div>
+                  </div>
+
+              {% endcase %}
+            </div>
           {% endfor %}
-        </div>
-
+        {% endform %}
       </div>
     </div>
+  
+    <!-- JSON Data for Variants -->
+    <script type="application/json" id="ProductVariants-{{ section.id }}">
+      {{ product_target.variants | json }}
+    </script>
 
-    <!-- RIGHT COLUMN: Product Details -->
-    <div class="product-info-column">
-      {% form 'product', product, id: 'product-form', class: 'product-form' %}
-        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-        
-        {% for block in section.blocks %}
-          <div class="product-block block-{{ block.type }}" {{ block.shopify_attributes }}>
-            
-            {% case block.type %}
-              
-              {% when '@app' %}
-                {% render block %}
-
-              {% when 'text' %}
-                <div class="product-text-block" style="font-size: {{ block.settings.text_size }}px; color: {{ block.settings.text_color }};">
-                  {{ block.settings.text }}
-                </div>
-
-              {% when 'title' %}
-                <h1 class="product-title">{{ product.title }}</h1>
-
-              {% when 'rating' %}
-                <div class="product-rating">
-                  <span class="stars">★★★★★</span>
-                  <span class="rating-count">5.0 (5)</span>
-                </div>
-
-              {% when 'price' %}
-                <div class="product-price-wrapper" id="price-{{ section.id }}">
-                  <span class="price-regular">{{ product.selected_or_first_available_variant.price | money }}</span>
-                  <s class="price-compare {% unless product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}hidden{% endunless %}">
-                    {{ product.selected_or_first_available_variant.compare_at_price | money }}
-                  </s>
-                </div>
-                <div class="tax-note">Tax included. <a href="#">Shipping</a> calculated at checkout.</div>
-
-              {% when 'description' %}
-                <div class="product-description rte">
-                  {{ product.description }}
-                </div>
-
-              {% when 'variant_picker' %}
-                {% unless product.has_only_default_variant %}
-                  <div class="variant-picker">
-                    {% for option in product.options_with_values %}
-                      <fieldset class="js-product-option">
-                        <legend class="option-label">{{ option.name }}</legend>
-                        <div class="option-values">
-                          {% for value in option.values %}
-                            <input type="radio" 
-                                   id="Option-{{ section.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}"
-                                   name="options[{{ option.name | escape }}]"
-                                   value="{{ value | escape }}"
-                                   {% if option.selected_value == value %}checked{% endif %}
-                                   class="visually-hidden variant-radio"
-                            >
-                            <label for="Option-{{ section.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}" class="variant-pill">
-                              {{ value }}
-                            </label>
-                          {% endfor %}
-                        </div>
-                      </fieldset>
-                    {% endfor %}
-                  </div>
-                {% endunless %}
-
-              {% when 'quantity_selector' %}
-                <div class="quantity-wrapper">
-                  <button type="button" class="qty-btn minus">-</button>
-                  <input type="number" name="quantity" value="1" min="1" class="qty-input">
-                  <button type="button" class="qty-btn plus">+</button>
-                </div>
-
-              {% when 'buy_buttons' %}
-                <div class="product-actions">
-                  <button type="submit" name="add" class="btn-add-to-cart">
-                    Add to cart
-                  </button>
-                  {% if block.settings.show_dynamic_checkout %}
-                    {{ form | payment_button }}
-                  {% endif %}
-                </div>
-
-              {% when 'trust_badge' %}
-                <div class="trust-badge-box">
-                  <div class="trust-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                  </div>
-                  <div class="trust-text">{{ block.settings.text }}</div>
-                </div>
-
-            {% endcase %}
-          </div>
-        {% endfor %}
-      {% endform %}
+  {% else %}
+    <div style="text-align:center; padding: 50px;">
+      <h2>Please select a product</h2>
     </div>
-  </div>
+  {% endif %}
 </div>
 
-<!-- JSON Data for Variants -->
-<script type="application/json" id="ProductVariants-{{ section.id }}">
-  {{ product.variants | json }}
-</script>
 
 {% schema %}
 {
   "name": "Custom Product Main",
   "settings": [
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Select Product",
+      "info": "If blank, uses the product assigned to the page (for Product Templates)."
+    },
     {
       "type": "header",
       "content": "Padding"
@@ -422,6 +446,12 @@
     height: 100%;
     object-fit: contain; /* Or cover, depending on preference */
     display: block;
+  }
+  
+  .product-slide svg {
+    width: 100%;
+    height: 100%;
+    background: #eee;
   }
 
   /* Navigation Arrows */
@@ -674,6 +704,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const sectionId = "{{ section.id }}";
   const section = document.querySelector(`#shopify-section-${sectionId}`);
   
+  // Safety check if product exists
+  if (!section.querySelector('.product-main-wrapper')) return;
+
   // --- 1. CAROUSEL LOGIC (Adapted from previous request) ---
   const track = section.querySelector('.main-slider-track');
   const slides = section.querySelectorAll('.product-slide');
@@ -743,85 +776,91 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   // --- 2. VARIANT & PRICE LOGIC ---
-  const productVariants = JSON.parse(document.getElementById(`ProductVariants-${sectionId}`).textContent);
-  const variantRadios = section.querySelectorAll('.variant-radio');
-  const hiddenInput = section.querySelector('input[name="id"]');
-  
-  // Elements to update
-  const priceRegular = section.querySelector('.price-regular');
-  const priceCompare = section.querySelector('.price-compare');
-  const addToCartBtn = section.querySelector('.btn-add-to-cart');
-
-  function getSelectedOptions() {
-    const fieldsets = Array.from(section.querySelectorAll('.js-product-option'));
-    return fieldsets.map(fieldset => {
-      const checkedRadio = fieldset.querySelector('input:checked');
-      return checkedRadio ? checkedRadio.value : null;
-    });
-  }
-
-  function updateProductInfo() {
-    const selectedOptions = getSelectedOptions();
+  const jsonScript = document.getElementById(`ProductVariants-${sectionId}`);
+  if (jsonScript) {
+    const productVariants = JSON.parse(jsonScript.textContent);
+    const variantRadios = section.querySelectorAll('.variant-radio');
+    const hiddenInput = section.querySelector('input[name="id"]');
     
-    // Find matching variant
-    const currentVariant = productVariants.find(variant => {
-      return variant.options.every((optionValue, index) => {
-        return optionValue === selectedOptions[index];
+    // Elements to update
+    const priceRegular = section.querySelector('.price-regular');
+    const priceCompare = section.querySelector('.price-compare');
+    const addToCartBtn = section.querySelector('.btn-add-to-cart');
+
+    function getSelectedOptions() {
+      const fieldsets = Array.from(section.querySelectorAll('.js-product-option'));
+      return fieldsets.map(fieldset => {
+        const checkedRadio = fieldset.querySelector('input:checked');
+        return checkedRadio ? checkedRadio.value : null;
       });
-    });
+    }
 
-    if (currentVariant) {
-      // 1. Update ID
-      hiddenInput.value = currentVariant.id;
-
-      // 2. Update Price
-      priceRegular.textContent = formatMoney(currentVariant.price);
+    function updateProductInfo() {
+      const selectedOptions = getSelectedOptions();
       
-      if (currentVariant.compare_at_price > currentVariant.price) {
-        priceCompare.textContent = formatMoney(currentVariant.compare_at_price);
-        priceCompare.classList.remove('hidden');
+      // Find matching variant
+      const currentVariant = productVariants.find(variant => {
+        return variant.options.every((optionValue, index) => {
+          return optionValue === selectedOptions[index];
+        });
+      });
+
+      if (currentVariant) {
+        // 1. Update ID
+        hiddenInput.value = currentVariant.id;
+
+        // 2. Update Price
+        if(priceRegular) priceRegular.textContent = formatMoney(currentVariant.price);
+        
+        if (currentVariant.compare_at_price > currentVariant.price) {
+            if(priceCompare) {
+                priceCompare.textContent = formatMoney(currentVariant.compare_at_price);
+                priceCompare.classList.remove('hidden');
+            }
+        } else {
+            if(priceCompare) priceCompare.classList.add('hidden');
+        }
+
+        // 3. Update Button Status
+        if (addToCartBtn) {
+            if (currentVariant.available) {
+            addToCartBtn.textContent = 'Add to cart';
+            addToCartBtn.disabled = false;
+            } else {
+            addToCartBtn.textContent = 'Sold Out';
+            addToCartBtn.disabled = true;
+            }
+        }
+
+        // 4. Switch Image (If variant has specific image)
+        if (currentVariant.featured_media) {
+          const mediaId = currentVariant.featured_media.id;
+          const slideIndex = Array.from(slides).findIndex(slide => slide.dataset.mediaId == mediaId);
+          if (slideIndex !== -1) {
+            counter = slideIndex;
+            updateCarousel();
+          }
+        }
+
       } else {
-        priceCompare.classList.add('hidden');
-      }
-
-      // 3. Update URL (Optional but good UX)
-      window.history.replaceState({}, '', `?variant=${currentVariant.id}`);
-
-      // 4. Update Button Status
-      if (currentVariant.available) {
-        addToCartBtn.textContent = 'Add to cart';
-        addToCartBtn.disabled = false;
-      } else {
-        addToCartBtn.textContent = 'Sold Out';
-        addToCartBtn.disabled = true;
-      }
-
-      // 5. Switch Image (If variant has specific image)
-      if (currentVariant.featured_media) {
-        const mediaId = currentVariant.featured_media.id;
-        const slideIndex = Array.from(slides).findIndex(slide => slide.dataset.mediaId == mediaId);
-        if (slideIndex !== -1) {
-          counter = slideIndex;
-          updateCarousel();
+        // Variant doesn't exist
+        if (addToCartBtn) {
+            addToCartBtn.textContent = 'Unavailable';
+            addToCartBtn.disabled = true;
         }
       }
-
-    } else {
-      // Variant doesn't exist
-      addToCartBtn.textContent = 'Unavailable';
-      addToCartBtn.disabled = true;
     }
-  }
 
-  // Helper: Format Money (Basic version, normally relies on Shopify global settings)
-  function formatMoney(cents) {
-    return '$' + (cents / 100).toFixed(2);
-  }
+    // Helper: Format Money
+    function formatMoney(cents) {
+      return '$' + (cents / 100).toFixed(2);
+    }
 
-  // Listen for changes
-  variantRadios.forEach(radio => {
-    radio.addEventListener('change', updateProductInfo);
-  });
+    // Listen for changes
+    variantRadios.forEach(radio => {
+      radio.addEventListener('change', updateProductInfo);
+    });
+  }
 
 
   // --- 3. QUANTITY LOGIC ---
