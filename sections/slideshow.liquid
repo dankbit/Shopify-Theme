@@ -104,30 +104,7 @@
 {
   "name": "Customer Faves",
   "settings": [
-    {
-  "type": "header",
-  "content": "Products Per View"
-},
-{
-  "type": "range",
-  "id": "products_per_view_mobile",
-  "min": 1,
-  "max": 3,
-  "step": 1,
-  "unit": "col",
-  "label": "Products visible at once (Mobile)",
-  "default": 1
-},
-{
-  "type": "range",
-  "id": "products_per_view_desktop",
-  "min": 1,
-  "max": 6,
-  "step": 1,
-  "unit": "col",
-  "label": "Products visible at once (Desktop)",
-  "default": 4
-},
+   
     {
       "type": "text",
       "id": "title",
@@ -531,8 +508,9 @@
 
   function getProductsPerView() {
     const width = window.innerWidth;
-    if (width < 768) return {{ section.settings.products_per_view_mobile }};
-    return {{ section.settings.products_per_view_desktop }};
+    if (width < 768) return 1;
+    if (width < 1024) return 2;
+    return 4;
   }
 
   function slideImage() {
