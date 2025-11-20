@@ -161,42 +161,87 @@
       "blocks": {
         "title_FLDpw4": {
           "type": "title",
-          "settings": {}
+          "settings": {
+            "font_size_desktop": 32,
+            "font_size_mobile": 24,
+            "margin_top": 0,
+            "margin_bottom": 10
+          }
         },
         "price_qBjMHB": {
           "type": "price",
-          "settings": {}
+          "settings": {
+            "font_size_desktop": 24,
+            "font_size_mobile": 20,
+            "margin_top": 0,
+            "margin_bottom": 10
+          }
         },
         "quantity_selector_BjMbVC": {
           "type": "quantity_selector",
-          "settings": {}
+          "settings": {
+            "font_size_desktop": 16,
+            "font_size_mobile": 16,
+            "margin_top": 0,
+            "margin_bottom": 20
+          }
         },
         "rating_WbJaj7": {
           "type": "rating",
-          "settings": {}
+          "settings": {
+            "font_size_desktop": 14,
+            "font_size_mobile": 14,
+            "margin_top": 0,
+            "margin_bottom": 10
+          }
+        },
+        "variant_picker_cP6TJg": {
+          "type": "variant_picker",
+          "settings": {
+            "font_size_desktop": 14,
+            "font_size_mobile": 13,
+            "margin_top": 10,
+            "margin_bottom": 20
+          }
         },
         "description_4DnCKT": {
           "type": "description",
-          "settings": {}
+          "settings": {
+            "font_size_desktop": 16,
+            "font_size_mobile": 15,
+            "margin_top": 0,
+            "margin_bottom": 20
+          }
         },
         "text_zHXVmV": {
           "type": "text",
           "settings": {
             "text": "<p>Share information about your brand.{{ section.settings.featured_product.metafields.test_data.snowboard_length | metafield_tag }}</p>",
             "text_color": "#000000",
-            "text_size": 16
+            "font_size_desktop": 16,
+            "font_size_mobile": 14,
+            "margin_top": 0,
+            "margin_bottom": 15
           }
         },
         "buy_buttons_FQhryY": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": true
+            "show_dynamic_checkout": true,
+            "font_size_desktop": 14,
+            "font_size_mobile": 14,
+            "margin_top": 0,
+            "margin_bottom": 20
           }
         },
         "trust_badge_3GzXGi": {
           "type": "trust_badge",
           "settings": {
-            "text": "100% Secure Checkout · 30 Days Risk-Free Trial"
+            "text": "100% Secure Checkout · 30 Days Risk-Free Trial",
+            "font_size_desktop": 13,
+            "font_size_mobile": 12,
+            "margin_top": 20,
+            "margin_bottom": 20
           }
         }
       },
@@ -205,6 +250,7 @@
         "price_qBjMHB",
         "quantity_selector_BjMbVC",
         "rating_WbJaj7",
+        "variant_picker_cP6TJg",
         "description_4DnCKT",
         "text_zHXVmV",
         "buy_buttons_FQhryY",
@@ -212,13 +258,13 @@
       ],
       "name": "Custom Product Main",
       "settings": {
-        "featured_product": "the-collection-snowboard-liquid",
+        "featured_product": "the-3p-fulfilled-snowboard",
         "padding_top_desktop": 40,
         "padding_bottom_desktop": 40,
-        "padding_top_mobile": 20,
-        "padding_bottom_mobile": 20,
         "padding_left_desktop": 40,
         "padding_right_desktop": 40,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
         "padding_left_mobile": 20,
         "padding_right_mobile": 20
       }
