@@ -52,8 +52,6 @@
       "type": "slideshow",
       "name": "Image Slider",
       "settings": {
-        "products_per_view_mobile": 2,
-        "products_per_view_desktop": 4,
         "title": "Customer Favs",
         "collection": "automated-collection",
         "padding_top_desktop": 40,
@@ -157,6 +155,21 @@
         "gap_between_products_desktop": 20,
         "gap_between_products_mobile": 10
       }
+    },
+    "product_ud_KBgTgt": {
+      "type": "product-ud",
+      "name": "Custom Product Main",
+      "settings": {
+        "featured_product": "the-3p-fulfilled-snowboard",
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "padding_left_desktop": 40,
+        "padding_right_desktop": 40,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20
+      }
     }
   },
   "order": [
@@ -164,6 +177,7 @@
     "slideshow_LGJh3n",
     "announcement_ud_DgdWjQ",
     "test_section_iUabHp",
-    "test_section_Lkj3W8"
+    "test_section_Lkj3W8",
+    "product_ud_KBgTgt"
   ]
 }
