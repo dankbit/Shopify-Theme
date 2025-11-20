@@ -158,9 +158,61 @@
     },
     "product_ud_KBgTgt": {
       "type": "product-ud",
+      "blocks": {
+        "title_FLDpw4": {
+          "type": "title",
+          "settings": {}
+        },
+        "price_qBjMHB": {
+          "type": "price",
+          "settings": {}
+        },
+        "quantity_selector_BjMbVC": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "rating_WbJaj7": {
+          "type": "rating",
+          "settings": {}
+        },
+        "description_4DnCKT": {
+          "type": "description",
+          "settings": {}
+        },
+        "text_zHXVmV": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Share information about your brand.{{ section.settings.featured_product.metafields.test_data.snowboard_length | metafield_tag }}</p>",
+            "text_color": "#000000",
+            "text_size": 16
+          }
+        },
+        "buy_buttons_FQhryY": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        },
+        "trust_badge_3GzXGi": {
+          "type": "trust_badge",
+          "settings": {
+            "text": "100% Secure Checkout · 30 Days Risk-Free Trial"
+          }
+        }
+      },
+      "block_order": [
+        "title_FLDpw4",
+        "price_qBjMHB",
+        "quantity_selector_BjMbVC",
+        "rating_WbJaj7",
+        "description_4DnCKT",
+        "text_zHXVmV",
+        "buy_buttons_FQhryY",
+        "trust_badge_3GzXGi"
+      ],
       "name": "Custom Product Main",
       "settings": {
-        "featured_product": "the-3p-fulfilled-snowboard",
+        "featured_product": "the-collection-snowboard-liquid",
         "padding_top_desktop": 40,
         "padding_bottom_desktop": 40,
         "padding_top_mobile": 20,
