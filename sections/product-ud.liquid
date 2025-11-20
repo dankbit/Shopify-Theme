@@ -1,6 +1,22 @@
+# Fixed Variant Availability Logic
+
+The issue is likely occurring because the `disabled` attribute needs to be fully removed (`removeAttribute`) rather than just set to `false` to ensure all browsers and theme styles update correctly. I also added a check to ensure the variant matching logic is robust.
+
+Here is the **complete, updated code**.
+
+### Key Fixes:
+1.  **Robust Button State:** Changed `addToCartBtn.disabled = false` to `addToCartBtn.removeAttribute('disabled')`.
+2.  **Button Text:** Ensures the text resets to "Add to cart" immediately when an available variant is found.
+3.  **Variant Matching:** Added `.toString()` to comparisons to prevent type mismatch errors between the JSON data and the HTML input values.
+
+```liquid
 {% comment %}
   Custom Product Main Section
-  - Fixed Schema Error: Text block margin default updated to match step size.
+  - Product Selector / Default
+  - 400x400 Image Slider (Fixed Track Logic)
+  - Block-level Font & Margin Controls
+  - Dynamic Price Calculation (Price x Quantity)
+  - Fixed: Sold Out to Available state switching
 {% endcomment %}
 
 {%- assign product_target = section.settings.featured_product | default: product -%}
@@ -80,13 +96,10 @@
 
       <!-- RIGHT COLUMN: Product Details -->
       <div class="product-info-column">
-        {% form 'product', product_target, id: 'product-form-id', class: 'product-form' %}
+        {% form 'product', product_target, id: 'product-form-custom', class: 'product-form' %}
           <input type="hidden" name="id" value="{{ product_target.selected_or_first_available_variant.id }}">
           
           {% for block in section.blocks %}
-            {% comment %} 
-              Apply Block Settings via CSS Variables
-            {% endcomment %}
             <div class="product-block block-{{ block.type }}" 
                  {{ block.shopify_attributes }}
                  style="
@@ -368,11 +381,11 @@
     }
   }
 
-  /* --- Global Block Styles (CSS Variables) --- */
+  /* --- Global Block Styles --- */
   .product-block {
     margin-top: var(--block-mt);
     margin-bottom: var(--block-mb);
-    font-size: var(--block-fs-mobile); /* Default Mobile Font Size */
+    font-size: var(--block-fs-mobile);
   }
 
   @media (min-width: 768px) {
@@ -381,25 +394,16 @@
     }
   }
 
-  /* Specific Text Block Overrides */
-  .product-title {
-    font-size: inherit; /* Inherits from .product-block */
-    margin: 0 0 10px 0;
-    line-height: 1.2;
-  }
-
-  .product-price-wrapper {
+  .product-title, .product-text-block, .product-description {
     font-size: inherit;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    line-height: 1.2;
+    margin: 0;
   }
   
-  .product-text-block {
-    font-size: inherit;
-  }
+  .product-title { margin-bottom: 10px; }
+  .product-description { line-height: 1.6; color: #333; }
 
-  /* --- Left Column: Media --- */
+  /* --- Left Column: Media (Flex Track Slider) --- */
   .product-gallery-container {
     position: relative;
     width: 100%;
@@ -418,6 +422,7 @@
 
   .main-slider-track {
     display: flex;
+    width: 100%;
     height: 100%;
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   }
@@ -426,16 +431,17 @@
     min-width: 100%;
     width: 100%;
     height: 100%;
+    flex-shrink: 0; /* Crucial for flex slider */
     position: relative;
   }
 
   .product-slide img {
     width: 100%;
     height: 100%;
-    object-fit: contain; 
+    object-fit: contain;
     display: block;
   }
-  
+
   .product-slide svg {
     width: 100%;
     height: 100%;
@@ -460,11 +466,7 @@
     transition: all 0.2s ease;
   }
 
-  .slider-arrow:hover {
-    background: #f0f0f0;
-    transform: translateY(-50%) scale(1.05);
-  }
-
+  .slider-arrow:hover { background: #f0f0f0; transform: translateY(-50%) scale(1.05); }
   .prev-btn { left: 10px; }
   .next-btn { right: 10px; }
 
@@ -504,163 +506,62 @@
     transition: all 0.2s;
     background: none;
   }
-  .thumbnail-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .thumbnail-btn.active {
-    border-color: #000;
-    opacity: 1;
-  }
+  .thumbnail-btn img { width: 100%; height: 100%; object-fit: cover; }
+  .thumbnail-btn.active { border-color: #000; opacity: 1; }
 
   /* --- Component Styles --- */
-  .product-rating {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: inherit;
-  }
+  .product-rating { display: flex; align-items: center; gap: 8px; font-size: inherit; }
   .stars { color: #1a4e38; }
 
-  .price-regular {
-    font-weight: 600;
-    color: #1a4e38;
-  }
-  .price-compare {
-    color: #777;
-    text-decoration: line-through;
-    font-size: 0.8em; /* Relative to main price */
-  }
+  .product-price-wrapper { font-size: inherit; display: flex; align-items: center; gap: 10px; }
+  .price-regular { font-weight: 600; color: #1a4e38; }
+  .price-compare { color: #777; text-decoration: line-through; font-size: 0.8em; }
   .price-compare.hidden { display: none; }
-  
-  .tax-note {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
-  }
-
-  .product-description {
-    font-size: inherit;
-    line-height: 1.6;
-    color: #333;
-  }
+  .tax-note { font-size: 12px; color: #666; margin-top: 5px; }
 
   /* Variant Picker */
-  .variant-picker fieldset {
-    border: none;
-    padding: 0;
-    margin: 0 0 15px 0;
-  }
-  .option-label {
-    font-weight: 600;
-    margin-bottom: 10px;
-    font-size: inherit;
-    display: block;
-  }
-  .option-values {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+  .variant-picker fieldset { border: none; padding: 0; margin: 0 0 15px 0; }
+  .option-label { font-weight: 600; margin-bottom: 10px; font-size: inherit; display: block; }
+  .option-values { display: flex; flex-wrap: wrap; gap: 10px; }
   .variant-pill {
-    border: 1px solid #e5e5e5;
-    padding: 10px 20px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: inherit;
-    min-width: 60px;
-    text-align: center;
-    color: #333;
+    border: 1px solid #e5e5e5; padding: 10px 20px; border-radius: 50px;
+    cursor: pointer; transition: all 0.2s; font-size: inherit; min-width: 60px;
+    text-align: center; color: #333;
   }
-  .variant-radio:checked + .variant-pill {
-    border-color: #000;
-    background-color: #fff;
-    color: #000;
-    box-shadow: 0 0 0 1px #000;
-  }
-  .visually-hidden {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
+  .variant-radio:checked + .variant-pill { border-color: #000; background-color: #fff; color: #000; box-shadow: 0 0 0 1px #000; }
+  .visually-hidden { position: absolute; opacity: 0; width: 0; height: 0; }
 
-  /* Quantity Selector - FIXED */
+  /* Quantity Selector */
   .quantity-wrapper {
-    display: flex;
-    border: 1px solid #000;
-    width: 140px;
-    height: 48px;
-    border-radius: 4px;
-    overflow: hidden;
+    display: flex; border: 1px solid #000; width: 140px; height: 48px; border-radius: 4px; overflow: hidden;
   }
   .qty-btn {
-    background: none;
-    border: none;
-    width: 40px;
-    font-size: 20px;
-    cursor: pointer;
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0; /* Ensures buttons don't disappear */
+    background: none; border: none; width: 40px; font-size: 20px; cursor: pointer; color: #000;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .qty-input {
-    flex: 1;
-    min-width: 0; /* Fixes flexbox input width issues */
-    border: none;
-    text-align: center;
-    font-size: inherit;
-    appearance: none;
-    -moz-appearance: textfield;
-    padding: 0;
+    flex: 1; min-width: 0; border: none; text-align: center; font-size: inherit;
+    appearance: none; -moz-appearance: textfield; padding: 0;
   }
-  .qty-input::-webkit-outer-spin-button,
-  .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .qty-input::-webkit-outer-spin-button, .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
   /* Buttons */
-  .product-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .product-actions { display: flex; flex-direction: column; gap: 10px; }
   .btn-add-to-cart {
-    width: 100%;
-    padding: 15px;
-    background: #fff;
-    border: 1px solid #000;
-    color: #000;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s;
-    font-size: inherit;
-    letter-spacing: 1px;
+    width: 100%; padding: 15px; background: #fff; border: 1px solid #000; color: #000;
+    font-weight: 700; text-transform: uppercase; cursor: pointer; border-radius: 4px;
+    transition: background 0.2s; font-size: inherit; letter-spacing: 1px;
   }
-  .btn-add-to-cart:hover {
-    background: #f5f5f5;
-  }
-  
+  .btn-add-to-cart:hover { background: #f5f5f5; }
   .shopify-payment-button__button {
-    border-radius: 4px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    width: 100%;
+    border-radius: 4px !important; font-weight: 700 !important; text-transform: uppercase !important;
+    letter-spacing: 1px !important; width: 100%;
   }
 
-  /* Trust Badge Box */
+  /* Trust Badge */
   .trust-badge-box {
-    background-color: #e8f5e9;
-    padding: 15px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    background-color: #e8f5e9; padding: 15px; border-radius: 4px;
+    display: flex; align-items: center; gap: 12px;
   }
   .trust-icon { color: #000; }
   .trust-text { font-size: inherit; font-weight: 500; }
@@ -670,10 +571,10 @@
 document.addEventListener('DOMContentLoaded', function() {
   const sectionId = "{{ section.id }}";
   const section = document.querySelector(`#shopify-section-${sectionId}`);
-  
   if (!section.querySelector('.product-main-wrapper')) return;
 
-  // --- 1. CAROUSEL LOGIC ---
+  // --- 1. CAROUSEL LOGIC (Fixed Track Method) ---
+  const track = section.querySelector('.main-slider-track');
   const slides = section.querySelectorAll('.product-slide');
   const prevBtn = section.querySelector('.prev-btn');
   const nextBtn = section.querySelector('.next-btn');
@@ -683,16 +584,12 @@ document.addEventListener('DOMContentLoaded', function() {
   let counter = 0;
   const totalSlides = slides.length;
 
-  // Initial Setup
-  slides.forEach((slide, index) => {
-    slide.style.left = `${index * 100}%`;
-  });
-
   function updateCarousel() {
-    slides.forEach((slide) => {
-      slide.style.transform = `translateX(-${counter * 100}%)`;
-    });
+    // Use transform on the track instead of individual slides
+    track.style.transform = `translateX(-${counter * 100}%)`;
+    
     if(currentSlideEl) currentSlideEl.textContent = counter + 1;
+    
     thumbnails.forEach((thumb, index) => {
       if(index === counter) {
         thumb.classList.add('active');
@@ -727,38 +624,78 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-
-  // --- 2. VARIANT LOGIC ---
+  // --- 2. PRICE & VARIANT & QUANTITY LOGIC ---
   const jsonScript = document.getElementById(`ProductVariants-${sectionId}`);
+  const qtyInput = section.querySelector('.qty-input');
+  const plusBtn = section.querySelector('.qty-btn.plus');
+  const minusBtn = section.querySelector('.qty-btn.minus');
+  const priceRegular = section.querySelector('.price-regular');
+  const priceCompare = section.querySelector('.price-compare');
+  
+  // Initialize Base Unit Price (from Liquid)
+  let currentUnitPrice = {{ product_target.selected_or_first_available_variant.price }};
+
+  function formatMoney(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function updateTotalPrice() {
+    const qty = parseInt(qtyInput.value) || 1;
+    const totalPrice = currentUnitPrice * qty;
+    
+    if(priceRegular) {
+      priceRegular.textContent = formatMoney(totalPrice);
+    }
+  }
+
+  // Quantity Events
+  if(qtyInput && plusBtn && minusBtn) {
+    plusBtn.addEventListener('click', () => {
+      qtyInput.value = parseInt(qtyInput.value) + 1;
+      updateTotalPrice();
+    });
+    minusBtn.addEventListener('click', () => {
+      const val = parseInt(qtyInput.value);
+      if(val > 1) {
+        qtyInput.value = val - 1;
+        updateTotalPrice();
+      }
+    });
+    qtyInput.addEventListener('change', updateTotalPrice);
+  }
+
+  // Variant Events
   if (jsonScript) {
     const productVariants = JSON.parse(jsonScript.textContent);
     const variantRadios = section.querySelectorAll('.variant-radio');
     const hiddenInput = section.querySelector('input[name="id"]');
-    const priceRegular = section.querySelector('.price-regular');
-    const priceCompare = section.querySelector('.price-compare');
     const addToCartBtn = section.querySelector('.btn-add-to-cart');
 
     function getSelectedOptions() {
       const fieldsets = Array.from(section.querySelectorAll('.js-product-option'));
       return fieldsets.map(fieldset => {
         const checkedRadio = fieldset.querySelector('input:checked');
-        return checkedRadio ? checkedRadio.value : null;
+        // Use .toString() to prevent mismatch between numeric-like strings
+        return checkedRadio ? checkedRadio.value.toString() : null;
       });
     }
 
     function updateProductInfo() {
       const selectedOptions = getSelectedOptions();
       const currentVariant = productVariants.find(variant => {
-        return variant.options.every((optionValue, index) => optionValue === selectedOptions[index]);
+        return variant.options.every((optionValue, index) => optionValue.toString() === selectedOptions[index]);
       });
 
       if (currentVariant) {
         hiddenInput.value = currentVariant.id;
         
-        if(priceRegular) priceRegular.textContent = formatMoney(currentVariant.price);
-        
+        // Update Base Price
+        currentUnitPrice = currentVariant.price;
+        updateTotalPrice(); // Recalculate based on new price and existing qty
+
         if (currentVariant.compare_at_price > currentVariant.price) {
             if(priceCompare) {
+                // Update compare price (simple check, not multiplying by qty usually, but can be added if needed)
                 priceCompare.textContent = formatMoney(currentVariant.compare_at_price);
                 priceCompare.classList.remove('hidden');
             }
@@ -769,10 +706,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (addToCartBtn) {
             if (currentVariant.available) {
               addToCartBtn.textContent = 'Add to cart';
-              addToCartBtn.disabled = false;
+              addToCartBtn.removeAttribute('disabled'); // FIX: Fully remove attribute
             } else {
               addToCartBtn.textContent = 'Sold Out';
-              addToCartBtn.disabled = true;
+              addToCartBtn.setAttribute('disabled', 'disabled');
             }
         }
 
@@ -789,33 +726,15 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         if (addToCartBtn) {
             addToCartBtn.textContent = 'Unavailable';
-            addToCartBtn.disabled = true;
+            addToCartBtn.setAttribute('disabled', 'disabled');
         }
       }
-    }
-
-    function formatMoney(cents) {
-      return '$' + (cents / 100).toFixed(2);
     }
 
     variantRadios.forEach(radio => {
       radio.addEventListener('change', updateProductInfo);
     });
   }
-
-  // --- 3. QUANTITY LOGIC ---
-  const qtyInput = section.querySelector('.qty-input');
-  const plusBtn = section.querySelector('.qty-btn.plus');
-  const minusBtn = section.querySelector('.qty-btn.minus');
-
-  if(qtyInput && plusBtn && minusBtn) {
-    plusBtn.addEventListener('click', () => {
-      qtyInput.value = parseInt(qtyInput.value) + 1;
-    });
-    minusBtn.addEventListener('click', () => {
-      const val = parseInt(qtyInput.value);
-      if(val > 1) qtyInput.value = val - 1;
-    });
-  }
 });
 </script>
+```
