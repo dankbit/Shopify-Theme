@@ -1,15 +1,4 @@
-# Fixed Variant Availability Logic
 
-The issue is likely occurring because the `disabled` attribute needs to be fully removed (`removeAttribute`) rather than just set to `false` to ensure all browsers and theme styles update correctly. I also added a check to ensure the variant matching logic is robust.
-
-Here is the **complete, updated code**.
-
-### Key Fixes:
-1.  **Robust Button State:** Changed `addToCartBtn.disabled = false` to `addToCartBtn.removeAttribute('disabled')`.
-2.  **Button Text:** Ensures the text resets to "Add to cart" immediately when an available variant is found.
-3.  **Variant Matching:** Added `.toString()` to comparisons to prevent type mismatch errors between the JSON data and the HTML input values.
-
-```liquid
 {% comment %}
   Custom Product Main Section
   - Product Selector / Default
