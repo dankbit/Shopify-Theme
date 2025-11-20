@@ -1,402 +1,102 @@
-{% comment %}
-  Custom Cart Drawer with AJAX & Upsells
-  - Replaces standard cart page navigation.
-  - Fetches cart data via API.
-  - Renders Upsell products from a selected collection.
-{% endcomment %}
+
 
 <div id="custom-cart-drawer" class="cart-drawer" aria-hidden="true">
   
-  <!-- Overlay (Background Dimmer) -->
+  <!-- Overlay -->
   <div class="cart-drawer__overlay"></div>
 
-  <!-- Main Drawer Container -->
+  <!-- Container -->
   <div class="cart-drawer__container">
     
-    <!-- 1. Header -->
+    <!-- 1. HEADER -->
     <div class="cart-drawer__header">
-      <h2 class="cart-drawer__title">Your Cart (<span id="drawer-cart-count">0</span>)</h2>
-      <button class="cart-drawer__close" aria-label="Close cart">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-
-    <!-- 2. Body (Scrollable) -->
-    <div class="cart-drawer__body">
-      
-      <!-- Cart Items Area (Populated by JS) -->
-      <div id="cart-drawer-items" class="cart-drawer__items">
-        <!-- Items will be injected here via AJAX -->
-        <div class="cart-drawer__loading">Loading cart...</div>
-      </div>
-
-      <!-- 3. Upsell / Recommendations Section -->
-      {% if section.settings.upsell_collection != blank %}
-        <div class="cart-drawer__upsell">
-          <h3 class="upsell-title">{{ section.settings.upsell_title }}</h3>
-          <div class="upsell-grid">
-            {% for product in section.settings.upsell_collection.products limit: 4 %}
-              <div class="upsell-item">
-                <div class="upsell-image">
-                  <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" loading="lazy">
-                </div>
-                <div class="upsell-info">
-                  <p class="upsell-name">{{ product.title }}</p>
-                  <p class="upsell-price">{{ product.price | money }}</p>
-                  <button class="upsell-add-btn" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
-                    Add
-                  </button>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- 4. Footer (Subtotal & Checkout) -->
-    <div class="cart-drawer__footer">
-      <div class="cart-drawer__subtotal">
-        <span>Subtotal</span>
-        <span id="drawer-subtotal-price">$0.00</span>
-      </div>
-      <p class="cart-drawer__note">Tax and shipping calculated at checkout.</p>
-      <form action="/cart" method="post">
-        <button type="submit" name="checkout" class="cart-drawer__checkout-btn">
-          Checkout
+      <h2 class="cart-drawer__title">Your cart</h2>
+      <div class="cart-drawer__header-actions">
+        <a href="/cart" class="view-cart-link">View cart</a>
+        <button class="cart-drawer__close" aria-label="Close">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
-      </form>
+      </div>
+    </div>
+
+    <!-- 2. CONTENT WRAPPER -->
+    <div class="cart-drawer__content" id="cart-drawer-content">
+      
+      <!-- LOADED STATE (Hidden by default until JS loads) -->
+      <div id="cart-drawer-populated" style="display:none;">
+        
+        <!-- Utility Links -->
+        <div class="cart-drawer__utilities">
+          <button type="button" class="utility-link">Add order note</button>
+          <button type="button" class="utility-link">Estimate shipping</button>
+        </div>
+
+        <!-- Top Checkout Button (As per screenshot) -->
+        <div class="cart-drawer__top-actions">
+          <form action="/cart" method="post">
+            <button type="submit" name="checkout" class="checkout-btn-main">
+              <span class="btn-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              </span>
+              View cart &mdash; <span id="drawer-total-price">$0.00</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cart-drawer-items" class="cart-drawer__items">
+          <!-- Items injected via JS -->
+        </div>
+
+        <!-- Upsell Section -->
+        {% if section.settings.upsell_collection != blank %}
+          <div class="cart-drawer__upsell">
+            <div class="upsell-header">
+              <h3>You may also like...</h3>
+              <div class="upsell-nav">
+                <!-- Simple Arrows just for UI compliance -->
+                <button class="upsell-arrow prev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                <button class="upsell-arrow next"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+              </div>
+            </div>
+            
+            <div class="upsell-list">
+              {% for product in section.settings.upsell_collection.products limit: 2 %}
+                <div class="upsell-card">
+                  <div class="upsell-img">
+                    <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" loading="lazy">
+                  </div>
+                  <div class="upsell-info">
+                    <p class="upsell-title">{{ product.title }}</p>
+                    <div class="upsell-price-row">
+                      <span class="upsell-price">{{ product.price | money }}</span>
+                      {% if product.compare_at_price > product.price %}
+                        <span class="upsell-compare">{{ product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    <button class="upsell-btn-outline upsell-add-btn" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                      Choose options
+                    </button>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div id="cart-drawer-empty" class="cart-drawer__empty" style="display:none;">
+        <div class="empty-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        </div>
+        <p>Your cart is empty</p>
+        <a href="/collections/all" class="start-shopping-btn">Start shopping</a>
+      </div>
+
     </div>
   </div>
 </div>
-
-<style>
-  /* --- 1. Drawer Structure --- */
-  .cart-drawer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999; /* Always on top */
-    visibility: hidden;
-    transition: visibility 0.3s ease;
-  }
-
-  /* Overlay (Dark background) */
-  .cart-drawer__overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  /* The Sliding Panel */
-  .cart-drawer__container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    max-width: 400px; /* Desktop width */
-    height: 100%;
-    background: #fff;
-    transform: translateX(100%); /* Start off-screen right */
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* --- State: Open --- */
-  .cart-drawer.is-open {
-    visibility: visible;
-  }
-  .cart-drawer.is-open .cart-drawer__overlay {
-    opacity: 1;
-  }
-  .cart-drawer.is-open .cart-drawer__container {
-    transform: translateX(0); /* Slide in */
-  }
-
-  /* --- Header --- */
-  .cart-drawer__header {
-    padding: 20px;
-    border-bottom: 1px solid #e5e5e5;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .cart-drawer__title { margin: 0; font-size: 18px; font-weight: 600; }
-  .cart-drawer__close { background: none; border: none; cursor: pointer; padding: 5px; }
-
-  /* --- Body (Scrollable Area) --- */
-  .cart-drawer__body {
-    flex: 1;
-    overflow-y: auto; /* Allows scrolling if many items */
-    padding: 20px;
-  }
-
-  /* Items */
-  .drawer-item {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #f5f5f5;
-    padding-bottom: 20px;
-  }
-  .drawer-item__image img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
-    background: #f5f5f5;
-  }
-  .drawer-item__details { flex: 1; }
-  .drawer-item__title { margin: 0 0 5px; font-weight: 600; font-size: 14px; }
-  .drawer-item__price { font-size: 14px; color: #666; margin-bottom: 10px; }
-  
-  .drawer-item__controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  /* Quantity Selectors */
-  .drawer-qty {
-    display: flex;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  .drawer-qty__btn {
-    background: none; border: none; padding: 5px 10px; cursor: pointer;
-  }
-  .drawer-qty__input {
-    width: 30px; border: none; text-align: center; font-size: 13px; -moz-appearance: textfield;
-  }
-  .drawer-item__remove {
-    background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; font-size: 12px;
-  }
-
-  /* --- Upsell Section --- */
-  .cart-drawer__upsell {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #f5f5f5;
-  }
-  .upsell-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; }
-  .upsell-item {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    align-items: center;
-  }
-  .upsell-image img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
-  .upsell-info { flex: 1; }
-  .upsell-name { margin: 0; font-size: 13px; font-weight: 500; }
-  .upsell-price { margin: 0 0 5px; font-size: 13px; color: #666; }
-  .upsell-add-btn {
-    background: #000; color: #fff; border: none; padding: 5px 15px; font-size: 12px; cursor: pointer; border-radius: 4px;
-  }
-
-  /* --- Footer --- */
-  .cart-drawer__footer {
-    padding: 20px;
-    border-top: 1px solid #e5e5e5;
-    background: #fff;
-  }
-  .cart-drawer__subtotal {
-    display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; margin-bottom: 5px;
-  }
-  .cart-drawer__note { font-size: 12px; color: #666; margin-bottom: 15px; }
-  .cart-drawer__checkout-btn {
-    width: 100%; background: #000; color: #fff; border: none; padding: 15px; font-weight: 700; text-transform: uppercase; cursor: pointer;
-  }
-  .cart-drawer__checkout-btn:hover { opacity: 0.9; }
-
-  /* Empty State */
-  .cart-drawer__empty { text-align: center; padding-top: 50px; color: #666; }
-</style>
-
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const drawer = document.getElementById('custom-cart-drawer');
-    const overlay = drawer.querySelector('.cart-drawer__overlay');
-    const closeBtn = drawer.querySelector('.cart-drawer__close');
-    const itemsContainer = document.getElementById('cart-drawer-items');
-    const subtotalEl = document.getElementById('drawer-subtotal-price');
-    const countEl = document.getElementById('drawer-cart-count');
-    
-    // 1. Helper: Format Money (Basic version)
-    // In production, you might pass Shopify's format string via Liquid
-    const formatMoney = (cents) => {
-      return '$' + (cents / 100).toFixed(2); 
-    };
-
-    // 2. Open/Close Logic
-    const openDrawer = () => {
-      drawer.classList.add('is-open');
-      drawer.setAttribute('aria-hidden', 'false');
-      fetchCart(); // Refresh data whenever opened
-      sessionStorage.setItem('cartDrawerOpen', 'true');
-    };
-
-    const closeDrawer = () => {
-      drawer.classList.remove('is-open');
-      drawer.setAttribute('aria-hidden', 'true');
-      sessionStorage.setItem('cartDrawerOpen', 'false');
-    };
-
-    // 3. Fetch Cart Data (AJAX)
-    const fetchCart = async () => {
-      try {
-        const response = await fetch('/cart.js');
-        const cart = await response.json();
-        renderCart(cart);
-      } catch (error) {
-        console.error('Error fetching cart:', error);
-      }
-    };
-
-    // 4. Render Cart HTML
-    const renderCart = (cart) => {
-      // Update Header & Footer
-      countEl.textContent = cart.item_count;
-      subtotalEl.textContent = formatMoney(cart.total_price);
-
-      // Clear Items Container
-      itemsContainer.innerHTML = '';
-
-      if (cart.items.length === 0) {
-        itemsContainer.innerHTML = '<p class="cart-drawer__empty">Your cart is empty.</p>';
-        return;
-      }
-
-      // Loop through items and build HTML string
-      cart.items.forEach(item => {
-        const itemHTML = `
-          <div class="drawer-item">
-            <div class="drawer-item__image">
-              <a href="${item.url}">
-                <img src="${item.image ? item.image : ''}" alt="${item.title}">
-              </a>
-            </div>
-            <div class="drawer-item__details">
-              <p class="drawer-item__title"><a href="${item.url}">${item.product_title}</a></p>
-              <div class="drawer-item__price">
-                ${item.variant_title !== null ? `<small>${item.variant_title}</small><br>` : ''}
-                ${formatMoney(item.final_price)}
-              </div>
-              <div class="drawer-item__controls">
-                <div class="drawer-qty">
-                  <button class="drawer-qty__btn minus" data-key="${item.key}" data-qty="${item.quantity - 1}">-</button>
-                  <input class="drawer-qty__input" type="number" value="${item.quantity}" readonly>
-                  <button class="drawer-qty__btn plus" data-key="${item.key}" data-qty="${item.quantity + 1}">+</button>
-                </div>
-                <button class="drawer-item__remove" data-key="${item.key}" data-qty="0">Remove</button>
-              </div>
-            </div>
-          </div>
-        `;
-        itemsContainer.insertAdjacentHTML('beforeend', itemHTML);
-      });
-
-      // Re-attach event listeners to new buttons
-      attachItemListeners();
-    };
-
-    // 5. Change Item Quantity (Update Cart)
-    const changeItemQty = async (key, newQty) => {
-      // Optional: Show loading state
-      itemsContainer.style.opacity = '0.5'; 
-      
-      try {
-        const response = await fetch('/cart/change.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: key, quantity: newQty })
-        });
-        const cart = await response.json();
-        renderCart(cart); // Re-render with new data
-      } catch (error) {
-        console.error('Error updating cart:', error);
-      } finally {
-        itemsContainer.style.opacity = '1';
-      }
-    };
-
-    // 6. Add Item (Upsell)
-    const addItemToCart = async (id, qty = 1) => {
-      try {
-        const response = await fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items: [{ id: id, quantity: qty }] })
-        });
-        
-        if (response.ok) {
-          openDrawer(); // Ensure drawer is open to show success
-          fetchCart(); // Refresh drawer
-        }
-      } catch (error) {
-        console.error('Error adding item:', error);
-      }
-    };
-
-    // 7. Event Listeners
-    
-    // Helper to attach listeners to dynamic HTML
-    const attachItemListeners = () => {
-      // Plus/Minus/Remove buttons
-      document.querySelectorAll('.drawer-qty__btn, .drawer-item__remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const key = btn.dataset.key;
-          const qty = parseInt(btn.dataset.qty);
-          changeItemQty(key, qty);
-        });
-      });
-    };
-
-    // Upsell Add Buttons
-    document.querySelectorAll('.upsell-add-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const variantId = btn.dataset.variantId;
-        btn.textContent = 'Adding...'; // Simple feedback
-        addItemToCart(variantId).then(() => {
-          btn.textContent = 'Added';
-          setTimeout(() => btn.textContent = 'Add', 2000);
-        });
-      });
-    });
-
-    // Close Triggers
-    closeBtn.addEventListener('click', closeDrawer);
-    overlay.addEventListener('click', closeDrawer);
-
-    // Hijack Cart Icon (The most important part for Dawn theme)
-    // Look for standard cart links
-    const cartLinks = document.querySelectorAll('a[href="/cart"]');
-    cartLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault(); // Stop page reload
-        openDrawer();
-      });
-    });
-
-    // 8. Session Storage Check (On Load)
-    if (sessionStorage.getItem('cartDrawerOpen') === 'true') {
-      // Optionally re-open drawer if it was open before refresh
-      // openDrawer(); 
-    }
-  });
-</script>
-
 
 {% schema %}
 {
@@ -405,12 +105,6 @@
     {
       "type": "header",
       "content": "Upsell Settings"
-    },
-    {
-      "type": "text",
-      "id": "upsell_title",
-      "label": "Upsell Section Title",
-      "default": "You may also like"
     },
     {
       "type": "collection",
@@ -425,3 +119,341 @@
   ]
 }
 {% endschema %}
+
+<style>
+  /* --- CORE DRAWER STYLES --- */
+  .cart-drawer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;
+    visibility: hidden; transition: visibility 0.3s ease; font-family: var(--font-body-family);
+  }
+  .cart-drawer__overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); opacity: 0; transition: opacity 0.3s ease;
+  }
+  .cart-drawer__container {
+    position: absolute; top: 0; right: 0; width: 100%; max-width: 420px; height: 100%;
+    background: #fff; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: flex; flex-direction: column;
+  }
+  .cart-drawer.is-open { visibility: visible; }
+  .cart-drawer.is-open .cart-drawer__overlay { opacity: 1; }
+  .cart-drawer.is-open .cart-drawer__container { transform: translateX(0); }
+
+  /* --- HEADER --- */
+  .cart-drawer__header {
+    padding: 20px 30px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fff;
+  }
+  .cart-drawer__title {
+    margin: 0; font-family: "Times New Roman", serif; /* Serif as per image */
+    font-size: 28px; font-weight: 400; letter-spacing: 0.5px; color: #121212;
+  }
+  .cart-drawer__header-actions {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .view-cart-link {
+    font-size: 13px; text-decoration: underline; color: #333; text-underline-offset: 3px;
+  }
+  .cart-drawer__close {
+    background: none; border: none; cursor: pointer; color: #333; display: flex;
+  }
+
+  /* --- CONTENT SCROLL AREA --- */
+  .cart-drawer__content {
+    flex: 1; overflow-y: auto; position: relative;
+  }
+
+  /* --- UTILITIES & TOP BUTTON --- */
+  .cart-drawer__utilities {
+    display: flex; justify-content: space-between; padding: 0 30px 15px;
+  }
+  .utility-link {
+    background: none; border: none; text-decoration: underline;
+    font-size: 13px; color: #333; cursor: pointer; padding: 0;
+  }
+  
+  .cart-drawer__top-actions {
+    padding: 0 30px 20px; border-bottom: 1px solid #eee;
+  }
+  .checkout-btn-main {
+    width: 100%; background-color: #033622; /* Dark Green */
+    color: #fff; border: none; padding: 12px; border-radius: 6px;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background 0.2s;
+  }
+  .checkout-btn-main:hover { background-color: #054d31; }
+
+  /* --- CART ITEMS --- */
+  .cart-drawer__items {
+    padding: 20px 30px;
+  }
+  .drawer-item {
+    display: flex; gap: 20px; margin-bottom: 25px;
+  }
+  .drawer-item__image img {
+    width: 100px; height: 100px; object-fit: cover; background: #f7f7f7;
+  }
+  .drawer-item__details {
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .drawer-item__vendor {
+    font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .drawer-item__title {
+    font-size: 14px; font-weight: 700; color: #121212; margin: 0 0 4px; line-height: 1.3; text-decoration: none;
+  }
+  .drawer-item__price {
+    font-size: 14px; font-weight: 700; color: #121212; margin-bottom: 8px;
+  }
+  .drawer-item__meta {
+    font-size: 12px; color: #555; margin-bottom: 10px;
+  }
+
+  /* Item Controls (Qty & Trash) */
+  .drawer-item__controls {
+    display: flex; align-items: center; gap: 15px; margin-top: auto;
+  }
+  .drawer-qty {
+    display: flex; align-items: center; border: 1px solid #ddd;
+    border-radius: 4px; height: 32px; width: 100px;
+  }
+  .drawer-qty__btn {
+    width: 30px; height: 100%; background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; color: #333;
+  }
+  .drawer-qty__input {
+    flex: 1; border: none; text-align: center; font-size: 13px; 
+    -moz-appearance: textfield; height: 100%; padding: 0;
+  }
+  .drawer-item__remove {
+    background: none; border: none; cursor: pointer; color: #666; padding: 5px;
+    display: flex; align-items: center;
+  }
+  .drawer-item__remove:hover { color: #000; }
+
+  /* --- UPSELL SECTION --- */
+  .cart-drawer__upsell {
+    background-color: #f8f8f8; /* Light gray bg as per image */
+    padding: 25px 30px;
+  }
+  .upsell-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+  }
+  .upsell-header h3 {
+    font-family: "Times New Roman", serif; font-size: 18px; margin: 0; color: #333;
+  }
+  .upsell-nav { display: flex; gap: 10px; }
+  .upsell-arrow {
+    background: none; border: none; cursor: pointer; color: #666; padding: 0;
+  }
+  
+  .upsell-list {
+    display: flex; flex-direction: column; gap: 15px;
+  }
+  .upsell-card {
+    display: flex; gap: 15px; background: #fff; padding: 10px; border-radius: 4px; /* Optional card style */
+  }
+  .upsell-img img {
+    width: 70px; height: 70px; object-fit: cover;
+  }
+  .upsell-info {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+  }
+  .upsell-title {
+    font-size: 13px; font-weight: 500; margin: 0 0 5px;
+  }
+  .upsell-price-row {
+    font-size: 13px; margin-bottom: 8px;
+  }
+  .upsell-price { font-weight: 600; }
+  .upsell-compare { text-decoration: line-through; color: #888; margin-left: 5px; font-size: 12px; }
+  
+  .upsell-btn-outline {
+    align-self: flex-start;
+    background: #fff; border: 1px solid #000; color: #000;
+    font-size: 12px; padding: 6px 12px; border-radius: 20px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upsell-btn-outline:hover {
+    background: #000; color: #fff;
+  }
+
+  /* --- EMPTY STATE --- */
+  .cart-drawer__empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 80%; text-align: center; padding: 0 20px;
+  }
+  .empty-icon { margin-bottom: 15px; color: #333; }
+  .cart-drawer__empty p {
+    font-size: 16px; margin-bottom: 25px; color: #333;
+  }
+  .start-shopping-btn {
+    background-color: #033622; color: #fff; text-decoration: none;
+    padding: 12px 30px; border-radius: 6px; font-weight: 700; font-size: 14px;
+    transition: background 0.2s;
+  }
+  .start-shopping-btn:hover { background-color: #054d31; }
+
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements
+    const drawer = document.getElementById('custom-cart-drawer');
+    const overlay = drawer.querySelector('.cart-drawer__overlay');
+    const closeBtn = drawer.querySelector('.cart-drawer__close');
+    const populatedState = document.getElementById('cart-drawer-populated');
+    const emptyState = document.getElementById('cart-drawer-empty');
+    const itemsContainer = document.getElementById('cart-drawer-items');
+    const totalPriceEl = document.getElementById('drawer-total-price');
+    
+    // Format Money
+    const formatMoney = (cents) => {
+      return '$' + (cents / 100).toFixed(2) + ' CAD'; // Hardcoded CAD based on screenshot
+    };
+
+    // Open/Close
+    const openDrawer = () => {
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      fetchCart(); 
+      sessionStorage.setItem('cartDrawerOpen', 'true');
+    };
+
+    const closeDrawer = () => {
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      sessionStorage.setItem('cartDrawerOpen', 'false');
+    };
+
+    // Fetch Cart
+    const fetchCart = async () => {
+      try {
+        const response = await fetch('/cart.js');
+        const cart = await response.json();
+        renderCart(cart);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    // Render Logic
+    const renderCart = (cart) => {
+      // Update Button Price
+      if (totalPriceEl) totalPriceEl.textContent = formatMoney(cart.total_price);
+
+      // Handle Empty vs Populated
+      if (cart.item_count === 0) {
+        populatedState.style.display = 'none';
+        emptyState.style.display = 'flex';
+      } else {
+        populatedState.style.display = 'block';
+        emptyState.style.display = 'none';
+        
+        // Build Items
+        itemsContainer.innerHTML = '';
+        cart.items.forEach(item => {
+          const itemHTML = `
+            <div class="drawer-item">
+              <div class="drawer-item__image">
+                <a href="${item.url}">
+                  <img src="${item.image ? item.image : ''}" alt="${item.title}">
+                </a>
+              </div>
+              <div class="drawer-item__details">
+                <div class="drawer-item__vendor">${item.vendor}</div>
+                <a href="${item.url}" class="drawer-item__title">${item.product_title}</a>
+                
+                <div class="drawer-item__price">${formatMoney(item.final_price)}</div>
+                
+                ${item.variant_title ? `<div class="drawer-item__meta">Size: ${item.variant_title}</div>` : ''}
+                
+                <div class="drawer-item__controls">
+                  <div class="drawer-qty">
+                    <button class="drawer-qty__btn minus" data-key="${item.key}" data-qty="${item.quantity - 1}">−</button>
+                    <input class="drawer-qty__input" type="number" value="${item.quantity}" readonly>
+                    <button class="drawer-qty__btn plus" data-key="${item.key}" data-qty="${item.quantity + 1}">+</button>
+                  </div>
+                  <button class="drawer-item__remove" data-key="${item.key}" data-qty="0" aria-label="Remove">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          itemsContainer.insertAdjacentHTML('beforeend', itemHTML);
+        });
+        attachItemListeners();
+      }
+    };
+
+    // Change Quantity
+    const changeItemQty = async (key, newQty) => {
+      itemsContainer.style.opacity = '0.6'; 
+      try {
+        const response = await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: key, quantity: newQty })
+        });
+        const cart = await response.json();
+        renderCart(cart);
+      } catch (error) { console.error(error); }
+      finally { itemsContainer.style.opacity = '1'; }
+    };
+
+    // Add Upsell
+    const addItemToCart = async (id, qty = 1) => {
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: [{ id: id, quantity: qty }] })
+        });
+        if (response.ok) {
+          openDrawer(); // Force open/refresh
+        }
+      } catch (error) { console.error(error); }
+    };
+
+    // Listeners
+    const attachItemListeners = () => {
+      document.querySelectorAll('.drawer-qty__btn, .drawer-item__remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          changeItemQty(btn.dataset.key, parseInt(btn.dataset.qty));
+        });
+      });
+    };
+
+    document.querySelectorAll('.upsell-add-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        btn.textContent = '...';
+        addItemToCart(btn.dataset.variantId).then(() => {
+          btn.textContent = 'Added';
+          setTimeout(() => btn.textContent = 'Choose options', 2000);
+        });
+      });
+    });
+
+    // Triggers
+    closeBtn.addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+
+    // Hijack Cart Links
+    document.querySelectorAll('a[href="/cart"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        openDrawer();
+      });
+    });
+
+    // Persistence
+    if (sessionStorage.getItem('cartDrawerOpen') === 'true') {
+      // openDrawer(); // Optional: uncomment if you want it to reopen on reload
+    }
+  });
+</script>
