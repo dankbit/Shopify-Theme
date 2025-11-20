@@ -50,42 +50,30 @@
     },
     "slideshow_LGJh3n": {
       "type": "slideshow",
-      "blocks": {
-        "slide_FtQ4kW": {
-          "type": "slide",
-          "settings": {
-            "slide_image": "shopify://shop_images/any-landscape-image-of-a-perfume-bottle-with-scenery.png"
-          }
-        },
-        "slide_CpB8Q3": {
-          "type": "slide",
-          "settings": {
-            "slide_image": "shopify://shop_images/Main_b9e0da7f-db89-4d41-83f0-7f417b02831d.jpg"
-          }
-        },
-        "slide_GyaipE": {
-          "type": "slide",
-          "settings": {
-            "slide_image": "shopify://shop_images/Main_52f8e304-92d9-4a36-82af-50df8fe31c69.jpg"
-          }
-        },
-        "slide_8qy7gi": {
-          "type": "slide",
-          "settings": {
-            "slide_image": "shopify://shop_images/Main_9129b69a-0c7b-4f66-b6cf-c4222f18028a.jpg"
-          }
-        }
-      },
-      "block_order": [
-        "slide_FtQ4kW",
-        "slide_CpB8Q3",
-        "slide_GyaipE",
-        "slide_8qy7gi"
-      ],
       "name": "Image Slider",
       "settings": {
-        "button_text_left": "Prev",
-        "button_text_right": "Next"
+        "title": "Customer Faves",
+        "collection": "automated-collection",
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40,
+        "padding_left_desktop": 40,
+        "padding_right_desktop": 40,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "padding_left_mobile": 10,
+        "padding_right_mobile": 10,
+        "title_font_size_desktop": 32,
+        "title_font_size_mobile": 20,
+        "product_title_font_size_desktop": 16,
+        "product_title_font_size_mobile": 12,
+        "price_font_size_desktop": 14,
+        "price_font_size_mobile": 12,
+        "title_color": "#000000",
+        "product_title_color": "#000000",
+        "price_color": "#000000",
+        "arrow_color": "#000000",
+        "show_title": true,
+        "show_price": true
       }
     },
     "announcement_ud_DgdWjQ": {
@@ -135,6 +123,7 @@
     },
     "test_section_Lkj3W8": {
       "type": "test-section",
+      "disabled": true,
       "name": "Customer Faves",
       "settings": {
         "title": "Customer Faves",
