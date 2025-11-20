@@ -1,11 +1,9 @@
 
 {% comment %}
   Custom Product Main Section
-  - Product Selector / Default
-  - 400x400 Image Slider (Fixed Track Logic)
-  - Block-level Font & Margin Controls
-  - Dynamic Price Calculation (Price x Quantity)
-  - Fixed: Sold Out to Available state switching
+  - Fixed: Button "Sold Out" -> "Add to Cart" logic (Property + Attribute).
+  - Fixed: Image Slider (Track Translation).
+  - Fixed: Dynamic Price (Unit Price * Quantity).
 {% endcomment %}
 
 {%- assign product_target = section.settings.featured_product | default: product -%}
@@ -420,7 +418,7 @@
     min-width: 100%;
     width: 100%;
     height: 100%;
-    flex-shrink: 0; /* Crucial for flex slider */
+    flex-shrink: 0;
     position: relative;
   }
 
@@ -542,6 +540,9 @@
     transition: background 0.2s; font-size: inherit; letter-spacing: 1px;
   }
   .btn-add-to-cart:hover { background: #f5f5f5; }
+  .btn-add-to-cart[disabled] {
+    background-color: #f0f0f0; color: #999; border-color: #ccc; cursor: not-allowed;
+  }
   .shopify-payment-button__button {
     border-radius: 4px !important; font-weight: 700 !important; text-transform: uppercase !important;
     letter-spacing: 1px !important; width: 100%;
@@ -562,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const section = document.querySelector(`#shopify-section-${sectionId}`);
   if (!section.querySelector('.product-main-wrapper')) return;
 
-  // --- 1. CAROUSEL LOGIC (Fixed Track Method) ---
+  // --- 1. CAROUSEL LOGIC ---
   const track = section.querySelector('.main-slider-track');
   const slides = section.querySelectorAll('.product-slide');
   const prevBtn = section.querySelector('.prev-btn');
@@ -574,11 +575,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const totalSlides = slides.length;
 
   function updateCarousel() {
-    // Use transform on the track instead of individual slides
     track.style.transform = `translateX(-${counter * 100}%)`;
-    
     if(currentSlideEl) currentSlideEl.textContent = counter + 1;
-    
     thumbnails.forEach((thumb, index) => {
       if(index === counter) {
         thumb.classList.add('active');
@@ -621,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const priceRegular = section.querySelector('.price-regular');
   const priceCompare = section.querySelector('.price-compare');
   
-  // Initialize Base Unit Price (from Liquid)
   let currentUnitPrice = {{ product_target.selected_or_first_available_variant.price }};
 
   function formatMoney(cents) {
@@ -631,13 +628,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateTotalPrice() {
     const qty = parseInt(qtyInput.value) || 1;
     const totalPrice = currentUnitPrice * qty;
-    
-    if(priceRegular) {
-      priceRegular.textContent = formatMoney(totalPrice);
-    }
+    if(priceRegular) priceRegular.textContent = formatMoney(totalPrice);
   }
 
-  // Quantity Events
   if(qtyInput && plusBtn && minusBtn) {
     plusBtn.addEventListener('click', () => {
       qtyInput.value = parseInt(qtyInput.value) + 1;
@@ -653,7 +646,6 @@ document.addEventListener('DOMContentLoaded', function() {
     qtyInput.addEventListener('change', updateTotalPrice);
   }
 
-  // Variant Events
   if (jsonScript) {
     const productVariants = JSON.parse(jsonScript.textContent);
     const variantRadios = section.querySelectorAll('.variant-radio');
@@ -664,7 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const fieldsets = Array.from(section.querySelectorAll('.js-product-option'));
       return fieldsets.map(fieldset => {
         const checkedRadio = fieldset.querySelector('input:checked');
-        // Use .toString() to prevent mismatch between numeric-like strings
+        // Fix type mismatch by converting to string
         return checkedRadio ? checkedRadio.value.toString() : null;
       });
     }
@@ -677,14 +669,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (currentVariant) {
         hiddenInput.value = currentVariant.id;
-        
-        // Update Base Price
         currentUnitPrice = currentVariant.price;
-        updateTotalPrice(); // Recalculate based on new price and existing qty
+        updateTotalPrice();
 
         if (currentVariant.compare_at_price > currentVariant.price) {
             if(priceCompare) {
-                // Update compare price (simple check, not multiplying by qty usually, but can be added if needed)
                 priceCompare.textContent = formatMoney(currentVariant.compare_at_price);
                 priceCompare.classList.remove('hidden');
             }
@@ -695,9 +684,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (addToCartBtn) {
             if (currentVariant.available) {
               addToCartBtn.textContent = 'Add to cart';
-              addToCartBtn.removeAttribute('disabled'); // FIX: Fully remove attribute
+              // FORCEFULLY ENABLE
+              addToCartBtn.disabled = false;
+              addToCartBtn.removeAttribute('disabled');
+              addToCartBtn.classList.remove('disabled');
             } else {
               addToCartBtn.textContent = 'Sold Out';
+              // FORCEFULLY DISABLE
+              addToCartBtn.disabled = true;
               addToCartBtn.setAttribute('disabled', 'disabled');
             }
         }
@@ -715,6 +709,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         if (addToCartBtn) {
             addToCartBtn.textContent = 'Unavailable';
+            addToCartBtn.disabled = true;
             addToCartBtn.setAttribute('disabled', 'disabled');
         }
       }
