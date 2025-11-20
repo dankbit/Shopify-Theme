@@ -1,0 +1,99 @@
+{% comment %}
+  Custom Cart Drawer with AJAX & Upsells
+  - Replaces standard cart page navigation.
+  - Fetches cart data via API.
+  - Renders Upsell products from a selected collection.
+{% endcomment %}
+
+<div id="custom-cart-drawer" class="cart-drawer" aria-hidden="true">
+  
+  <!-- Overlay (Background Dimmer) -->
+  <div class="cart-drawer__overlay"></div>
+
+  <!-- Main Drawer Container -->
+  <div class="cart-drawer__container">
+    
+    <!-- 1. Header -->
+    <div class="cart-drawer__header">
+      <h2 class="cart-drawer__title">Your Cart (<span id="drawer-cart-count">0</span>)</h2>
+      <button class="cart-drawer__close" aria-label="Close cart">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <!-- 2. Body (Scrollable) -->
+    <div class="cart-drawer__body">
+      
+      <!-- Cart Items Area (Populated by JS) -->
+      <div id="cart-drawer-items" class="cart-drawer__items">
+        <!-- Items will be injected here via AJAX -->
+        <div class="cart-drawer__loading">Loading cart...</div>
+      </div>
+
+      <!-- 3. Upsell / Recommendations Section -->
+      {% if section.settings.upsell_collection != blank %}
+        <div class="cart-drawer__upsell">
+          <h3 class="upsell-title">{{ section.settings.upsell_title }}</h3>
+          <div class="upsell-grid">
+            {% for product in section.settings.upsell_collection.products limit: 4 %}
+              <div class="upsell-item">
+                <div class="upsell-image">
+                  <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" loading="lazy">
+                </div>
+                <div class="upsell-info">
+                  <p class="upsell-name">{{ product.title }}</p>
+                  <p class="upsell-price">{{ product.price | money }}</p>
+                  <button class="upsell-add-btn" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                    Add
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 4. Footer (Subtotal & Checkout) -->
+    <div class="cart-drawer__footer">
+      <div class="cart-drawer__subtotal">
+        <span>Subtotal</span>
+        <span id="drawer-subtotal-price">$0.00</span>
+      </div>
+      <p class="cart-drawer__note">Tax and shipping calculated at checkout.</p>
+      <form action="/cart" method="post">
+        <button type="submit" name="checkout" class="cart-drawer__checkout-btn">
+          Checkout
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Cart Drawer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Upsell Settings"
+    },
+    {
+      "type": "text",
+      "id": "upsell_title",
+      "label": "Upsell Section Title",
+      "default": "You may also like"
+    },
+    {
+      "type": "collection",
+      "id": "upsell_collection",
+      "label": "Upsell Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Cart Drawer"
+    }
+  ]
+}
+{% endschema %}
