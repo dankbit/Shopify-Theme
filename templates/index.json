@@ -52,7 +52,7 @@
       "type": "slideshow",
       "name": "Image Slider",
       "settings": {
-        "title": "Customer Faves",
+        "title": "Customer Favs",
         "collection": "automated-collection",
         "padding_top_desktop": 40,
         "padding_bottom_desktop": 40,
