@@ -418,7 +418,6 @@
     background-color: var(--color-background);
     padding: var(--section-padding-top) var(--section-padding-right) var(--section-padding-bottom) var(--section-padding-left);
     width: 100%;
-    overflow: hidden;
   }
 
   .customer-faves__main-container {
@@ -446,27 +445,15 @@
     }
   }
 
-  /* Carousel Wrapper */
+  /* Carousel Wrapper - POSITIONED RELATIVE FOR ABSOLUTE ARROWS */
   .customer-faves__wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
     position: relative;
     width: 100%;
-    min-width: 0;
-  }
-
-  @media (min-width: 768px) {
-    .customer-faves__wrapper {
-      gap: 1.5rem;
-    }
   }
 
   /* Carousel */
   .customer-faves__carousel {
-    flex: 1;
     width: 100%;
-    min-width: 0;
     overflow: visible;
   }
 
@@ -572,8 +559,11 @@
     font-weight: 600;
   }
 
-  /* Navigation Arrows */
+  /* Navigation Arrows - ABSOLUTE POSITIONED */
   .customer-faves__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;
@@ -582,7 +572,7 @@
     align-items: center;
     justify-content: center;
     transition: opacity 0.3s ease;
-    flex-shrink: 0;
+    z-index: 10;
     min-width: 40px;
     height: 40px;
   }
@@ -590,6 +580,14 @@
   .customer-faves__arrow svg {
     width: 24px;
     height: 24px;
+  }
+
+  .customer-faves__arrow--left {
+    left: 0;
+  }
+
+  .customer-faves__arrow--right {
+    right: 0;
   }
 
   .customer-faves__arrow:hover:not(:disabled) {
