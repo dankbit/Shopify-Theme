@@ -518,17 +518,19 @@
   }
 
   function goNext() {
-    if (counter < productCards.length - productsPerView) {
-      counter++;
-      slideImage();
+    counter++;
+    if (counter > productCards.length - productsPerView) {
+      counter = 0;
     }
+    slideImage();
   }
 
   function goPrev() {
-    if (counter > 0) {
-      counter--;
-      slideImage();
+    counter--;
+    if (counter < 0) {
+      counter = productCards.length - productsPerView;
     }
+    slideImage();
   }
 
   prevBtn.addEventListener('click', goPrev);
