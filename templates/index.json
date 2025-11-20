@@ -160,6 +160,7 @@
     },
     "test_section_iUabHp": {
       "type": "test-section",
+      "disabled": true,
       "name": "Best Sellers",
       "settings": {
         "title": "BEST SELLERS",
