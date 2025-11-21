@@ -15,7 +15,7 @@
       "type": "custom-cart-drawer",
       "name": "Custom Cart Drawer",
       "settings": {
-        "empty_collection": "automated-collection"
+        "empty_collection": ""
       }
     },
     "footer": {
