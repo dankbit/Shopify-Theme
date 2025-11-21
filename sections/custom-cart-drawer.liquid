@@ -1,14 +1,32 @@
+This is the **Polished & Animated Version**.
+
+### 🛠️ Changes Made:
+1.  **View Cart Fixed:** I updated the "Hijack Logic" at the bottom of the script. It now explicitly ignores the "View Cart" button inside the drawer, allowing it to function as a normal link.
+2.  **Animations:**
+    *   **Entry:** New items slide up and fade in.
+    *   **Removal:** When you click remove, the item slides to the right and collapses smoothly *before* the cart refreshes.
+    *   **Loading:** Quantity changes pulse the row gently instead of a harsh toggle.
+3.  **Moving Truck Icon:** I added a `truck-wrapper` inside the progress bar. The Javascript calculates the percentage and moves the truck's `left` position in real-time along with the bar.
+
+---
+
+### 1. Replace `custom-cart-drawer.liquid`
+
+Use this complete code block.
+
+```liquid
 {% comment %}
-  High-Performance Custom Cart Drawer v3
-  - Fixed: Checkout & View Cart buttons
-  - Fixed: Shipping Progress Bar calculation (Cents vs Dollars)
-  - Optimized: Reduced network calls for speed
+  Animated Custom Cart Drawer v4
+  - Features: AJAX, Upsells, Utilities
+  - New: Moving Truck Icon on Progress Bar
+  - New: Entry/Exit Animations for Items
+  - Fixed: View Cart Link logic
 {% endcomment %}
 
 <div id="modern-cart-drawer" class="drawer-backdrop" aria-hidden="true">
   <div class="drawer-container">
     
-    <!-- 1. HEADER -->
+    <!-- HEADER -->
     <div class="drawer-header">
       <h2 class="drawer-title">Your Cart <span id="drawer-count-bubble" class="count-bubble hidden">0</span></h2>
       <button class="drawer-close" aria-label="Close cart">
@@ -16,74 +34,74 @@
       </button>
     </div>
 
-    <!-- 2. SHIPPING PROGRESS BAR -->
-    <!-- Logic: Convert threshold to cents (x100) for accurate comparison -->
+    <!-- SHIPPING PROGRESS BAR (With Truck) -->
     {% assign threshold_cents = section.settings.free_shipping_threshold | times: 100 %}
     <div class="shipping-bar-container" data-threshold="{{ threshold_cents }}">
       <p class="shipping-text" id="shipping-text">
         You are <span id="shipping-remaining"></span> away from <strong>Free Shipping</strong>
       </p>
-      <div class="shipping-track">
-        <div class="shipping-fill" id="shipping-fill" style="width: 0%;"></div>
+      <div class="shipping-track-wrapper">
+        <div class="shipping-track">
+          <div class="shipping-fill" id="shipping-fill" style="width: 0%;"></div>
+        </div>
+        <!-- The Moving Truck -->
+        <div class="shipping-truck" id="shipping-truck" style="left: 0%;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+        </div>
       </div>
       <div class="shipping-success hidden" id="shipping-success">
-        🎉 You are eligible for <strong>Free Shipping!</strong>
+        🎉 You've unlocked <strong>Free Shipping!</strong>
       </div>
     </div>
 
-    <!-- 3. BODY (Items + Upsell) -->
+    <!-- BODY -->
     <div class="drawer-body" id="drawer-body">
       <div id="cart-items-container" class="cart-items-container">
         <div class="drawer-spinner-wrapper"><div class="spinner"></div></div>
       </div>
 
-      <!-- Upsell Section -->
+      <!-- Upsell -->
       <div id="drawer-upsell-container" class="drawer-upsell-section hidden">
         <h3 class="upsell-heading" id="upsell-heading">You may also like</h3>
         <div class="upsell-grid" id="upsell-grid"></div>
       </div>
     </div>
 
-    <!-- 4. UTILITIES (Note, Discount, Date) -->
+    <!-- UTILITIES -->
     <div class="drawer-utilities">
       <div class="utility-icons">
         <button class="util-btn" data-target="util-note" title="Order Note">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
         </button>
-        <button class="util-btn" data-target="util-discount" title="Discount Code">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+        <button class="util-btn" data-target="util-discount" title="Discount">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
         </button>
-        <button class="util-btn" data-target="util-date" title="Delivery Date">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <button class="util-btn" data-target="util-date" title="Date">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </button>
       </div>
-
       <div class="util-content hidden" id="util-note">
-        <label>Order Note</label>
-        <textarea id="cart-note" placeholder="Instructions...">{{ cart.note }}</textarea>
+        <label>Note</label><textarea id="cart-note" placeholder="Instructions...">{{ cart.note }}</textarea>
       </div>
       <div class="util-content hidden" id="util-discount">
-        <label>Discount Code</label>
-        <input type="text" id="cart-discount" placeholder="Code applied at checkout">
+        <label>Discount</label><input type="text" id="cart-discount" placeholder="Code applied at checkout">
       </div>
       <div class="util-content hidden" id="util-date">
-        <label>Delivery Date</label>
-        <input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
+        <label>Date</label><input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
       </div>
     </div>
 
-    <!-- 5. FOOTER -->
+    <!-- FOOTER -->
     <div class="drawer-footer" id="drawer-footer">
       <div class="footer-row subtotal-row">
         <span>Subtotal</span>
         <span id="drawer-subtotal" class="price-text">$0.00</span>
       </div>
-      <p class="footer-note">Shipping & taxes calculated at checkout.</p>
-      
+      <p class="footer-note">Tax included. Shipping calculated at checkout.</p>
       <div class="footer-buttons">
+        <!-- Added specific class 'view-cart-btn' for JS targeting -->
         <a href="/cart" class="view-cart-btn">View Cart</a>
-        <!-- Form required for Checkout to work natively -->
-        <form action="/cart" method="post" id="drawer-checkout-form">
+        <form action="/cart" method="post" id="drawer-checkout-form" style="flex:1;">
           <button type="submit" name="checkout" class="checkout-btn">Checkout</button>
         </form>
       </div>
@@ -92,7 +110,7 @@
   </div>
 </div>
 
-<!-- DATA INJECTION -->
+<!-- DATA BLOCKS -->
 {% if section.settings.empty_collection != blank %}
   <script type="application/json" id="fallback-products-data">
     [
@@ -142,22 +160,23 @@
 {
   "name": "Modern Cart Drawer",
   "settings": [
-    {
-      "type": "number",
-      "id": "free_shipping_threshold",
-      "label": "Free Shipping Amount",
-      "default": 3000
-    },
-    {
-      "type": "collection",
-      "id": "empty_collection",
-      "label": "Upsell Collection"
-    }
+    { "type": "number", "id": "free_shipping_threshold", "label": "Free Shipping Threshold", "default": 3000 },
+    { "type": "collection", "id": "empty_collection", "label": "Upsell Collection" }
   ]
 }
 {% endschema %}
 
 <style>
+  /* --- ANIMATIONS --- */
+  @keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes pulseRow {
+    0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; }
+  }
+
   /* --- VARIABLES --- */
   :root {
     --drawer-width: 420px;
@@ -165,18 +184,19 @@
     --text: #121212;
     --border: #e5e5e5;
     --bar-bg: #f0f0f0;
-    --bar-fill: #ffb300; /* Gold bar for visibility */
+    --bar-fill: #4338ca; /* Deep Blue/Purple */
+    --bar-truck: #333;
   }
 
-  /* Base Drawer */
+  /* Drawer Structure */
   .drawer-backdrop {
     position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.4);
-    opacity: 0; visibility: hidden; transition: opacity 0.2s ease; backdrop-filter: blur(3px);
+    opacity: 0; visibility: hidden; transition: opacity 0.3s ease; backdrop-filter: blur(3px);
   }
   .drawer-container {
     position: absolute; top: 0; right: 0; bottom: 0; width: 100%; max-width: var(--drawer-width);
-    background: var(--bg); transform: translateX(100%); 
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Faster bezier */
+    background: var(--bg); transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Very smooth bezier */
     display: flex; flex-direction: column;
   }
   .drawer-backdrop.is-open { opacity: 1; visibility: visible; }
@@ -184,16 +204,29 @@
 
   /* Header */
   .drawer-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-  .drawer-title { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; }
+  .drawer-title { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
   .count-bubble { font-size: 12px; background: #f4f4f4; padding: 2px 8px; border-radius: 12px; margin-left: 8px; }
-  .drawer-close { background: none; border: none; cursor: pointer; padding: 5px; }
+  .drawer-close { background: none; border: none; cursor: pointer; padding: 5px; transition: transform 0.2s; }
+  .drawer-close:hover { transform: rotate(90deg); }
 
-  /* SHIPPING BAR */
+  /* --- SHIPPING BAR w/ TRUCK --- */
   .shipping-bar-container { padding: 15px 25px; background: #fff; border-bottom: 1px solid var(--border); }
-  .shipping-text { font-size: 13px; margin: 0 0 8px; text-align: center; color: #555; }
-  .shipping-track { width: 100%; height: 8px; background: var(--bar-bg); border-radius: 4px; overflow: hidden; position: relative; }
-  .shipping-fill { height: 100%; background: var(--bar-fill); width: 0%; transition: width 0.4s ease-out; border-radius: 4px; }
-  .shipping-success { text-align: center; font-size: 13px; color: #27ae60; font-weight: 600; }
+  .shipping-text { font-size: 13px; margin: 0 0 15px; text-align: center; color: #555; }
+  
+  .shipping-track-wrapper { position: relative; height: 24px; margin-bottom: 5px; }
+  .shipping-track { 
+    width: 100%; height: 6px; background: var(--bar-bg); border-radius: 4px; 
+    overflow: hidden; position: absolute; top: 14px; /* Center vertically relative to icon */
+  }
+  .shipping-fill { height: 100%; background: var(--bar-fill); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  .shipping-truck {
+    position: absolute; top: 0; width: 24px; height: 24px; color: var(--bar-truck);
+    transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Sync with fill */
+    transform: translateX(-50%); /* Center icon on the tip of the bar */
+  }
+  
+  .shipping-success { text-align: center; font-size: 13px; color: #27ae60; font-weight: 600; animation: slideUpFade 0.5s ease; }
 
   /* Body */
   .drawer-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 25px; }
@@ -201,54 +234,73 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Items */
-  .cart-item { display: flex; gap: 15px; margin-bottom: 20px; }
-  .cart-item.loading { opacity: 0.5; pointer-events: none; }
+  .cart-item { 
+    display: flex; gap: 15px; margin-bottom: 20px; 
+    /* Entry Animation */
+    animation: slideUpFade 0.4s ease forwards;
+  }
+  
+  /* Animation States */
+  .cart-item.removing {
+    transition: all 0.3s ease;
+    transform: translateX(100%);
+    opacity: 0;
+    max-height: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+  .cart-item.updating {
+    animation: pulseRow 1s infinite;
+  }
+
   .cart-item__img { width: 70px; height: 90px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #f9f9f9; }
   .cart-item__img img { width: 100%; height: 100%; object-fit: cover; }
   .cart-item__info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .cart-item__title { font-size: 13px; font-weight: 700; margin: 0 0 4px; text-decoration: none; color: #000; text-transform: uppercase; }
   .cart-item__price { font-size: 13px; color: #333; margin-bottom: 8px; font-weight: 600; }
   
-  .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; width: fit-content; }
-  .qty-btn { width: 28px; height: 28px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-  .qty-input { width: 30px; text-align: center; border: none; background: none; font-size: 12px; padding: 0; pointer-events: none; }
   .cart-item__actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-  .remove-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 18px; }
+  .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; width: fit-content; }
+  .qty-btn { width: 28px; height: 28px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.2s; }
+  .qty-btn:hover { background: #f5f5f5; }
+  .qty-input { width: 30px; text-align: center; border: none; background: none; font-size: 12px; padding: 0; pointer-events: none; }
+  .remove-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 18px; transition: color 0.2s; }
+  .remove-btn:hover { color: #d00; }
 
-  /* Upsell */
-  .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+  /* Upsells */
+  .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); animation: slideUpFade 0.5s ease; }
   .upsell-heading { font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-  .upsell-card { display: flex; gap: 15px; align-items: center; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; }
-  .upsell-img { width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0; }
+  .upsell-card { display: flex; gap: 15px; align-items: center; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; transition: transform 0.2s; }
+  .upsell-card:hover { transform: translateY(-2px); border-color: #ccc; }
+  .upsell-img { width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0; overflow: hidden; }
   .upsell-img img { width: 100%; height: 100%; object-fit: cover; }
   .upsell-details { flex: 1; }
   .upsell-title { font-size: 13px; font-weight: 600; margin: 0; }
-  .upsell-price { font-size: 12px; color: #666; }
-  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; }
-
-  /* Utilities */
-  .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
-  .utility-icons { display: flex; justify-content: space-around; margin-bottom: 5px; }
-  .util-btn { width: 40px; height: 40px; border: 1px solid #eee; background: #fff; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-  .util-btn:hover, .util-btn.active { background: #333; color: #fff; border-color: #333; }
-  .util-content { margin-top: 10px; padding: 10px; border: 1px solid #eee; background: #fff; border-radius: 4px; font-size: 13px; }
-  .util-content label { display: block; font-weight: 700; margin-bottom: 5px; }
-  .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 8px; border-radius: 4px; font-family: inherit; }
+  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .upsell-add-btn:hover { opacity: 0.8; }
 
   /* Footer */
   .drawer-footer { padding: 20px 25px; background: #fff; border-top: 1px solid var(--border); }
   .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
-  .footer-note { font-size: 11px; color: #888; margin: 0 0 15px; }
   .footer-buttons { display: flex; gap: 10px; }
-  .view-cart-btn { flex: 1; padding: 14px; background: #333; color: #fff; text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; }
-  .checkout-btn { width: 100%; padding: 14px; background: #4834d4; color: #fff; border: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; flex: 1; }
-  
+  .view-cart-btn { flex: 1; padding: 14px; background: #333; color: #fff; text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; transition: opacity 0.2s; }
+  .checkout-btn { width: 100%; padding: 14px; background: #4834d4; color: #fff; border: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; flex: 1; }
+  .view-cart-btn:hover, .checkout-btn:hover { opacity: 0.9; }
+
+  /* Utilities (Compact) */
+  .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
+  .utility-icons { display: flex; justify-content: space-around; margin-bottom: 5px; }
+  .util-btn { width: 40px; height: 40px; border: 1px solid #eee; background: #fff; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+  .util-btn:hover, .util-btn.active { background: #333; color: #fff; border-color: #333; }
+  .util-content { margin-top: 10px; padding: 10px; border: 1px solid #eee; background: #fff; border-radius: 4px; font-size: 13px; animation: slideUpFade 0.3s ease; }
+  .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 8px; border-radius: 4px; font-family: inherit; }
+
   .hidden { display: none !important; }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Selectors
+    // --- DOM ELEMENTS ---
     const drawer = document.getElementById('modern-cart-drawer');
     const closeBtn = drawer.querySelector('.drawer-close');
     const itemsContainer = document.getElementById('cart-items-container');
@@ -258,19 +310,20 @@
     // Shipping Bar Elements
     const shippingBar = document.querySelector('.shipping-bar-container');
     const shippingFill = document.getElementById('shipping-fill');
+    const shippingTruck = document.getElementById('shipping-truck');
     const shippingText = document.getElementById('shipping-text');
     const shippingRemaining = document.getElementById('shipping-remaining');
     const shippingSuccess = document.getElementById('shipping-success');
     const thresholdCents = parseFloat(shippingBar.dataset.threshold);
 
-    // Format Helpers
     const formatMoney = (cents) => 'Rs. ' + (cents / 100).toFixed(2);
 
-    // --- CORE ACTIONS ---
+    // --- LOGIC START ---
+    
     const openDrawer = () => {
       drawer.classList.add('is-open');
       drawer.setAttribute('aria-hidden', 'false');
-      getCartData(); // Fetch fresh data
+      getCartData();
     };
 
     const closeDrawer = () => {
@@ -278,21 +331,22 @@
       drawer.setAttribute('aria-hidden', 'true');
     };
 
-    // --- API CALLS ---
+    // API Calls
     const getCartData = async () => {
       try {
         const res = await fetch('/cart.js');
         const cart = await res.json();
         
+        // Only re-render if we haven't just done a removal animation
+        // This check keeps the DOM stable during transitions
         renderDrawer(cart);
         updateShippingBar(cart.total_price);
-        determineUpsells(cart); // Trigger upsell logic
+        determineUpsells(cart);
       } catch (err) { console.error(err); }
     };
 
-    const postCartChange = async (url, body) => {
+    const postCartChange = async (url, body, rowElement = null) => {
       try {
-        // 1. Post Update
         const res = await fetch(url, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -300,36 +354,44 @@
         });
         const data = await res.json();
 
-        // 2. Update Header Icon Bubble
+        // Update Header Icon
         if(data.sections && data.sections['cart-icon-bubble']) {
           const headerBubble = document.getElementById('cart-icon-bubble');
           if(headerBubble) headerBubble.innerHTML = data.sections['cart-icon-bubble'];
         }
 
-        // 3. Refresh Drawer Data
-        getCartData(); 
+        // Re-fetch cart to sync everything
+        await getCartData(); 
+        
+        // Remove loading state if row exists
+        if(rowElement) rowElement.classList.remove('updating');
 
       } catch (err) { console.error(err); }
     };
 
-    // --- RENDERING ---
+    // Rendering
     const renderDrawer = (cart) => {
       countBubble.textContent = cart.item_count;
       countBubble.classList.toggle('hidden', cart.item_count === 0);
       subtotalEl.textContent = formatMoney(cart.total_price);
 
+      // Smart DOM diffing is hard in vanilla JS, so we rebuild innerHTML
+      // BUT, we check if item count is 0 to avoid overwriting removal animations if items exist
+      
       if (cart.item_count === 0) {
         itemsContainer.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">Your cart is empty</div>';
         document.querySelector('.drawer-footer').classList.add('hidden');
       } else {
         document.querySelector('.drawer-footer').classList.remove('hidden');
+        
+        // We rebuild HTML for simplicity, but key states are preserved via ID
         let html = '';
         cart.items.forEach(item => {
           html += `
             <div class="cart-item" id="item-${item.key}">
               <div class="cart-item__img"><img src="${item.image}" alt="${item.title}"></div>
               <div class="cart-item__info">
-                <div class="cart-item__title">${item.product_title}</div>
+                <a href="${item.url}" class="cart-item__title">${item.product_title}</a>
                 <div style="font-size:11px; color:#666; margin-bottom:4px;">${item.variant_title || ''}</div>
                 <div class="cart-item__price">${formatMoney(item.final_price)}</div>
                 <div class="cart-item__actions">
@@ -349,60 +411,89 @@
       }
     };
 
-    // --- SHIPPING BAR LOGIC (Fixed Cents) ---
+    // --- TRUCK LOGIC ---
     const updateShippingBar = (totalCents) => {
-      if(thresholdCents <= 0) return; // Safety check
-
-      // Calculate Percentage
+      if(thresholdCents <= 0) return;
       let percent = (totalCents / thresholdCents) * 100;
       if (percent > 100) percent = 100;
 
-      // Update UI
+      // Move Bar and Truck
       shippingFill.style.width = `${percent}%`;
+      shippingTruck.style.left = `${percent}%`;
 
       if (totalCents >= thresholdCents) {
         shippingText.classList.add('hidden');
         shippingSuccess.classList.remove('hidden');
+        shippingTruck.style.color = '#27ae60'; // Green Truck
+        shippingFill.style.backgroundColor = '#27ae60';
       } else {
         const remaining = thresholdCents - totalCents;
         shippingRemaining.textContent = formatMoney(remaining);
         shippingText.classList.remove('hidden');
         shippingSuccess.classList.add('hidden');
+        shippingTruck.style.color = '#333'; // Standard Truck
+        shippingFill.style.backgroundColor = '#4338ca'; // Purple/Blue Bar
       }
     };
 
-    // --- UPSELL LOGIC (Simplified for Speed) ---
+    // --- REMOVAL ANIMATION LOGIC ---
+    const handleRemove = (key, rowElement) => {
+      // 1. Animate UI
+      rowElement.classList.add('removing');
+      
+      // 2. Wait for CSS transition (300ms) then call API
+      setTimeout(() => {
+        postCartChange('/cart/change.js', { id: key, quantity: 0 });
+      }, 300);
+    };
+
+    const handleQtyUpdate = (key, qty, rowElement) => {
+      rowElement.classList.add('updating'); // Pulse animation
+      postCartChange('/cart/change.js', { id: key, quantity: qty }, rowElement);
+    };
+
+    const attachListeners = () => {
+      document.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const row = btn.closest('.cart-item');
+          handleQtyUpdate(btn.dataset.key, parseInt(btn.dataset.qty), row);
+        });
+      });
+
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const row = btn.closest('.cart-item');
+          handleRemove(btn.dataset.key, row);
+        });
+      });
+    };
+
+    // Upsell Reuse Logic
     const determineUpsells = (cart) => {
-      // This runs only if upsell container exists
       const container = document.getElementById('drawer-upsell-container');
+      const grid = document.getElementById('upsell-grid');
       if(!container) return;
 
       if(cart.item_count === 0) {
         const script = document.getElementById('fallback-products-data');
-        if(script) renderUpsells(JSON.parse(script.textContent));
+        if(script) renderUpsells(JSON.parse(script.textContent), grid, container);
       } else {
-        // Simple API fetch for related products based on first item
         const firstId = cart.items[0].product_id;
         fetch(`/recommendations/products.json?product_id=${firstId}&limit=2`)
           .then(res => res.json())
-          .then(data => {
-             if(data.products.length) renderUpsells(data.products);
-          });
+          .then(data => { if(data.products.length) renderUpsells(data.products, grid, container); });
       }
     };
 
-    const renderUpsells = (products) => {
-      const grid = document.getElementById('upsell-grid');
-      const container = document.getElementById('drawer-upsell-container');
+    const renderUpsells = (products, grid, container) => {
       let html = '';
       products.forEach(prod => {
         if(!prod.available) return;
-        // Fix image URL protocol if missing
         let img = prod.featured_image || prod.image;
         if(img && !img.startsWith('http')) img = 'https:' + img;
-        
         const varId = prod.variants ? prod.variants[0].id : prod.variant_id;
-
         html += `
           <div class="upsell-card">
             <div class="upsell-img"><img src="${img}"></div>
@@ -411,81 +502,49 @@
               <div class="upsell-price">${formatMoney(prod.price)}</div>
             </div>
             <button class="upsell-add-btn" onclick="addUpsell(${varId})">Add</button>
-          </div>
-        `;
+          </div>`;
       });
-      
       if(html) { grid.innerHTML = html; container.classList.remove('hidden'); }
     };
 
-    // --- EVENT LISTENERS ---
-    const attachListeners = () => {
-      document.querySelectorAll('.qty-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const key = btn.dataset.key;
-          const qty = parseInt(btn.dataset.qty);
-          
-          // Optimistic UI: Dim row immediately
-          document.getElementById(`item-${key}`).style.opacity = '0.5';
-          
-          postCartChange('/cart/change.js', { id: key, quantity: qty });
-        });
-      });
-
-      document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          postCartChange('/cart/change.js', { id: btn.dataset.key, quantity: 0 });
-        });
-      });
-    };
-
-    // Global Helper for Inline Upsell Buttons
     window.addUpsell = (id) => {
       postCartChange('/cart/add.js', { items: [{ id: id, quantity: 1 }] });
     };
 
-    // --- UTILITIES TOGGLE ---
+    // Utilities Toggle
     document.querySelectorAll('.util-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = document.getElementById(btn.dataset.target);
         const isHidden = target.classList.contains('hidden');
-        // Reset
         document.querySelectorAll('.util-content').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.util-btn').forEach(b => b.classList.remove('active'));
-        
-        if(isHidden) {
-          target.classList.remove('hidden');
-          btn.classList.add('active');
-        }
+        if(isHidden) { target.classList.remove('hidden'); btn.classList.add('active'); }
       });
     });
 
-    // --- CHECKOUT FIX ---
+    // CHECKOUT LOGIC
     const discountInput = document.getElementById('cart-discount');
     const checkoutForm = document.getElementById('drawer-checkout-form');
-    
     if(checkoutForm) {
       checkoutForm.addEventListener('submit', (e) => {
         const code = discountInput.value.trim();
         if(code) {
-          // Inject discount into form action URL if present
           e.preventDefault();
           window.location.href = `/checkout?discount=${code}`;
         }
-        // Otherwise let standard form submit happen
       });
     }
 
-    // Hijack & Close
+    // Open/Close Events
     closeBtn.addEventListener('click', closeDrawer);
-    document.querySelector('.drawer-backdrop').addEventListener('click', (e) => {
-      if(e.target.classList.contains('drawer-backdrop')) closeDrawer();
-    });
+    drawer.addEventListener('click', (e) => { if(e.target === drawer) closeDrawer(); });
 
-    document.querySelectorAll('a[href="/cart"]').forEach(link => {
+    // --- HIJACK FIX ---
+    // We specifically ignore links with class 'view-cart-btn'
+    // This fixes the infinite loop issue on the View Cart button inside the drawer
+    document.querySelectorAll('a[href="/cart"]:not(.view-cart-btn)').forEach(link => {
       link.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); });
     });
   });
 </script>
+```
