@@ -15,7 +15,8 @@
       "type": "custom-cart-drawer",
       "name": "Custom Cart Drawer",
       "settings": {
-        "empty_collection": ""
+        "free_shipping_threshold": 3000,
+        "empty_collection": "automated-collection"
       }
     },
     "footer": {
