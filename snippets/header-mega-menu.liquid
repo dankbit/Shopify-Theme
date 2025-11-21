@@ -67,6 +67,66 @@
                     </li>
                   {%- endfor -%}
                 </ul>
+                {% comment %} --- CUSTOM BOTTOM IMAGES LOGIC --- {% endcomment %}
+{% assign promo_block = blank %}
+
+{% for block in section.blocks %}
+  {% if block.type == 'mega_menu_images' %}
+    {% assign trigger_handle = block.settings.menu_trigger | handleize | strip %}
+    {% assign menu_handle = link.title | handleize | strip %}
+    
+    {% if trigger_handle == menu_handle %}
+      {% assign promo_block = block %}
+      {% break %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if promo_block != blank %}
+  <div class="mega-menu__bottom-promos">
+    <style>
+      .mega-menu__bottom-promos {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(var(--color-foreground), 0.08);
+      }
+      .promo-item {
+        text-decoration: none;
+        display: block;
+        transition: opacity 0.3s ease;
+      }
+      .promo-item:hover { opacity: 0.8; }
+      .promo-image-wrapper img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+        border-radius: 4px;
+      }
+    </style>
+
+    {% for i in (1..3) %}
+      {% capture img_key %}image_{{ i }}{% endcapture %}
+      {% capture link_key %}link_{{ i }}{% endcapture %}
+      
+      {% if promo_block.settings[img_key] != blank %}
+        <a href="{{ promo_block.settings[link_key] }}" class="promo-item">
+          <div class="promo-image-wrapper">
+            <img
+              src="{{ promo_block.settings[img_key] | image_url: width: 600 }}"
+              loading="lazy"
+              width="600"
+              height="{{ 600 | divided_by: promo_block.settings[img_key].aspect_ratio | round }}"
+              alt="{{ promo_block.settings[img_key].alt | default: 'Promo image' }}">
+          </div>
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
               </div>
             </details>
           </header-menu>
