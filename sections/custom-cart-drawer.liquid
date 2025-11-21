@@ -1,5 +1,4 @@
 
-
 <div id="modern-cart-drawer" class="drawer-backdrop" aria-hidden="true">
   <div class="drawer-container">
     
@@ -166,14 +165,39 @@
   .remove-link { font-size: 12px; color: #666; text-decoration: underline; background: none; border: none; cursor: pointer; white-space: nowrap; margin-left: 10px; align-self: flex-end; }
   .remove-link:hover { color: #d00; }
 
-  /* UPSELLS (Fixed Height Images) */
+  /* UPSELLS */
   .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
   .upsell-heading { font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-  .upsell-card { display: flex; gap: 15px; align-items: center; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; }
+  
+  .upsell-card { 
+    display: flex; 
+    gap: 15px; 
+    align-items: center; 
+    background: #fff; 
+    padding: 10px; 
+    border: 1px solid #eee; 
+    border-radius: 6px; 
+    margin-bottom: 10px;
+    justify-content: space-between; /* Fix alignment */
+  }
+  
   .upsell-img { width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0; overflow: hidden; }
   .upsell-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .upsell-title { font-size: 13px; font-weight: 600; margin: 0; }
-  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  
+  /* FIXED: Added this class to push button to the right */
+  .upsell-details { 
+    flex: 1; 
+    padding-right: 10px;
+  }
+  
+  .upsell-title { font-size: 13px; font-weight: 600; margin: 0; line-height: 1.2; }
+  .upsell-price { font-size: 12px; color: #555; margin-top: 2px; }
+  
+  .upsell-add-btn { 
+    background: #000; color: #fff; border: none; padding: 6px 14px; 
+    border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; 
+    flex-shrink: 0; /* Prevent squishing */
+  }
 
   /* UTILITIES & FOOTER */
   .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
@@ -186,17 +210,35 @@
 
   .drawer-footer { padding: 20px 25px; background: #fff; border-top: 1px solid var(--border); }
   .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
-  .footer-buttons { display: flex; gap: 12px; height: 48px; }
   
-  /* EQUAL BUTTONS */
-  .view-cart-btn, .checkout-btn { 
-    flex: 1; height: 100%; display: flex; align-items: center; justify-content: center;
+  /* FIXED: Equal Button Sizes */
+  .footer-buttons { display: flex; gap: 12px; height: 48px; width: 100%; }
+  
+  /* The Anchor Tag and the Form Wrapper now share space equally */
+  .view-cart-btn, 
+  .checkout-form-wrapper { 
+    flex: 1; 
+    height: 100%; 
+    width: 50%; /* Explicit fallback */
+  }
+
+  .view-cart-btn { 
+    display: flex; align-items: center; justify-content: center;
     text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; 
     text-transform: uppercase; border-radius: 4px; cursor: pointer; padding: 0;
+    background: #333; color: #fff; 
+    box-sizing: border-box;
   }
-  .view-cart-btn { background: #333; color: #fff; }
-  .checkout-btn { background: #4834d4; color: #fff; border: none; }
-  .checkout-form-wrapper { flex: 1; height: 100%; }
+
+  /* The button inside the form takes 100% of the wrapper */
+  .checkout-btn { 
+    width: 100%; height: 100%; 
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; font-weight: 700; font-size: 13px; 
+    text-transform: uppercase; border-radius: 4px; cursor: pointer; padding: 0;
+    background: #4834d4; color: #fff; border: none; 
+    box-sizing: border-box;
+  }
 
   @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
