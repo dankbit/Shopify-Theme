@@ -79,6 +79,7 @@
       <!-- Date Section -->
       <div class="util-content hidden" id="util-date">
         <div class="util-header"><label>Delivery Date</label><span class="save-badge hidden" id="msg-date">✓ Saved</span></div>
+        <!-- min attribute will be set by JS -->
         <input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
         <div class="util-actions">
           <button class="action-btn cancel" data-type="date">Cancel</button>
@@ -247,6 +248,11 @@
     const dateInput = document.getElementById('cart-date');
     const discountInput = document.getElementById('cart-discount');
 
+    // --- NEW: PREVENT PAST DATES ---
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+
     // --- SHIPPING LOGIC ---
     const shippingBar = document.querySelector('.shipping-bar-container');
     const thresholdCents = parseFloat(shippingBar.dataset.threshold);
@@ -300,7 +306,7 @@
           // 1. Remove draft from storage
           sessionStorage.removeItem(`draft_${type}`);
           
-          // 2. FORCE CLEAR INPUT 
+          // 2. FORCE CLEAR INPUT
           if(type === 'note') noteInput.value = '';
           if(type === 'date') dateInput.value = '';
           if(type === 'discount') discountInput.value = '';
@@ -480,4 +486,3 @@
     if (sessionStorage.getItem('cart_drawer_open') === 'true') openDrawer();
   });
 </script>
-```
