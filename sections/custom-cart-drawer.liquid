@@ -79,7 +79,7 @@
       <!-- Date Section -->
       <div class="util-content hidden" id="util-date">
         <div class="util-header"><label>Delivery Date</label><span class="save-badge hidden" id="msg-date">✓ Saved</span></div>
-        <!-- min attribute will be set by JS -->
+        <!-- min attribute will be set by JS to +4 days -->
         <input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
         <div class="util-actions">
           <button class="action-btn cancel" data-type="date">Cancel</button>
@@ -248,10 +248,11 @@
     const dateInput = document.getElementById('cart-date');
     const discountInput = document.getElementById('cart-discount');
 
-    // --- NEW: PREVENT PAST DATES ---
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
+    // --- NEW: PREVENT PAST DATES (+4 DAYS LOGIC) ---
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 4); // Add 4 Days
+    const minDate = futureDate.toISOString().split('T')[0];
+    dateInput.setAttribute('min', minDate);
 
     // --- SHIPPING LOGIC ---
     const shippingBar = document.querySelector('.shipping-bar-container');
