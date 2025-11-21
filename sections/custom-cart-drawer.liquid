@@ -1,15 +1,3 @@
-I understand now. You want the **Cancel** button to act like a **"Clear & Close"** button. It should completely wipe the text box clean (make it empty) so the user can start fresh next time they open it, while the **Refresh** logic still protects them if they are in the middle of typing.
-
-Here is the corrected code.
-
-### The Specific Fix in this version:
-I changed the **Cancel Logic** in the JavaScript.
-*   **Previously:** It reverted the text to whatever was saved on the server (`{{ cart.note }}`).
-*   **Now:** It sets `noteInput.value = ''` (Empty String). This ensures that when you click Cancel, the box is wiped clean.
-
-### 📋 Copy and Replace Full Code:
-
-```html
 <div id="modern-cart-drawer" class="drawer-backdrop" aria-hidden="true">
   <div class="drawer-container">
     
@@ -312,7 +300,7 @@ I changed the **Cancel Logic** in the JavaScript.
           // 1. Remove draft from storage
           sessionStorage.removeItem(`draft_${type}`);
           
-          // 2. FORCE CLEAR INPUT (User requested empty state on cancel)
+          // 2. FORCE CLEAR INPUT 
           if(type === 'note') noteInput.value = '';
           if(type === 'date') dateInput.value = '';
           if(type === 'discount') discountInput.value = '';
