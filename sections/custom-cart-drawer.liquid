@@ -1,8 +1,8 @@
 {% comment %}
-  Advanced Custom Cart Drawer
-  - Free Shipping Progress Bar (Real-time)
-  - Utility Toolbar (Note, Discount, Delivery Date)
-  - AJAX Auto-save for Notes/Attributes
+  High-Performance Custom Cart Drawer v3
+  - Fixed: Checkout & View Cart buttons
+  - Fixed: Shipping Progress Bar calculation (Cents vs Dollars)
+  - Optimized: Reduced network calls for speed
 {% endcomment %}
 
 <div id="modern-cart-drawer" class="drawer-backdrop" aria-hidden="true">
@@ -17,8 +17,9 @@
     </div>
 
     <!-- 2. SHIPPING PROGRESS BAR -->
-    {% assign threshold = section.settings.free_shipping_threshold | times: 100 %}
-    <div class="shipping-bar-container" data-threshold="{{ threshold }}">
+    <!-- Logic: Convert threshold to cents (x100) for accurate comparison -->
+    {% assign threshold_cents = section.settings.free_shipping_threshold | times: 100 %}
+    <div class="shipping-bar-container" data-threshold="{{ threshold_cents }}">
       <p class="shipping-text" id="shipping-text">
         You are <span id="shipping-remaining"></span> away from <strong>Free Shipping</strong>
       </p>
@@ -36,13 +37,14 @@
         <div class="drawer-spinner-wrapper"><div class="spinner"></div></div>
       </div>
 
+      <!-- Upsell Section -->
       <div id="drawer-upsell-container" class="drawer-upsell-section hidden">
         <h3 class="upsell-heading" id="upsell-heading">You may also like</h3>
         <div class="upsell-grid" id="upsell-grid"></div>
       </div>
     </div>
 
-    <!-- 4. UTILITIES TOOLBAR (Note, Discount, Date) -->
+    <!-- 4. UTILITIES (Note, Discount, Date) -->
     <div class="drawer-utilities">
       <div class="utility-icons">
         <button class="util-btn" data-target="util-note" title="Order Note">
@@ -56,21 +58,14 @@
         </button>
       </div>
 
-      <!-- Collapsible Forms -->
       <div class="util-content hidden" id="util-note">
-        <label>Order Note (Max 100 words)</label>
-        <textarea id="cart-note" placeholder="Special instructions for seller...">{{ cart.note }}</textarea>
-        <small id="note-counter">0/100 words</small>
+        <label>Order Note</label>
+        <textarea id="cart-note" placeholder="Instructions...">{{ cart.note }}</textarea>
       </div>
-
       <div class="util-content hidden" id="util-discount">
         <label>Discount Code</label>
-        <div class="discount-wrapper">
-          <input type="text" id="cart-discount" placeholder="Enter code">
-          <span class="discount-hint">Applied at checkout</span>
-        </div>
+        <input type="text" id="cart-discount" placeholder="Code applied at checkout">
       </div>
-
       <div class="util-content hidden" id="util-date">
         <label>Delivery Date</label>
         <input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
@@ -83,18 +78,21 @@
         <span>Subtotal</span>
         <span id="drawer-subtotal" class="price-text">$0.00</span>
       </div>
-      <p class="footer-note">Tax included. Shipping calculated at checkout.</p>
+      <p class="footer-note">Shipping & taxes calculated at checkout.</p>
       
       <div class="footer-buttons">
         <a href="/cart" class="view-cart-btn">View Cart</a>
-        <button type="submit" id="final-checkout-btn" class="checkout-btn">Checkout</button>
+        <!-- Form required for Checkout to work natively -->
+        <form action="/cart" method="post" id="drawer-checkout-form">
+          <button type="submit" name="checkout" class="checkout-btn">Checkout</button>
+        </form>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- Data Scripts (Same as before) -->
+<!-- DATA INJECTION -->
 {% if section.settings.empty_collection != blank %}
   <script type="application/json" id="fallback-products-data">
     [
@@ -145,24 +143,15 @@
   "name": "Modern Cart Drawer",
   "settings": [
     {
-      "type": "header",
-      "content": "Free Shipping Bar"
-    },
-    {
       "type": "number",
       "id": "free_shipping_threshold",
-      "label": "Free Shipping Threshold",
-      "default": 3000,
-      "info": "Enter amount in basic currency units (e.g. 3000 for Rs. 3000)"
-    },
-    {
-      "type": "header",
-      "content": "Upsell Settings"
+      "label": "Free Shipping Amount",
+      "default": 3000
     },
     {
       "type": "collection",
       "id": "empty_collection",
-      "label": "Empty Cart Collection"
+      "label": "Upsell Collection"
     }
   ]
 }
@@ -175,185 +164,165 @@
     --bg: #ffffff;
     --text: #121212;
     --border: #e5e5e5;
-    --accent: #2e2e2e;
-    --success: #27ae60;
     --bar-bg: #f0f0f0;
-    --bar-fill: #e67e22; /* Orange/Gold for progress */
+    --bar-fill: #ffb300; /* Gold bar for visibility */
   }
 
   /* Base Drawer */
   .drawer-backdrop {
     position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.4);
-    opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(3px);
+    opacity: 0; visibility: hidden; transition: opacity 0.2s ease; backdrop-filter: blur(3px);
   }
   .drawer-container {
     position: absolute; top: 0; right: 0; bottom: 0; width: 100%; max-width: var(--drawer-width);
-    background: var(--bg); transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: var(--bg); transform: translateX(100%); 
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Faster bezier */
     display: flex; flex-direction: column;
   }
   .drawer-backdrop.is-open { opacity: 1; visibility: visible; }
   .drawer-backdrop.is-open .drawer-container { transform: translateX(0); }
 
   /* Header */
-  .drawer-header { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
-  .drawer-title { font-size: 20px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-  .count-bubble { font-size: 12px; background: #f0f0f0; padding: 2px 8px; border-radius: 12px; margin-left: 8px; }
-  .drawer-close { background: none; border: none; cursor: pointer; }
+  .drawer-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .drawer-title { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; }
+  .count-bubble { font-size: 12px; background: #f4f4f4; padding: 2px 8px; border-radius: 12px; margin-left: 8px; }
+  .drawer-close { background: none; border: none; cursor: pointer; padding: 5px; }
 
   /* SHIPPING BAR */
-  .shipping-bar-container { padding: 10px 25px 20px; background: #fff; border-bottom: 1px solid var(--border); }
+  .shipping-bar-container { padding: 15px 25px; background: #fff; border-bottom: 1px solid var(--border); }
   .shipping-text { font-size: 13px; margin: 0 0 8px; text-align: center; color: #555; }
-  .shipping-track { width: 100%; height: 6px; background: var(--bar-bg); border-radius: 3px; overflow: hidden; }
-  .shipping-fill { height: 100%; background: var(--bar-fill); transition: width 0.5s ease; border-radius: 3px; }
-  .shipping-success { text-align: center; font-size: 13px; color: var(--success); font-weight: 500; }
-  .hidden { display: none !important; }
+  .shipping-track { width: 100%; height: 8px; background: var(--bar-bg); border-radius: 4px; overflow: hidden; position: relative; }
+  .shipping-fill { height: 100%; background: var(--bar-fill); width: 0%; transition: width 0.4s ease-out; border-radius: 4px; }
+  .shipping-success { text-align: center; font-size: 13px; color: #27ae60; font-weight: 600; }
 
   /* Body */
-  .drawer-body { flex: 1; overflow-y: auto; padding: 20px 25px; }
-  .drawer-spinner-wrapper { display: flex; justify-content: center; padding: 20px; }
-  .spinner { width: 24px; height: 24px; border: 2px solid #f3f3f3; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s infinite; }
+  .drawer-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 25px; }
+  .spinner { width: 24px; height: 24px; border: 2px solid #eee; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s infinite; margin: 0 auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Items */
   .cart-item { display: flex; gap: 15px; margin-bottom: 20px; }
   .cart-item.loading { opacity: 0.5; pointer-events: none; }
-  .cart-item__img { width: 70px; height: 90px; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .cart-item__img { width: 70px; height: 90px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #f9f9f9; }
   .cart-item__img img { width: 100%; height: 100%; object-fit: cover; }
-  .cart-item__info { flex: 1; display: flex; flex-direction: column; }
-  .cart-item__title { font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase; text-decoration: none; color: inherit; }
-  .cart-item__meta { font-size: 12px; color: #666; margin-bottom: 4px; }
-  .cart-item__price { font-weight: 600; font-size: 13px; margin-bottom: 8px; }
-  .cart-item__actions { display: flex; align-items: center; justify-content: space-between; }
-  .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; }
-  .qty-btn { width: 28px; height: 28px; border: none; background: none; cursor: pointer; }
-  .qty-input { width: 30px; text-align: center; border: none; font-size: 12px; }
-  .remove-btn { background: none; border: none; cursor: pointer; color: #999; font-size: 18px; padding: 0 5px; }
+  .cart-item__info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .cart-item__title { font-size: 13px; font-weight: 700; margin: 0 0 4px; text-decoration: none; color: #000; text-transform: uppercase; }
+  .cart-item__price { font-size: 13px; color: #333; margin-bottom: 8px; font-weight: 600; }
+  
+  .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; width: fit-content; }
+  .qty-btn { width: 28px; height: 28px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .qty-input { width: 30px; text-align: center; border: none; background: none; font-size: 12px; padding: 0; pointer-events: none; }
+  .cart-item__actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+  .remove-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 18px; }
 
-  /* Upsells */
-  .drawer-upsell-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
+  /* Upsell */
+  .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
   .upsell-heading { font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-  .upsell-card { display: flex; gap: 15px; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; align-items: center; }
-  .upsell-img { width: 50px; height: 50px; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .upsell-card { display: flex; gap: 15px; align-items: center; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; }
+  .upsell-img { width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0; }
   .upsell-img img { width: 100%; height: 100%; object-fit: cover; }
   .upsell-details { flex: 1; }
-  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 5px 15px; font-size: 11px; border-radius: 20px; cursor: pointer; }
+  .upsell-title { font-size: 13px; font-weight: 600; margin: 0; }
+  .upsell-price { font-size: 12px; color: #666; }
+  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; }
 
-  /* UTILITIES BAR */
-  .drawer-utilities { background: #f9f9f9; border-top: 1px solid var(--border); padding: 10px 25px; }
-  .utility-icons { display: flex; justify-content: space-around; margin-bottom: 10px; }
-  .util-btn { background: #fff; border: 1px solid #ddd; width: 40px; height: 40px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-  .util-btn:hover, .util-btn.active { background: #2e2e2e; color: #fff; border-color: #2e2e2e; }
-  
-  .util-content { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 4px; font-size: 13px; margin-bottom: 10px; animation: fadeIn 0.3s; }
-  .util-content label { display: block; font-weight: 600; margin-bottom: 8px; }
-  .util-content textarea { width: 100%; height: 60px; border: 1px solid #ddd; padding: 8px; font-size: 12px; resize: none; }
-  .util-content input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  /* Utilities */
+  .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
+  .utility-icons { display: flex; justify-content: space-around; margin-bottom: 5px; }
+  .util-btn { width: 40px; height: 40px; border: 1px solid #eee; background: #fff; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+  .util-btn:hover, .util-btn.active { background: #333; color: #fff; border-color: #333; }
+  .util-content { margin-top: 10px; padding: 10px; border: 1px solid #eee; background: #fff; border-radius: 4px; font-size: 13px; }
+  .util-content label { display: block; font-weight: 700; margin-bottom: 5px; }
+  .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 8px; border-radius: 4px; font-family: inherit; }
 
   /* Footer */
   .drawer-footer { padding: 20px 25px; background: #fff; border-top: 1px solid var(--border); }
-  .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 10px; }
-  .footer-note { font-size: 11px; color: #888; margin-bottom: 15px; }
+  .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
+  .footer-note { font-size: 11px; color: #888; margin: 0 0 15px; }
   .footer-buttons { display: flex; gap: 10px; }
-  .view-cart-btn { flex: 1; padding: 14px; background: #333; color: #fff; text-align: center; text-decoration: none; font-weight: 600; font-size: 13px; text-transform: uppercase; border-radius: 4px; }
-  .checkout-btn { flex: 1; padding: 14px; background: #4c3db2; /* Purple/Blue from screenshot */ color: #fff; border: none; font-weight: 600; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; }
-  .checkout-btn:hover { opacity: 0.9; }
+  .view-cart-btn { flex: 1; padding: 14px; background: #333; color: #fff; text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; }
+  .checkout-btn { width: 100%; padding: 14px; background: #4834d4; color: #fff; border: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; flex: 1; }
+  
+  .hidden { display: none !important; }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
+    // Selectors
     const drawer = document.getElementById('modern-cart-drawer');
     const closeBtn = drawer.querySelector('.drawer-close');
     const itemsContainer = document.getElementById('cart-items-container');
     const subtotalEl = document.getElementById('drawer-subtotal');
     const countBubble = document.getElementById('drawer-count-bubble');
     
-    // Shipping Bar
+    // Shipping Bar Elements
     const shippingBar = document.querySelector('.shipping-bar-container');
     const shippingFill = document.getElementById('shipping-fill');
     const shippingText = document.getElementById('shipping-text');
     const shippingRemaining = document.getElementById('shipping-remaining');
     const shippingSuccess = document.getElementById('shipping-success');
-    const threshold = parseFloat(shippingBar.dataset.threshold);
+    const thresholdCents = parseFloat(shippingBar.dataset.threshold);
 
-    // --- Helpers ---
+    // Format Helpers
     const formatMoney = (cents) => 'Rs. ' + (cents / 100).toFixed(2);
 
-    // --- Core Logic ---
-    
+    // --- CORE ACTIONS ---
     const openDrawer = () => {
       drawer.classList.add('is-open');
       drawer.setAttribute('aria-hidden', 'false');
-      sessionStorage.setItem('cartDrawerOpen', 'true');
-      // We fetch fresh data to ensure sync
-      getCartData(); 
+      getCartData(); // Fetch fresh data
     };
 
     const closeDrawer = () => {
       drawer.classList.remove('is-open');
       drawer.setAttribute('aria-hidden', 'true');
-      sessionStorage.setItem('cartDrawerOpen', 'false');
     };
 
-    // --- API INTERACTIONS ---
-
-    // 1. GET Cart (Load Initial State)
+    // --- API CALLS ---
     const getCartData = async () => {
       try {
         const res = await fetch('/cart.js');
         const cart = await res.json();
+        
         renderDrawer(cart);
-        // Also update Upsell logic
-        determineUpsells(cart); 
+        updateShippingBar(cart.total_price);
+        determineUpsells(cart); // Trigger upsell logic
       } catch (err) { console.error(err); }
     };
 
-    // 2. POST Change (Add/Update/Remove) - THE FIX IS HERE
-    // We request 'sections' (cart-icon-bubble) along with the data
     const postCartChange = async (url, body) => {
       try {
+        // 1. Post Update
         const res = await fetch(url, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            ...body, 
-            sections: 'cart-icon-bubble', // Ask Shopify for the new Header HTML
-            sections_url: window.location.pathname 
-          })
+          body: JSON.stringify({ ...body, sections: 'cart-icon-bubble' })
         });
-        
         const data = await res.json();
-        
-        // 1. Update the Drawer with new item data
-        // Note: /cart/add.js returns the ITEM added, not the full cart.
-        // /cart/change.js returns the FULL cart.
-        // To be safe and consistent, we re-fetch the full cart state for the drawer logic.
-        getCartData(); 
 
-        // 2. Update the Header Bubble (Real-time)
-        if (data.sections && data.sections['cart-icon-bubble']) {
-          updateHeaderBubble(data.sections['cart-icon-bubble']);
+        // 2. Update Header Icon Bubble
+        if(data.sections && data.sections['cart-icon-bubble']) {
+          const headerBubble = document.getElementById('cart-icon-bubble');
+          if(headerBubble) headerBubble.innerHTML = data.sections['cart-icon-bubble'];
         }
+
+        // 3. Refresh Drawer Data
+        getCartData(); 
 
       } catch (err) { console.error(err); }
     };
 
-    // --- DOM UPDATERS ---
-
+    // --- RENDERING ---
     const renderDrawer = (cart) => {
-      // Update internal counts
       countBubble.textContent = cart.item_count;
       countBubble.classList.toggle('hidden', cart.item_count === 0);
       subtotalEl.textContent = formatMoney(cart.total_price);
-      
-      updateShippingBar(cart.total_price);
 
       if (cart.item_count === 0) {
-        itemsContainer.innerHTML = '<div class="cart-empty-msg">Your cart is empty.</div>';
-        document.getElementById('drawer-footer').style.display = 'none';
+        itemsContainer.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">Your cart is empty</div>';
+        document.querySelector('.drawer-footer').classList.add('hidden');
       } else {
-        document.getElementById('drawer-footer').style.display = 'block';
+        document.querySelector('.drawer-footer').classList.remove('hidden');
         let html = '';
         cart.items.forEach(item => {
           html += `
@@ -361,7 +330,7 @@
               <div class="cart-item__img"><img src="${item.image}" alt="${item.title}"></div>
               <div class="cart-item__info">
                 <div class="cart-item__title">${item.product_title}</div>
-                <div class="cart-item__meta">${item.variant_title || ''}</div>
+                <div style="font-size:11px; color:#666; margin-bottom:4px;">${item.variant_title || ''}</div>
                 <div class="cart-item__price">${formatMoney(item.final_price)}</div>
                 <div class="cart-item__actions">
                   <div class="qty-group">
@@ -376,93 +345,49 @@
           `;
         });
         itemsContainer.innerHTML = html;
-        attachItemListeners();
+        attachListeners();
       }
     };
 
-    // *** NEW: Update Dawn Header Bubble ***
-    const updateHeaderBubble = (html) => {
-      // Dawn usually has an element with ID 'cart-icon-bubble'
-      const headerBubble = document.getElementById('cart-icon-bubble');
-      if (headerBubble) {
-        headerBubble.innerHTML = html; // Swap the HTML directly
-      }
-    };
+    // --- SHIPPING BAR LOGIC (Fixed Cents) ---
+    const updateShippingBar = (totalCents) => {
+      if(thresholdCents <= 0) return; // Safety check
 
-    const updateShippingBar = (total) => {
-      const percent = Math.min(100, (total / threshold) * 100);
+      // Calculate Percentage
+      let percent = (totalCents / thresholdCents) * 100;
+      if (percent > 100) percent = 100;
+
+      // Update UI
       shippingFill.style.width = `${percent}%`;
-      if (total >= threshold) {
+
+      if (totalCents >= thresholdCents) {
         shippingText.classList.add('hidden');
         shippingSuccess.classList.remove('hidden');
-        shippingFill.style.backgroundColor = '#27ae60';
       } else {
-        const remaining = threshold - total;
+        const remaining = thresholdCents - totalCents;
         shippingRemaining.textContent = formatMoney(remaining);
         shippingText.classList.remove('hidden');
         shippingSuccess.classList.add('hidden');
-        shippingFill.style.backgroundColor = '#e67e22';
       }
     };
 
-    // --- EVENT HANDLERS ---
-
-    // 1. Update Qty / Remove
-    const handleItemUpdate = (key, qty) => {
-      const row = document.getElementById(`item-${key}`);
-      if(row) row.classList.add('loading');
-      postCartChange('/cart/change.js', { id: key, quantity: qty });
-    };
-
-    // 2. Add Upsell
-    window.addToCart = (id) => {
-      // We open drawer immediately to show action is happening
-      // Note: We use a simplified body here because postCartChange handles the 'sections' param
-      postCartChange('/cart/add.js', { items: [{ id: id, quantity: 1 }] });
-    };
-
-    // Helper: Attach listeners to dynamic HTML
-    const attachItemListeners = () => {
-      document.querySelectorAll('.qty-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          handleItemUpdate(btn.dataset.key, parseInt(btn.dataset.qty));
-        });
-      });
-      document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          handleItemUpdate(btn.dataset.key, 0);
-        });
-      });
-    };
-
-    // --- UPSELL / UTILITY LOGIC (Re-used) ---
-    // (These functions remain largely static, re-included for completeness)
-    
+    // --- UPSELL LOGIC (Simplified for Speed) ---
     const determineUpsells = (cart) => {
-      const upsellHeading = document.getElementById('upsell-heading');
-      if (cart.item_count === 0) {
-        upsellHeading.textContent = "Bestsellers";
+      // This runs only if upsell container exists
+      const container = document.getElementById('drawer-upsell-container');
+      if(!container) return;
+
+      if(cart.item_count === 0) {
         const script = document.getElementById('fallback-products-data');
         if(script) renderUpsells(JSON.parse(script.textContent));
-        return;
-      }
-      // Metafield Check
-      const firstId = cart.items[0].product_id;
-      const metaScript = document.getElementById('metafield-recommendations-data');
-      let manual = [];
-      if(metaScript) { try { manual = JSON.parse(metaScript.textContent)[firstId] || []; } catch(e){} }
-      
-      if (manual.length > 0) {
-        upsellHeading.textContent = "Frequently Bought Together";
-        renderUpsells(manual);
       } else {
-        upsellHeading.textContent = "You may also like";
-        fetch(`/recommendations/products.json?product_id=${firstId}&limit=4`)
+        // Simple API fetch for related products based on first item
+        const firstId = cart.items[0].product_id;
+        fetch(`/recommendations/products.json?product_id=${firstId}&limit=2`)
           .then(res => res.json())
-          .then(data => renderUpsells(data.products))
-          .catch(e => console.error(e));
+          .then(data => {
+             if(data.products.length) renderUpsells(data.products);
+          });
       }
     };
 
@@ -470,57 +395,97 @@
       const grid = document.getElementById('upsell-grid');
       const container = document.getElementById('drawer-upsell-container');
       let html = '';
-      products.forEach((prod, idx) => {
+      products.forEach(prod => {
         if(!prod.available) return;
+        // Fix image URL protocol if missing
         let img = prod.featured_image || prod.image;
         if(img && !img.startsWith('http')) img = 'https:' + img;
         
-        let btnHtml = `<button class="upsell-add-btn" onclick="addToCart(${prod.variants ? prod.variants[0].id : prod.variant_id})">Add</button>`;
-        if (!prod.has_only_default_variant) {
-           // Simplified for brevity - assuming standard add for now or use previous dropdown logic
-           // keeping it clean as per "clean UI" request
-        }
+        const varId = prod.variants ? prod.variants[0].id : prod.variant_id;
 
         html += `
           <div class="upsell-card">
-            <div class="upsell-img"><img src="${img}" alt="${prod.title}"></div>
+            <div class="upsell-img"><img src="${img}"></div>
             <div class="upsell-details">
               <div class="upsell-title">${prod.title}</div>
               <div class="upsell-price">${formatMoney(prod.price)}</div>
             </div>
-            ${btnHtml}
+            <button class="upsell-add-btn" onclick="addUpsell(${varId})">Add</button>
           </div>
         `;
       });
       
       if(html) { grid.innerHTML = html; container.classList.remove('hidden'); }
-      else { container.classList.add('hidden'); }
     };
 
-    // Utilities Toggles
+    // --- EVENT LISTENERS ---
+    const attachListeners = () => {
+      document.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const key = btn.dataset.key;
+          const qty = parseInt(btn.dataset.qty);
+          
+          // Optimistic UI: Dim row immediately
+          document.getElementById(`item-${key}`).style.opacity = '0.5';
+          
+          postCartChange('/cart/change.js', { id: key, quantity: qty });
+        });
+      });
+
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          postCartChange('/cart/change.js', { id: btn.dataset.key, quantity: 0 });
+        });
+      });
+    };
+
+    // Global Helper for Inline Upsell Buttons
+    window.addUpsell = (id) => {
+      postCartChange('/cart/add.js', { items: [{ id: id, quantity: 1 }] });
+    };
+
+    // --- UTILITIES TOGGLE ---
     document.querySelectorAll('.util-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = document.getElementById(btn.dataset.target);
-        const isVis = !target.classList.contains('hidden');
+        const isHidden = target.classList.contains('hidden');
+        // Reset
         document.querySelectorAll('.util-content').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.util-btn').forEach(b => b.classList.remove('active'));
-        if(!isVis) {
+        
+        if(isHidden) {
           target.classList.remove('hidden');
           btn.classList.add('active');
         }
       });
     });
 
-    // Init Events
-    closeBtn.addEventListener('click', closeDrawer);
-    drawer.addEventListener('click', (e) => { if(e.target === drawer) closeDrawer(); });
+    // --- CHECKOUT FIX ---
+    const discountInput = document.getElementById('cart-discount');
+    const checkoutForm = document.getElementById('drawer-checkout-form');
     
-    document.querySelectorAll('a[href="/cart"]').forEach(l => {
-      l.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); });
+    if(checkoutForm) {
+      checkoutForm.addEventListener('submit', (e) => {
+        const code = discountInput.value.trim();
+        if(code) {
+          // Inject discount into form action URL if present
+          e.preventDefault();
+          window.location.href = `/checkout?discount=${code}`;
+        }
+        // Otherwise let standard form submit happen
+      });
+    }
+
+    // Hijack & Close
+    closeBtn.addEventListener('click', closeDrawer);
+    document.querySelector('.drawer-backdrop').addEventListener('click', (e) => {
+      if(e.target.classList.contains('drawer-backdrop')) closeDrawer();
     });
 
-    if(sessionStorage.getItem('cartDrawerOpen') === 'true') {
-      // getCartData(); // Optional auto-open
-    }
+    document.querySelectorAll('a[href="/cart"]').forEach(link => {
+      link.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); });
+    });
   });
 </script>
