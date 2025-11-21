@@ -1,3 +1,4 @@
+
 <div id="modern-cart-drawer" class="drawer-backdrop" aria-hidden="true">
   <div class="drawer-container">
     
@@ -42,7 +43,7 @@
       </div>
     </div>
 
-    <!-- UTILITIES (UPDATED WITH BUTTONS) -->
+    <!-- UTILITIES (UPDATED) -->
     <div class="drawer-utilities">
       <div class="utility-icons">
         <button class="util-btn" data-target="util-note" title="Order Note">
@@ -59,6 +60,7 @@
       <!-- Note Section -->
       <div class="util-content hidden" id="util-note">
         <div class="util-header"><label>Order Note</label><span class="save-badge hidden" id="msg-note">✓ Saved</span></div>
+        <!-- Value is empty by default unless server has data -->
         <textarea id="cart-note" placeholder="Special instructions...">{{ cart.note }}</textarea>
         <div class="util-actions">
           <button class="action-btn cancel" data-type="note">Cancel</button>
@@ -199,7 +201,7 @@
   .upsell-price { font-size: 12px; color: #555; margin-top: 2px; }
   .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
 
-  /* UTILITIES - Updated */
+  /* UTILITIES */
   .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
   .utility-icons { display: flex; justify-content: space-around; margin-bottom: 5px; }
   .util-btn { width: 40px; height: 40px; border: 1px solid #eee; background: #fff; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -211,7 +213,6 @@
   .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-family: inherit; resize: vertical; }
   .util-content textarea { min-height: 60px; }
 
-  /* New Actions CSS */
   .util-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
   .action-btn { padding: 6px 14px; font-size: 11px; border-radius: 4px; font-weight: 600; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 0.5px; }
   .action-btn.save { background-color: #27ae60; color: white; }
@@ -254,7 +255,7 @@
     const formatMoney = (cents) => 'Rs. ' + (cents / 100).toFixed(2);
 
     // --- STATE MANAGEMENT (Session Storage) ---
-    // 1. Initialize Inputs from Storage (Draft) OR Server
+    // 1. Initialize Inputs from Storage (Draft)
     if(sessionStorage.getItem('draft_note')) noteInput.value = sessionStorage.getItem('draft_note');
     if(sessionStorage.getItem('draft_date')) dateInput.value = sessionStorage.getItem('draft_date');
     if(sessionStorage.getItem('draft_discount')) discountInput.value = sessionStorage.getItem('draft_discount');
@@ -290,31 +291,23 @@
           // SAVE LOGIC
           if(type === 'note') await updateCartAttribute('note', noteInput.value);
           if(type === 'date') await updateCartAttribute('attributes', { 'Delivery Date': dateInput.value });
-          if(type === 'discount') {
-            // Discounts technically apply at checkout, so we just visually "save" it
-            sessionStorage.setItem('saved_discount', discountInput.value);
-          }
+          if(type === 'discount') sessionStorage.setItem('saved_discount', discountInput.value);
           
-          // Show "Saved" badge briefly
+          // Show "Saved" badge
           msgElement.classList.remove('hidden');
           setTimeout(() => msgElement.classList.add('hidden'), 2000);
 
         } else {
           // CANCEL LOGIC
-          // 1. Clear the draft from storage
+          // 1. Remove draft from storage
           sessionStorage.removeItem(`draft_${type}`);
           
-          // 2. Restore Value from "Server" state (or empty)
-          // Note: For a robust real-world app, we'd fetch cart.js again to get the true source of truth.
-          // For now, we will just clear inputs or revert to what was known on load if possible.
-          if(type === 'note') noteInput.value = '{{ cart.note }}'; 
+          // 2. VISUALLY RESET INPUT (Important Fix)
+          if(type === 'note') noteInput.value = '{{ cart.note }}'; // Revert to server saved
           if(type === 'date') dateInput.value = '{{ cart.attributes["Delivery Date"] }}';
-          if(type === 'discount') {
-             discountInput.value = ''; // Discounts aren't stored on cart object usually
-             sessionStorage.removeItem('draft_discount');
-          }
+          if(type === 'discount') discountInput.value = ''; // Reset to blank
 
-          // 3. Close the utility view
+          // 3. Close view
           container.classList.add('hidden');
           document.querySelector(`.util-btn[data-target="util-${type}"]`).classList.remove('active');
         }
@@ -331,7 +324,7 @@
       } catch(e) { console.error(e); }
     };
 
-    // --- CORE CART FUNCTIONS ---
+    // --- CORE CART FUNCTIONS (Standard) ---
     const getCartData = async () => {
       try {
         const res = await fetch('/cart.js');
@@ -391,7 +384,6 @@
       }
     };
 
-    // --- SHIPPING BAR & UPSELLS (Unchanged logic, kept for integrity) ---
     const updateShippingBar = (totalCents) => {
       if(thresholdCents <= 0) return;
       let percent = (totalCents / thresholdCents) * 100;
@@ -459,7 +451,6 @@
 
     window.addUpsell = (id, btn) => { btn.classList.add('adding'); btn.textContent = '...'; postCartChange('/cart/add.js', { items: [{ id: id, quantity: 1 }] }); };
 
-    // --- EVENT LISTENERS ---
     const attachListeners = () => {
       document.querySelectorAll('.qty-btn').forEach(btn => {
         btn.addEventListener('click', (e) => { e.preventDefault(); const row = btn.closest('.cart-item'); row.classList.add('updating'); postCartChange('/cart/change.js', { id: btn.dataset.key, quantity: parseInt(btn.dataset.qty) }, row); });
@@ -469,32 +460,26 @@
       });
     };
 
-    // Toggle Utilities
     document.querySelectorAll('.util-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = document.getElementById(btn.dataset.target);
         const isHidden = target.classList.contains('hidden');
-        // Hide all others
         document.querySelectorAll('.util-content').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.util-btn').forEach(b => b.classList.remove('active'));
-        
         if(isHidden) { target.classList.remove('hidden'); btn.classList.add('active'); }
       });
     });
 
-    // Checkout Handler (Apply Discount)
     document.getElementById('drawer-checkout-form')?.addEventListener('submit', (e) => { 
-      // Check draft or saved discount
       const code = discountInput.value.trim() || sessionStorage.getItem('saved_discount');
       if(code) { e.preventDefault(); window.location.href = `/checkout?discount=${code}`; } 
     });
 
-    // Drawer Toggles
     document.querySelector('.drawer-close').addEventListener('click', closeDrawer);
     document.querySelector('.drawer-backdrop').addEventListener('click', (e) => { if(e.target.classList.contains('drawer-backdrop')) closeDrawer(); });
     document.querySelectorAll('a[href="/cart"]:not(.view-cart-btn)').forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); }); });
 
-    // Init Check
     if (sessionStorage.getItem('cart_drawer_open') === 'true') openDrawer();
   });
 </script>
+```
