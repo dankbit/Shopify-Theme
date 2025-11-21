@@ -17,7 +17,6 @@
       </p>
       <div class="shipping-track-wrapper">
         <div class="shipping-track">
-          <!-- RED FILL -->
           <div class="shipping-fill" id="shipping-fill" style="width: 0%; background-color: #d90429;"></div>
         </div>
         <div class="shipping-truck" id="shipping-truck" style="left: 0%;">
@@ -43,16 +42,49 @@
       </div>
     </div>
 
-    <!-- UTILITIES -->
+    <!-- UTILITIES (UPDATED WITH BUTTONS) -->
     <div class="drawer-utilities">
       <div class="utility-icons">
-        <button class="util-btn" data-target="util-note" title="Order Note"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-        <button class="util-btn" data-target="util-discount" title="Discount"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></button>
-        <button class="util-btn" data-target="util-date" title="Date"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>
+        <button class="util-btn" data-target="util-note" title="Order Note">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+        <button class="util-btn" data-target="util-discount" title="Discount">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+        </button>
+        <button class="util-btn" data-target="util-date" title="Delivery Date">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </button>
       </div>
-      <div class="util-content hidden" id="util-note"><div class="util-header"><label>Note</label><span class="save-badge hidden" id="note-saved">✓ Saved</span></div><textarea id="cart-note">{{ cart.note }}</textarea></div>
-      <div class="util-content hidden" id="util-discount"><label>Discount</label><input type="text" id="cart-discount" placeholder="Code applied at checkout"></div>
-      <div class="util-content hidden" id="util-date"><div class="util-header"><label>Date</label><span class="save-badge hidden" id="date-saved">✓ Saved</span></div><input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}"></div>
+
+      <!-- Note Section -->
+      <div class="util-content hidden" id="util-note">
+        <div class="util-header"><label>Order Note</label><span class="save-badge hidden" id="msg-note">✓ Saved</span></div>
+        <textarea id="cart-note" placeholder="Special instructions...">{{ cart.note }}</textarea>
+        <div class="util-actions">
+          <button class="action-btn cancel" data-type="note">Cancel</button>
+          <button class="action-btn save" data-type="note">Save</button>
+        </div>
+      </div>
+
+      <!-- Discount Section -->
+      <div class="util-content hidden" id="util-discount">
+        <div class="util-header"><label>Discount Code</label><span class="save-badge hidden" id="msg-discount">✓ Saved</span></div>
+        <input type="text" id="cart-discount" placeholder="Code applied at checkout">
+        <div class="util-actions">
+          <button class="action-btn cancel" data-type="discount">Cancel</button>
+          <button class="action-btn save" data-type="discount">Save</button>
+        </div>
+      </div>
+
+      <!-- Date Section -->
+      <div class="util-content hidden" id="util-date">
+        <div class="util-header"><label>Delivery Date</label><span class="save-badge hidden" id="msg-date">✓ Saved</span></div>
+        <input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
+        <div class="util-actions">
+          <button class="action-btn cancel" data-type="date">Cancel</button>
+          <button class="action-btn save" data-type="date">Save</button>
+        </div>
+      </div>
     </div>
 
     <!-- FOOTER -->
@@ -73,7 +105,7 @@
   </div>
 </div>
 
-<!-- DATA -->
+<!-- DATA & SCHEMA -->
 {% if section.settings.empty_collection != blank %}
   <script type="application/json" id="fallback-products-data">
     [
@@ -107,7 +139,7 @@
     --drawer-width: 420px;
     --bg: #ffffff; --text: #121212; --border: #e5e5e5;
     --bar-bg: #f0f0f0;
-    --bar-fill: #d90429; /* RED COLOR */
+    --bar-fill: #d90429;
     --bar-truck: #333;
   }
   .hidden { display: none !important; }
@@ -130,10 +162,7 @@
   .shipping-text { font-size: 13px; margin: 0 0 12px; text-align: center; color: #555; }
   .shipping-track-wrapper { position: relative; height: 32px; margin-bottom: 5px; margin-top: 12px; }
   .shipping-track { width: 100%; height: 6px; background: var(--bar-bg); border-radius: 4px; overflow: hidden; position: absolute; top: 16px; }
-  
-  /* RED FILL */
   .shipping-fill { height: 100%; background-color: #d90429 !important; width: 0%; transition: width 0.5s ease; }
-  
   .shipping-truck { position: absolute; top: -2px; width: 40px; height: 40px; color: var(--bar-truck); transition: left 0.5s ease; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
   .truck-bubble { background: #000; color: #fff; font-size: 9px; font-weight: bold; padding: 2px 5px; border-radius: 8px; margin-bottom: 2px; white-space: nowrap; }
   .shipping-success { text-align: center; font-size: 13px; color: #27ae60; font-weight: 600; animation: slideUpFade 0.5s ease; }
@@ -142,133 +171,167 @@
   .drawer-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 25px; }
   .spinner { width: 24px; height: 24px; border: 2px solid #eee; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s infinite; margin: 0 auto; }
   
-  /* ITEMS */
+  /* CART ITEM */
   .cart-item { display: flex; gap: 15px; margin-bottom: 20px; position: relative; border-bottom: 1px solid #f9f9f9; padding-bottom: 20px; align-items: flex-start; }
   .cart-item.updating { opacity: 0.6; pointer-events: none; }
   .cart-item.removing { transform: translateX(100%); opacity: 0; max-height: 0; margin: 0; padding: 0; overflow: hidden; transition: all 0.3s ease; }
-
   .cart-item__img { width: 80px; height: 100px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #f9f9f9; }
   .cart-item__img img { width: 100%; height: 100%; object-fit: cover; }
-  
   .cart-item__content { flex: 1; display: flex; justify-content: space-between; }
   .cart-item__stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
   .cart-item__title { font-size: 13px; font-weight: 700; margin: 0; text-decoration: none; color: #000; text-transform: uppercase; line-height: 1.3; }
   .cart-item__price { font-size: 13px; color: #333; font-weight: 600; margin-bottom: 2px; }
   .cart-item__variant { font-size: 11px; color: #666; }
-  
   .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; width: 80px; height: 28px; margin-top: 6px; }
   .qty-btn { width: 26px; height: 100%; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
   .qty-input { width: 28px; text-align: center; border: none; background: none; font-size: 12px; padding: 0; pointer-events: none; }
-
   .cart-item__remove { margin-top: auto; margin-bottom: 5px; display: flex; align-items: flex-end; }
   .remove-link { font-size: 12px; color: #666; text-decoration: underline; background: none; border: none; cursor: pointer; white-space: nowrap; margin-left: 10px; align-self: flex-end; }
-  .remove-link:hover { color: #d00; }
 
   /* UPSELLS */
   .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
   .upsell-heading { font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-  
-  .upsell-card { 
-    display: flex; 
-    gap: 15px; 
-    align-items: center; 
-    background: #fff; 
-    padding: 10px; 
-    border: 1px solid #eee; 
-    border-radius: 6px; 
-    margin-bottom: 10px;
-    justify-content: space-between; 
-  }
-  
+  .upsell-card { display: flex; gap: 15px; align-items: center; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; justify-content: space-between; }
   .upsell-img { width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0; overflow: hidden; }
   .upsell-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  
   .upsell-details { flex: 1; padding-right: 10px; }
   .upsell-title { font-size: 13px; font-weight: 600; margin: 0; line-height: 1.2; }
   .upsell-price { font-size: 12px; color: #555; margin-top: 2px; }
-  
-  .upsell-add-btn { 
-    background: #000; color: #fff; border: none; padding: 6px 14px; 
-    border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; 
-    flex-shrink: 0; 
-  }
+  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
 
-  /* UTILITIES & FOOTER */
+  /* UTILITIES - Updated */
   .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
   .utility-icons { display: flex; justify-content: space-around; margin-bottom: 5px; }
   .util-btn { width: 40px; height: 40px; border: 1px solid #eee; background: #fff; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
   .util-btn.active { background: #333; color: #fff; }
-  .util-content { margin-top: 10px; padding: 10px; border: 1px solid #eee; background: #fff; border-radius: 4px; font-size: 13px; }
-  .util-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 8px; border-radius: 4px; }
+  
+  .util-content { margin-top: 10px; padding: 15px; border: 1px solid #eee; background: #fff; border-radius: 6px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+  .util-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .util-header label { font-weight: 600; font-size: 13px; color: #555; }
+  .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-family: inherit; resize: vertical; }
+  .util-content textarea { min-height: 60px; }
 
+  /* New Actions CSS */
+  .util-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+  .action-btn { padding: 6px 14px; font-size: 11px; border-radius: 4px; font-weight: 600; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 0.5px; }
+  .action-btn.save { background-color: #27ae60; color: white; }
+  .action-btn.save:hover { background-color: #219150; }
+  .action-btn.cancel { background-color: #e5e5e5; color: #555; }
+  .action-btn.cancel:hover { background-color: #d4d4d4; }
+  
+  .save-badge { font-size: 11px; color: #27ae60; font-weight: 700; animation: fadeIn 0.3s ease; }
+
+  /* FOOTER */
   .drawer-footer { padding: 20px 25px; background: #fff; border-top: 1px solid var(--border); }
   .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
-  
   .footer-buttons { display: flex; gap: 12px; height: 48px; width: 100%; }
-  
-  .view-cart-btn, 
-  .checkout-form-wrapper { 
-    flex: 1; 
-    height: 100%; 
-    width: 50%;
-  }
-
-  .view-cart-btn { 
-    display: flex; align-items: center; justify-content: center;
-    text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; 
-    text-transform: uppercase; border-radius: 4px; cursor: pointer; padding: 0;
-    background: #333; color: #fff; 
-    box-sizing: border-box;
-  }
-
-  .checkout-btn { 
-    width: 100%; height: 100%; 
-    display: flex; align-items: center; justify-content: center;
-    text-align: center; font-weight: 700; font-size: 13px; 
-    text-transform: uppercase; border-radius: 4px; cursor: pointer; padding: 0;
-    background: #4834d4; color: #fff; border: none; 
-    box-sizing: border-box;
-  }
+  .view-cart-btn, .checkout-form-wrapper { flex: 1; height: 100%; width: 50%; }
+  .view-cart-btn { display: flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; padding: 0; background: #333; color: #fff; box-sizing: border-box; }
+  .checkout-btn { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; padding: 0; background: #4834d4; color: #fff; border: none; box-sizing: border-box; }
 
   @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // --- DOM ELEMENTS ---
     const drawer = document.getElementById('modern-cart-drawer');
     const itemsContainer = document.getElementById('cart-items-container');
     const subtotalEl = document.getElementById('drawer-subtotal');
     const countBubble = document.getElementById('drawer-count-bubble');
     const footer = document.getElementById('drawer-footer');
     
-    const shippingBar = document.querySelector('.shipping-bar-container');
-    const shippingFill = document.getElementById('shipping-fill');
-    const shippingTruck = document.getElementById('shipping-truck');
-    const truckBubble = document.getElementById('truck-bubble');
-    const shippingText = document.getElementById('shipping-text');
-    const shippingRemaining = document.getElementById('shipping-remaining');
-    const shippingSuccess = document.getElementById('shipping-success');
-    const thresholdCents = parseFloat(shippingBar.dataset.threshold);
+    // Utilities Elements
+    const noteInput = document.getElementById('cart-note');
+    const dateInput = document.getElementById('cart-date');
+    const discountInput = document.getElementById('cart-discount');
 
+    // --- SHIPPING LOGIC ---
+    const shippingBar = document.querySelector('.shipping-bar-container');
+    const thresholdCents = parseFloat(shippingBar.dataset.threshold);
     const formatMoney = (cents) => 'Rs. ' + (cents / 100).toFixed(2);
 
-    // Saves state to sessionStorage
+    // --- STATE MANAGEMENT (Session Storage) ---
+    // 1. Initialize Inputs from Storage (Draft) OR Server
+    if(sessionStorage.getItem('draft_note')) noteInput.value = sessionStorage.getItem('draft_note');
+    if(sessionStorage.getItem('draft_date')) dateInput.value = sessionStorage.getItem('draft_date');
+    if(sessionStorage.getItem('draft_discount')) discountInput.value = sessionStorage.getItem('draft_discount');
+
+    // 2. Listeners for "Drafting" (Save as you type)
+    noteInput.addEventListener('input', (e) => sessionStorage.setItem('draft_note', e.target.value));
+    dateInput.addEventListener('input', (e) => sessionStorage.setItem('draft_date', e.target.value));
+    discountInput.addEventListener('input', (e) => sessionStorage.setItem('draft_discount', e.target.value));
+
+    // --- DRAWER ACTIONS ---
     const openDrawer = () => { 
       drawer.classList.add('is-open'); 
       drawer.setAttribute('aria-hidden', 'false'); 
-      sessionStorage.setItem('cart_drawer_open', 'true'); // Save State
+      sessionStorage.setItem('cart_drawer_open', 'true'); 
       getCartData(); 
     };
-
-    // Saves state to sessionStorage
     const closeDrawer = () => { 
       drawer.classList.remove('is-open'); 
       drawer.setAttribute('aria-hidden', 'true'); 
-      sessionStorage.setItem('cart_drawer_open', 'false'); // Save State
+      sessionStorage.setItem('cart_drawer_open', 'false'); 
     };
 
+    // --- UTILITY BUTTON ACTIONS (Save / Cancel) ---
+    document.querySelectorAll('.action-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const type = btn.dataset.type;
+        const isSave = btn.classList.contains('save');
+        const container = document.getElementById(`util-${type}`);
+        const msgElement = document.getElementById(`msg-${type}`);
+
+        if (isSave) {
+          // SAVE LOGIC
+          if(type === 'note') await updateCartAttribute('note', noteInput.value);
+          if(type === 'date') await updateCartAttribute('attributes', { 'Delivery Date': dateInput.value });
+          if(type === 'discount') {
+            // Discounts technically apply at checkout, so we just visually "save" it
+            sessionStorage.setItem('saved_discount', discountInput.value);
+          }
+          
+          // Show "Saved" badge briefly
+          msgElement.classList.remove('hidden');
+          setTimeout(() => msgElement.classList.add('hidden'), 2000);
+
+        } else {
+          // CANCEL LOGIC
+          // 1. Clear the draft from storage
+          sessionStorage.removeItem(`draft_${type}`);
+          
+          // 2. Restore Value from "Server" state (or empty)
+          // Note: For a robust real-world app, we'd fetch cart.js again to get the true source of truth.
+          // For now, we will just clear inputs or revert to what was known on load if possible.
+          if(type === 'note') noteInput.value = '{{ cart.note }}'; 
+          if(type === 'date') dateInput.value = '{{ cart.attributes["Delivery Date"] }}';
+          if(type === 'discount') {
+             discountInput.value = ''; // Discounts aren't stored on cart object usually
+             sessionStorage.removeItem('draft_discount');
+          }
+
+          // 3. Close the utility view
+          container.classList.add('hidden');
+          document.querySelector(`.util-btn[data-target="util-${type}"]`).classList.remove('active');
+        }
+      });
+    });
+
+    const updateCartAttribute = async (key, value) => {
+      try {
+        await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ [key]: value })
+        });
+      } catch(e) { console.error(e); }
+    };
+
+    // --- CORE CART FUNCTIONS ---
     const getCartData = async () => {
       try {
         const res = await fetch('/cart.js');
@@ -328,64 +391,57 @@
       }
     };
 
+    // --- SHIPPING BAR & UPSELLS (Unchanged logic, kept for integrity) ---
     const updateShippingBar = (totalCents) => {
       if(thresholdCents <= 0) return;
       let percent = (totalCents / thresholdCents) * 100;
       if (percent > 100) percent = 100;
+      const fill = document.getElementById('shipping-fill');
+      const truck = document.getElementById('shipping-truck');
+      const success = document.getElementById('shipping-success');
+      const txt = document.getElementById('shipping-text');
       
-      shippingFill.style.width = `${percent}%`;
-      shippingTruck.style.left = `${percent}%`;
-      truckBubble.textContent = `${Math.round(percent)}%`;
+      fill.style.width = `${percent}%`;
+      truck.style.left = `${percent}%`;
+      document.getElementById('truck-bubble').textContent = `${Math.round(percent)}%`;
 
       if (totalCents >= thresholdCents) {
-        shippingText.classList.add('hidden');
-        shippingSuccess.classList.remove('hidden');
-        document.querySelector('.shipping-truck').style.color = '#27ae60';
-        shippingFill.style.backgroundColor = '#27ae60';
+        txt.classList.add('hidden');
+        success.classList.remove('hidden');
+        fill.style.backgroundColor = '#27ae60';
+        truck.style.color = '#27ae60';
       } else {
         const remaining = thresholdCents - totalCents;
-        shippingRemaining.textContent = formatMoney(remaining);
-        shippingText.classList.remove('hidden');
-        shippingSuccess.classList.add('hidden');
-        document.querySelector('.shipping-truck').style.color = '#333';
-        shippingFill.style.backgroundColor = '#d90429';
+        document.getElementById('shipping-remaining').textContent = formatMoney(remaining);
+        txt.classList.remove('hidden');
+        success.classList.add('hidden');
+        fill.style.backgroundColor = '#d90429';
+        truck.style.color = '#333';
       }
     };
 
-    // --- ROBUST UPSELL FALLBACK LOGIC ---
     const determineUpsells = (cart) => {
       const container = document.getElementById('drawer-upsell-container');
       const grid = document.getElementById('upsell-grid');
-      const heading = document.getElementById('upsell-heading');
       if(!container) return;
       
-      // 1. Try API if cart has items
-      let apiSuccess = false;
       if(cart.item_count > 0) {
-        const firstId = cart.items[0].product_id;
-        fetch(`/recommendations/products.json?product_id=${firstId}&limit=2`)
+        fetch(`/recommendations/products.json?product_id=${cart.items[0].product_id}&limit=2`)
           .then(res => res.json())
           .then(data => { 
              if(data.products && data.products.length > 0) {
                renderUpsells(data.products, grid, container);
-               heading.textContent = "Frequently Bought Together";
-               apiSuccess = true;
-             } else {
-               // API Empty? Fallback
-               runFallback(grid, container, heading);
-             }
-          })
-          .catch(() => runFallback(grid, container, heading));
-      } else {
-        runFallback(grid, container, heading);
-      }
+               document.getElementById('upsell-heading').textContent = "Frequently Bought Together";
+             } else { runFallback(grid, container); }
+          }).catch(() => runFallback(grid, container));
+      } else { runFallback(grid, container); }
     };
 
-    const runFallback = (grid, container, heading) => {
+    const runFallback = (grid, container) => {
       const script = document.getElementById('fallback-products-data');
       if(script) {
          renderUpsells(JSON.parse(script.textContent), grid, container);
-         heading.textContent = "You may also like"; // Generic Title
+         document.getElementById('upsell-heading').textContent = "You may also like"; 
       }
     };
 
@@ -403,6 +459,7 @@
 
     window.addUpsell = (id, btn) => { btn.classList.add('adding'); btn.textContent = '...'; postCartChange('/cart/add.js', { items: [{ id: id, quantity: 1 }] }); };
 
+    // --- EVENT LISTENERS ---
     const attachListeners = () => {
       document.querySelectorAll('.qty-btn').forEach(btn => {
         btn.addEventListener('click', (e) => { e.preventDefault(); const row = btn.closest('.cart-item'); row.classList.add('updating'); postCartChange('/cart/change.js', { id: btn.dataset.key, quantity: parseInt(btn.dataset.qty) }, row); });
@@ -412,24 +469,32 @@
       });
     };
 
+    // Toggle Utilities
     document.querySelectorAll('.util-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = document.getElementById(btn.dataset.target);
         const isHidden = target.classList.contains('hidden');
+        // Hide all others
         document.querySelectorAll('.util-content').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.util-btn').forEach(b => b.classList.remove('active'));
+        
         if(isHidden) { target.classList.remove('hidden'); btn.classList.add('active'); }
       });
     });
-    document.getElementById('drawer-checkout-form')?.addEventListener('submit', (e) => { const code = document.getElementById('cart-discount').value.trim(); if(code) { e.preventDefault(); window.location.href = `/checkout?discount=${code}`; } });
 
+    // Checkout Handler (Apply Discount)
+    document.getElementById('drawer-checkout-form')?.addEventListener('submit', (e) => { 
+      // Check draft or saved discount
+      const code = discountInput.value.trim() || sessionStorage.getItem('saved_discount');
+      if(code) { e.preventDefault(); window.location.href = `/checkout?discount=${code}`; } 
+    });
+
+    // Drawer Toggles
     document.querySelector('.drawer-close').addEventListener('click', closeDrawer);
     document.querySelector('.drawer-backdrop').addEventListener('click', (e) => { if(e.target.classList.contains('drawer-backdrop')) closeDrawer(); });
     document.querySelectorAll('a[href="/cart"]:not(.view-cart-btn)').forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); }); });
 
-    // Check state on load
-    if (sessionStorage.getItem('cart_drawer_open') === 'true') {
-       openDrawer();
-    }
+    // Init Check
+    if (sessionStorage.getItem('cart_drawer_open') === 'true') openDrawer();
   });
 </script>
