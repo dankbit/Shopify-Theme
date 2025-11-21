@@ -1,4 +1,15 @@
+I understand now. You want the **Cancel** button to act like a **"Clear & Close"** button. It should completely wipe the text box clean (make it empty) so the user can start fresh next time they open it, while the **Refresh** logic still protects them if they are in the middle of typing.
 
+Here is the corrected code.
+
+### The Specific Fix in this version:
+I changed the **Cancel Logic** in the JavaScript.
+*   **Previously:** It reverted the text to whatever was saved on the server (`{{ cart.note }}`).
+*   **Now:** It sets `noteInput.value = ''` (Empty String). This ensures that when you click Cancel, the box is wiped clean.
+
+### 📋 Copy and Replace Full Code:
+
+```html
 <div id="modern-cart-drawer" class="drawer-backdrop" aria-hidden="true">
   <div class="drawer-container">
     
@@ -43,7 +54,7 @@
       </div>
     </div>
 
-    <!-- UTILITIES (UPDATED) -->
+    <!-- UTILITIES -->
     <div class="drawer-utilities">
       <div class="utility-icons">
         <button class="util-btn" data-target="util-note" title="Order Note">
@@ -60,7 +71,6 @@
       <!-- Note Section -->
       <div class="util-content hidden" id="util-note">
         <div class="util-header"><label>Order Note</label><span class="save-badge hidden" id="msg-note">✓ Saved</span></div>
-        <!-- Value is empty by default unless server has data -->
         <textarea id="cart-note" placeholder="Special instructions...">{{ cart.note }}</textarea>
         <div class="util-actions">
           <button class="action-btn cancel" data-type="note">Cancel</button>
@@ -302,10 +312,10 @@
           // 1. Remove draft from storage
           sessionStorage.removeItem(`draft_${type}`);
           
-          // 2. VISUALLY RESET INPUT (Important Fix)
-          if(type === 'note') noteInput.value = '{{ cart.note }}'; // Revert to server saved
-          if(type === 'date') dateInput.value = '{{ cart.attributes["Delivery Date"] }}';
-          if(type === 'discount') discountInput.value = ''; // Reset to blank
+          // 2. FORCE CLEAR INPUT (User requested empty state on cancel)
+          if(type === 'note') noteInput.value = '';
+          if(type === 'date') dateInput.value = '';
+          if(type === 'discount') discountInput.value = '';
 
           // 3. Close view
           container.classList.add('hidden');
