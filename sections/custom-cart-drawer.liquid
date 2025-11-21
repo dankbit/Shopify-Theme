@@ -16,16 +16,23 @@
       <p class="shipping-text" id="shipping-text">
         You are <span id="shipping-remaining" style="font-weight:700;"></span> away from <strong>Free Shipping</strong>
       </p>
-      <div class="shipping-track-wrapper">
+      
+      <div class="shipping-visual-wrapper">
+        <!-- The Track Background -->
         <div class="shipping-track">
-          <!-- RED BACKGROUND -->
-          <div class="shipping-fill" id="shipping-fill" style="width: 0%; background-color: #d90429;"></div>
+          <!-- The RED Fill (Chases the truck) -->
+          <div class="shipping-fill" id="shipping-fill" style="width: 0%;"></div>
         </div>
-        <div class="shipping-truck" id="shipping-truck" style="left: 0%;">
+        
+        <!-- The Truck & Bubble (Moves absolute) -->
+        <div class="shipping-truck-wrapper" id="shipping-truck" style="left: 0%;">
           <div class="truck-bubble" id="truck-bubble">0%</div>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          <div class="truck-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
         </div>
       </div>
+
       <div class="shipping-success hidden" id="shipping-success">
         🎉 You've unlocked <strong>Free Shipping!</strong>
       </div>
@@ -63,6 +70,7 @@
         <span id="drawer-subtotal" class="price-text">$0.00</span>
       </div>
       <p class="footer-note">Tax included. Shipping calculated at checkout.</p>
+      
       <div class="footer-buttons">
         <a href="/cart" class="view-cart-btn">View Cart</a>
         <form action="/cart" method="post" id="drawer-checkout-form" class="checkout-form-wrapper">
@@ -131,7 +139,7 @@
   :root {
     --drawer-width: 420px;
     --bg: #ffffff; --text: #121212; --border: #e5e5e5;
-    --bar-bg: #f0f0f0;
+    --bar-bg: #e0e0e0;
     --bar-fill: #d90429; /* RED COLOR */
     --bar-truck: #333;
   }
@@ -150,24 +158,46 @@
   .drawer-close { background: none; border: none; cursor: pointer; padding: 5px; transition: transform 0.2s; }
   .drawer-close:hover { transform: rotate(90deg); }
 
-  /* SHIPPING BAR */
+  /* SHIPPING BAR (FIXED) */
   .shipping-bar-container { padding: 15px 25px; background: #fff; border-bottom: 1px solid var(--border); }
   .shipping-text { font-size: 13px; margin: 0 0 12px; text-align: center; color: #555; }
-  .shipping-track-wrapper { position: relative; height: 32px; margin-bottom: 5px; margin-top: 12px; }
-  .shipping-track { width: 100%; height: 6px; background: var(--bar-bg); border-radius: 4px; overflow: hidden; position: absolute; top: 16px; }
   
-  /* RED FILL */
-  .shipping-fill { height: 100%; background-color: #d90429 !important; width: 0%; transition: width 0.5s ease; }
+  /* Wrapper creates space for Truck + Track */
+  .shipping-visual-wrapper { position: relative; height: 40px; margin-top: 5px; }
   
-  .shipping-truck { position: absolute; top: -2px; width: 40px; height: 40px; color: var(--bar-truck); transition: left 0.5s ease; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-  .truck-bubble { background: #000; color: #fff; font-size: 9px; font-weight: bold; padding: 2px 5px; border-radius: 8px; margin-bottom: 2px; white-space: nowrap; }
-  .shipping-success { text-align: center; font-size: 13px; color: #27ae60; font-weight: 600; animation: slideUpFade 0.5s ease; }
+  /* Track Base */
+  .shipping-track { 
+    width: 100%; height: 8px; background: var(--bar-bg); border-radius: 10px; 
+    overflow: hidden; position: absolute; top: 20px; left: 0; z-index: 1; 
+  }
+  
+  /* RED Fill (Animated) */
+  .shipping-fill { 
+    height: 100%; background-color: #d90429 !important; 
+    width: 0%; transition: width 0.5s ease; 
+  }
+  
+  /* Truck + Percent Bubble (Absolute) */
+  .shipping-truck-wrapper {
+    position: absolute; top: 0; width: 40px; height: 40px;
+    transition: left 0.5s ease; transform: translateX(-50%); z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  
+  /* Percent Bubble */
+  .truck-bubble { 
+    background: #000; color: #fff; font-size: 10px; font-weight: bold; 
+    padding: 3px 6px; border-radius: 10px; margin-bottom: 4px; white-space: nowrap;
+  }
+  .truck-icon { color: var(--bar-truck); }
+  
+  .shipping-success { text-align: center; font-size: 13px; color: #27ae60; font-weight: 600; margin-top: 5px; animation: slideUpFade 0.5s ease; }
 
   /* BODY */
   .drawer-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 25px; }
   .spinner { width: 24px; height: 24px; border: 2px solid #eee; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s infinite; margin: 0 auto; }
   
-  /* ITEMS (Stacked) */
+  /* ITEMS (Stacked Layout) */
   .cart-item { display: flex; gap: 15px; margin-bottom: 20px; position: relative; border-bottom: 1px solid #f9f9f9; padding-bottom: 20px; align-items: flex-start; }
   .cart-item.updating { opacity: 0.6; pointer-events: none; }
   .cart-item.removing { transform: translateX(100%); opacity: 0; max-height: 0; margin: 0; padding: 0; overflow: hidden; transition: all 0.3s ease; }
@@ -189,70 +219,17 @@
   .remove-link { font-size: 12px; color: #666; text-decoration: underline; background: none; border: none; cursor: pointer; white-space: nowrap; margin-left: 10px; align-self: flex-end; }
   .remove-link:hover { color: #d00; }
 
-  /* UPSELLS (FIXED LAYOUT) */
+  /* UPSELLS (Clean Row) */
   .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
   .upsell-heading { font-size: 14px; font-weight: 600; margin-bottom: 15px; }
   
-  /* Fixed Upsell Card CSS */
-  .upsell-card { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; /* Space between img, text, btn */
-    background: #fff; 
-    padding: 10px; 
-    border: 1px solid #eee; 
-    border-radius: 6px; 
-    margin-bottom: 10px; 
-  }
-  
-  .upsell-img { 
-    width: 50px; 
-    height: 50px; 
-    border-radius: 4px; 
-    flex-shrink: 0; 
-    overflow: hidden; /* Crucial for constraints */
-  }
-  
-  .upsell-img img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    display: block; 
-  }
-  
-  .upsell-details { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    overflow: hidden; /* Prevents text spill */
-  }
-  
-  .upsell-title { 
-    font-size: 13px; 
-    font-weight: 600; 
-    margin: 0 0 3px 0; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-  }
-  
-  .upsell-price { 
-    font-size: 12px; 
-    color: #666; 
-  }
-  
-  .upsell-add-btn { 
-    background: #000; 
-    color: #fff; 
-    border: none; 
-    padding: 6px 14px; 
-    border-radius: 20px; 
-    font-size: 11px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    flex-shrink: 0; 
-  }
+  .upsell-card { display: flex; align-items: center; gap: 12px; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; }
+  .upsell-img { width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0; overflow: hidden; }
+  .upsell-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .upsell-details { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  .upsell-title { font-size: 13px; font-weight: 600; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upsell-price { font-size: 12px; color: #666; }
+  .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
 
   /* UTILITIES & FOOTER */
   .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
@@ -265,10 +242,32 @@
 
   .drawer-footer { padding: 20px 25px; background: #fff; border-top: 1px solid var(--border); }
   .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
-  .footer-buttons { display: flex; gap: 12px; }
-  .view-cart-btn, .checkout-btn { flex: 1; padding: 14px; text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .view-cart-btn { background: #333; color: #fff; }
-  .checkout-btn { background: #4834d4; color: #fff; border: none; }
+  .footer-note { font-size: 11px; color: #888; margin: 0 0 15px; }
+  
+  /* EQUAL BUTTONS LAYOUT */
+  .footer-buttons { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; /* 50/50 Grid */
+    gap: 12px; 
+    height: 48px; /* Fixed height enforcement */
+  }
+  
+  .view-cart-btn { 
+    width: 100%; height: 100%;
+    background: #333; color: #fff; 
+    text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; 
+    border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; 
+    padding: 0;
+  }
+  
+  .checkout-form-wrapper { width: 100%; height: 100%; }
+  
+  .checkout-btn { 
+    width: 100%; height: 100%;
+    background: #4834d4; color: #fff; border: none; 
+    font-weight: 700; font-size: 13px; text-transform: uppercase; 
+    border-radius: 4px; cursor: pointer; padding: 0;
+  }
 
   @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -332,6 +331,7 @@
           html += `
             <div class="cart-item" id="item-${item.key}">
               <div class="cart-item__img"><img src="${item.image}" alt="${item.title}"></div>
+              
               <div class="cart-item__content">
                 <div class="cart-item__stack">
                   <a href="${item.url}" class="cart-item__title">${item.product_title}</a>
@@ -343,6 +343,7 @@
                     <button class="qty-btn plus" data-key="${item.key}" data-qty="${item.quantity + 1}">+</button>
                   </div>
                 </div>
+                
                 <div class="cart-item__remove">
                   <button class="remove-link" data-key="${item.key}">Remove</button>
                 </div>
@@ -360,6 +361,7 @@
       let percent = (totalCents / thresholdCents) * 100;
       if (percent > 100) percent = 100;
       
+      // Red fill tracks exactly with truck
       shippingFill.style.width = `${percent}%`;
       shippingTruck.style.left = `${percent}%`;
       truckBubble.textContent = `${Math.round(percent)}%`;
@@ -368,14 +370,14 @@
         shippingText.classList.add('hidden');
         shippingSuccess.classList.remove('hidden');
         document.querySelector('.shipping-truck').style.color = '#27ae60';
-        shippingFill.style.backgroundColor = '#27ae60';
+        shippingFill.style.backgroundColor = '#27ae60'; // Turn Green on Success
       } else {
         const remaining = thresholdCents - totalCents;
         shippingRemaining.textContent = formatMoney(remaining);
         shippingText.classList.remove('hidden');
         shippingSuccess.classList.add('hidden');
         document.querySelector('.shipping-truck').style.color = '#333';
-        shippingFill.style.backgroundColor = '#d90429';
+        shippingFill.style.backgroundColor = '#d90429'; // RED Fill
       }
     };
 
@@ -392,27 +394,15 @@
     const determineUpsells = (cart) => {
       const container = document.getElementById('drawer-upsell-container');
       const grid = document.getElementById('upsell-grid');
-      const heading = document.getElementById('upsell-heading');
       if(!container) return;
-      
-      // 1. ALWAYS show fallback collection if present, just change heading based on context
-      const script = document.getElementById('fallback-products-data');
-      if(script) {
-         renderUpsells(JSON.parse(script.textContent), grid, container);
-         heading.textContent = (cart.item_count === 0) ? "Bestsellers" : "You may also like";
-      }
-      
-      // 2. Enhance with API if cart has items
-      if(cart.item_count > 0) {
+      if(cart.item_count === 0) {
+        const script = document.getElementById('fallback-products-data');
+        if(script) renderUpsells(JSON.parse(script.textContent), grid, container);
+      } else {
         const firstId = cart.items[0].product_id;
         fetch(`/recommendations/products.json?product_id=${firstId}&limit=2`)
           .then(res => res.json())
-          .then(data => { 
-             if(data.products.length) {
-               renderUpsells(data.products, grid, container);
-               heading.textContent = "Frequently Bought Together";
-             }
-          });
+          .then(data => { if(data.products.length) renderUpsells(data.products, grid, container); });
       }
     };
 
