@@ -32,7 +32,6 @@
     <!-- BODY -->
     <div class="drawer-body" id="drawer-body">
       <div id="cart-items-container" class="cart-items-container">
-        <!-- Initial Loading State -->
         <div class="drawer-spinner-wrapper"><div class="spinner"></div></div>
       </div>
 
@@ -57,28 +56,15 @@
         </button>
       </div>
 
-      <!-- NOTE INPUT -->
       <div class="util-content hidden" id="util-note">
-        <div class="util-header">
-          <label>Order Note</label>
-          <span class="save-badge hidden" id="note-saved">✓ Saved</span>
-        </div>
+        <div class="util-header"><label>Order Note</label><span class="save-badge hidden" id="note-saved">✓ Saved</span></div>
         <textarea id="cart-note" placeholder="Instructions...">{{ cart.note }}</textarea>
       </div>
-
-      <!-- DISCOUNT INPUT -->
       <div class="util-content hidden" id="util-discount">
-        <label>Discount Code</label>
-        <input type="text" id="cart-discount" placeholder="Code applied at checkout">
-        <div style="font-size:11px; color:#666; margin-top:4px;">Applied automatically at checkout step.</div>
+        <label>Discount Code</label><input type="text" id="cart-discount" placeholder="Code applied at checkout">
       </div>
-
-      <!-- DATE INPUT -->
       <div class="util-content hidden" id="util-date">
-        <div class="util-header">
-          <label>Delivery Date</label>
-          <span class="save-badge hidden" id="date-saved">✓ Saved</span>
-        </div>
+        <div class="util-header"><label>Delivery Date</label><span class="save-badge hidden" id="date-saved">✓ Saved</span></div>
         <input type="date" id="cart-date" value="{{ cart.attributes['Delivery Date'] }}">
       </div>
     </div>
@@ -92,10 +78,8 @@
       <p class="footer-note">Tax included. Shipping calculated at checkout.</p>
       <div class="footer-buttons">
         <a href="/cart" class="view-cart-btn">View Cart</a>
-        <form action="/cart" method="post" id="drawer-checkout-form" style="flex:1;">
-          <button type="submit" name="checkout" class="checkout-btn">
-            Checkout
-          </button>
+        <form action="/cart" method="post" id="drawer-checkout-form" class="checkout-form-wrapper">
+          <button type="submit" name="checkout" class="checkout-btn">Checkout</button>
         </form>
       </div>
     </div>
@@ -160,14 +144,6 @@
 {% endschema %}
 
 <style>
-  /* --- ANIMATIONS --- */
-  @keyframes slideUpFade {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
   /* --- VARIABLES --- */
   :root {
     --drawer-width: 420px;
@@ -218,29 +194,47 @@
   .drawer-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 25px; }
   .spinner { width: 24px; height: 24px; border: 2px solid #eee; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s infinite; margin: 0 auto; }
   
-  .cart-item { display: flex; gap: 15px; margin-bottom: 20px; animation: slideUpFade 0.4s ease forwards; position: relative; }
-  
-  /* Optimistic Loading State (No Freeze) */
-  .cart-item.updating { opacity: 0.6; pointer-events: none; }
-  .cart-item.updating::after {
-    content: ""; position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
-    border: 2px solid #333; border-top-color: transparent; border-radius: 50%;
-    animation: spin 0.6s linear infinite; margin-left: -8px; margin-top: -8px;
+  .cart-item { 
+    display: flex; gap: 15px; margin-bottom: 20px; animation: slideUpFade 0.4s ease forwards; position: relative; 
+    border-bottom: 1px solid #f9f9f9; padding-bottom: 20px;
   }
-  
-  .cart-item.removing { transform: translateX(100%); opacity: 0; max-height: 0; margin: 0; overflow: hidden; transition: all 0.3s ease; }
+  .cart-item.updating { opacity: 0.6; pointer-events: none; }
+  .cart-item.removing { transform: translateX(100%); opacity: 0; max-height: 0; margin: 0; padding: 0; overflow: hidden; transition: all 0.3s ease; }
 
   .cart-item__img { width: 70px; height: 90px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #f9f9f9; }
   .cart-item__img img { width: 100%; height: 100%; object-fit: cover; }
-  .cart-item__info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .cart-item__title { font-size: 13px; font-weight: 700; margin: 0 0 4px; text-decoration: none; color: #000; text-transform: uppercase; }
-  .cart-item__price { font-size: 13px; color: #333; margin-bottom: 8px; font-weight: 600; }
-  .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; width: fit-content; }
-  .qty-btn { width: 28px; height: 28px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.2s; }
+  
+  .cart-item__info { flex: 1; display: flex; flex-direction: column; position: relative; }
+  .cart-item__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+  
+  .cart-item__title { 
+    font-size: 13px; font-weight: 700; margin: 0; text-decoration: none; 
+    color: #000; text-transform: uppercase; line-height: 1.4; 
+  }
+  
+  .cart-item__price { font-size: 13px; color: #333; font-weight: 600; text-align: right; }
+  .cart-item__variant { font-size: 11px; color: #666; margin-bottom: 8px; }
+
+  .cart-item__actions { 
+    display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; 
+  }
+  
+  .qty-group { display: flex; border: 1px solid #ddd; border-radius: 4px; height: 32px; }
+  .qty-btn { 
+    width: 32px; height: 100%; border: none; background: none; cursor: pointer; 
+    display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.2s; 
+  }
   .qty-btn:hover { background: #f5f5f5; }
-  .qty-input { width: 30px; text-align: center; border: none; background: none; font-size: 12px; padding: 0; pointer-events: none; }
-  .remove-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 18px; transition: color 0.2s; }
-  .remove-btn:hover { color: #d00; }
+  .qty-input { 
+    width: 36px; text-align: center; border: none; background: none; font-size: 13px; padding: 0; pointer-events: none; 
+  }
+  
+  /* New Remove Button Style */
+  .remove-link { 
+    font-size: 12px; color: #666; text-decoration: underline; background: none; border: none; cursor: pointer; 
+    transition: color 0.2s;
+  }
+  .remove-link:hover { color: #d00; }
 
   /* UPSELLS */
   .drawer-upsell-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); animation: slideUpFade 0.5s ease; }
@@ -252,7 +246,7 @@
   .upsell-details { flex: 1; }
   .upsell-title { font-size: 13px; font-weight: 600; margin: 0; }
   .upsell-add-btn { background: #000; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-  .upsell-add-btn.adding { opacity: 0.7; cursor: wait; }
+  .upsell-add-btn:hover { opacity: 0.8; }
 
   /* UTILITIES */
   .drawer-utilities { background: #fcfcfc; border-top: 1px solid var(--border); padding: 10px 25px; }
@@ -265,22 +259,40 @@
   .util-content input, .util-content textarea { width: 100%; border: 1px solid #ddd; padding: 8px; border-radius: 4px; font-family: inherit; transition: border-color 0.2s; }
   .util-content input:focus, .util-content textarea:focus { border-color: #333; outline: none; }
 
-  /* FOOTER */
+  /* FOOTER FIXES */
   .drawer-footer { padding: 20px 25px; background: #fff; border-top: 1px solid var(--border); }
   .footer-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 5px; }
-  .footer-buttons { display: flex; gap: 10px; }
-  .view-cart-btn { flex: 1; padding: 14px; background: #333; color: #fff; text-align: center; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; transition: opacity 0.2s; }
-  .checkout-btn { width: 100%; padding: 14px; background: #4834d4; color: #fff; border: none; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; flex: 1; }
+  .footer-note { font-size: 11px; color: #888; margin: 0 0 15px; }
+  
+  /* Equal Buttons */
+  .footer-buttons { display: flex; gap: 12px; }
+  .view-cart-btn { 
+    flex: 1; padding: 14px; background: #333; color: #fff; text-align: center; text-decoration: none; 
+    font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 4px; transition: opacity 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .checkout-form-wrapper { flex: 1; display: flex; }
+  .checkout-btn { 
+    width: 100%; padding: 14px; background: #4834d4; color: #fff; border: none; font-weight: 700; 
+    font-size: 13px; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; 
+  }
   .view-cart-btn:hover, .checkout-btn:hover { opacity: 0.9; }
+
+  /* Animations */
+  @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // --- SELECTORS ---
+    // --- DOM ---
     const drawer = document.getElementById('modern-cart-drawer');
+    const closeBtn = drawer.querySelector('.drawer-close');
     const itemsContainer = document.getElementById('cart-items-container');
     const subtotalEl = document.getElementById('drawer-subtotal');
     const countBubble = document.getElementById('drawer-count-bubble');
+    
+    // Shipping Bar
     const shippingBar = document.querySelector('.shipping-bar-container');
     const shippingFill = document.getElementById('shipping-fill');
     const shippingTruck = document.getElementById('shipping-truck');
@@ -289,10 +301,9 @@
     const shippingSuccess = document.getElementById('shipping-success');
     const thresholdCents = parseFloat(shippingBar.dataset.threshold);
 
-    // --- HELPERS ---
     const formatMoney = (cents) => 'Rs. ' + (cents / 100).toFixed(2);
 
-    // --- CORE ---
+    // --- CORE ACTIONS ---
     const openDrawer = () => {
       drawer.classList.add('is-open');
       drawer.setAttribute('aria-hidden', 'false');
@@ -304,7 +315,7 @@
       drawer.setAttribute('aria-hidden', 'true');
     };
 
-    // --- API CALLS ---
+    // --- API ---
     const getCartData = async () => {
       try {
         const res = await fetch('/cart.js');
@@ -317,30 +328,24 @@
 
     const postCartChange = async (url, body, rowElement = null) => {
       try {
-        // 1. Send Request
         const res = await fetch(url, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          method: 'POST', headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ ...body, sections: 'cart-icon-bubble' })
         });
         const data = await res.json();
 
-        // 2. Update Header Bubble immediately
         if(data.sections && data.sections['cart-icon-bubble']) {
           const headerBubble = document.getElementById('cart-icon-bubble');
           if(headerBubble) headerBubble.innerHTML = data.sections['cart-icon-bubble'];
         }
 
-        // 3. Refresh Drawer
         await getCartData();
-        
-        // 4. Remove optimistic loading state
         if(rowElement) rowElement.classList.remove('updating');
 
       } catch (err) { console.error(err); }
     };
 
-    // --- RENDERERS ---
+    // --- RENDER ---
     const renderDrawer = (cart) => {
       countBubble.textContent = cart.item_count;
       countBubble.classList.toggle('hidden', cart.item_count === 0);
@@ -352,24 +357,26 @@
       } else {
         document.querySelector('.drawer-footer').classList.remove('hidden');
         
-        // Only rebuild HTML if the IDs changed (Simple diffing check)
-        // For this implementation, we will assume full re-render but logic is fast
         let html = '';
         cart.items.forEach(item => {
           html += `
             <div class="cart-item" id="item-${item.key}">
               <div class="cart-item__img"><img src="${item.image}" alt="${item.title}"></div>
               <div class="cart-item__info">
-                <div class="cart-item__title">${item.product_title}</div>
-                <div style="font-size:11px; color:#666; margin-bottom:4px;">${item.variant_title || ''}</div>
-                <div class="cart-item__price">${formatMoney(item.final_price)}</div>
+                <div class="cart-item__top">
+                  <a href="${item.url}" class="cart-item__title">${item.product_title}</a>
+                  <div class="cart-item__price">${formatMoney(item.final_price)}</div>
+                </div>
+                
+                <div class="cart-item__variant">${item.variant_title || ''}</div>
+                
                 <div class="cart-item__actions">
                   <div class="qty-group">
                     <button class="qty-btn minus" data-key="${item.key}" data-qty="${item.quantity - 1}">-</button>
                     <input class="qty-input" type="text" value="${item.quantity}" readonly>
                     <button class="qty-btn plus" data-key="${item.key}" data-qty="${item.quantity + 1}">+</button>
                   </div>
-                  <button class="remove-btn" data-key="${item.key}">×</button>
+                  <button class="remove-link" data-key="${item.key}">Remove</button>
                 </div>
               </div>
             </div>
@@ -380,7 +387,7 @@
       }
     };
 
-    // --- PROGRESS BAR ---
+    // --- BAR & TRUCK ---
     const updateShippingBar = (totalCents) => {
       if(thresholdCents <= 0) return;
       let percent = (totalCents / thresholdCents) * 100;
@@ -404,15 +411,14 @@
       }
     };
 
-    // --- EVENTS & INTERACTIONS ---
+    // --- LISTENERS ---
     const handleQtyUpdate = (key, newQty, row) => {
-      // Optimistic UI: Update input immediately, then sync
       if (newQty > 0) {
         row.querySelector('.qty-input').value = newQty;
         row.classList.add('updating');
         postCartChange('/cart/change.js', { id: key, quantity: newQty }, row);
       } else {
-        row.classList.add('removing'); // Slide out
+        row.classList.add('removing');
         setTimeout(() => postCartChange('/cart/change.js', { id: key, quantity: 0 }), 300);
       }
     };
@@ -425,7 +431,7 @@
           handleQtyUpdate(btn.dataset.key, parseInt(btn.dataset.qty), row);
         });
       });
-      document.querySelectorAll('.remove-btn').forEach(btn => {
+      document.querySelectorAll('.remove-link').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const row = btn.closest('.cart-item');
@@ -434,73 +440,44 @@
       });
     };
 
-    // --- AUTO SAVE & FEEDBACK (Debounced) ---
+    // Auto Save (Debounce)
     const setupAutoSave = (inputId, endpoint, payloadKey, feedbackId) => {
       const input = document.getElementById(inputId);
       const badge = document.getElementById(feedbackId);
       let timeout;
-
       if(!input) return;
-
       input.addEventListener('input', () => {
-        if(badge) badge.classList.add('hidden'); // Hide while typing
+        if(badge) badge.classList.add('hidden');
         clearTimeout(timeout);
-        
         timeout = setTimeout(() => {
-          const body = {};
-          body[payloadKey] = input.value;
-          
-          fetch(endpoint, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-          }).then(() => {
-            if(badge) badge.classList.remove('hidden'); // Show Saved
-          });
+          const body = {}; body[payloadKey] = input.value;
+          fetch(endpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) })
+            .then(() => { if(badge) badge.classList.remove('hidden'); });
         }, 800);
       });
     };
-
-    // Init Auto-saves
     setupAutoSave('cart-note', '/cart/update.js', 'note', 'note-saved');
     
-    // Date is 'change' event, not 'input'
     const dateInput = document.getElementById('cart-date');
     if(dateInput) {
       dateInput.addEventListener('change', () => {
-        fetch('/cart/update.js', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ attributes: { 'Delivery Date': dateInput.value } })
-        }).then(() => {
-          const badge = document.getElementById('date-saved');
-          if(badge) badge.classList.remove('hidden');
-        });
+        fetch('/cart/update.js', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ attributes: { 'Delivery Date': dateInput.value } }) })
+          .then(() => { const badge = document.getElementById('date-saved'); if(badge) badge.classList.remove('hidden'); });
       });
     }
 
-    // --- UPSELL LOGIC (Reused) ---
+    // Upsell Reuse (Simplified)
     const determineUpsells = (cart) => {
       const container = document.getElementById('drawer-upsell-container');
       const grid = document.getElementById('upsell-grid');
       if(!container) return;
-
       if(cart.item_count === 0) {
         const script = document.getElementById('fallback-products-data');
         if(script) renderUpsells(JSON.parse(script.textContent), grid, container);
       } else {
         const firstId = cart.items[0].product_id;
-        const metaScript = document.getElementById('metafield-recommendations-data');
-        let manual = [];
-        if(metaScript) { try { manual = JSON.parse(metaScript.textContent)[firstId] || []; } catch(e){} }
-        
-        if (manual.length > 0) {
-          renderUpsells(manual, grid, container);
-        } else {
-          fetch(`/recommendations/products.json?product_id=${firstId}&limit=2`)
-            .then(res => res.json())
-            .then(data => { if(data.products.length) renderUpsells(data.products, grid, container); });
-        }
+        fetch(`/recommendations/products.json?product_id=${firstId}&limit=2`)
+          .then(res => res.json()).then(data => { if(data.products.length) renderUpsells(data.products, grid, container); });
       }
     };
 
@@ -514,10 +491,7 @@
         html += `
           <div class="upsell-card">
             <div class="upsell-img"><img src="${img}"></div>
-            <div class="upsell-details">
-              <div class="upsell-title">${prod.title}</div>
-              <div class="upsell-price">${formatMoney(prod.price)}</div>
-            </div>
+            <div class="upsell-details"><div class="upsell-title">${prod.title}</div><div class="upsell-price">${formatMoney(prod.price)}</div></div>
             <button class="upsell-add-btn" onclick="addUpsell(${varId}, this)">Add</button>
           </div>`;
       });
@@ -525,12 +499,11 @@
     };
 
     window.addUpsell = (id, btn) => {
-      btn.classList.add('adding');
-      btn.textContent = '...';
+      btn.classList.add('adding'); btn.textContent = '...';
       postCartChange('/cart/add.js', { items: [{ id: id, quantity: 1 }] });
     };
 
-    // Utilities Toggle
+    // Utilities
     document.querySelectorAll('.util-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = document.getElementById(btn.dataset.target);
@@ -541,24 +514,20 @@
       });
     });
 
-    // Checkout & View Cart
+    // Checkout / View Cart
     const checkoutForm = document.getElementById('drawer-checkout-form');
     if(checkoutForm) {
       checkoutForm.addEventListener('submit', (e) => {
         const code = document.getElementById('cart-discount').value.trim();
-        if(code) {
-          e.preventDefault();
-          window.location.href = `/checkout?discount=${code}`;
-        }
+        if(code) { e.preventDefault(); window.location.href = `/checkout?discount=${code}`; }
       });
     }
 
-    // Open/Close & Hijack
-    document.querySelector('.drawer-close').addEventListener('click', closeDrawer);
+    // Open/Close
+    closeBtn.addEventListener('click', closeDrawer);
     document.querySelector('.drawer-backdrop').addEventListener('click', (e) => {
       if(e.target.classList.contains('drawer-backdrop')) closeDrawer();
     });
-
     document.querySelectorAll('a[href="/cart"]:not(.view-cart-btn)').forEach(link => {
       link.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); });
     });
