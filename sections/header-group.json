@@ -37,6 +37,21 @@
     },
     "header": {
       "type": "header",
+      "blocks": {
+        "mega_menu_images_dJq4WJ": {
+          "type": "mega_menu_images",
+          "settings": {
+            "menu_trigger": "Home",
+            "image_1": "shopify://shop_images/any-landscape-image-of-a-perfume-bottle-with-scenery.png",
+            "link_1": "",
+            "link_2": "",
+            "link_3": ""
+          }
+        }
+      },
+      "block_order": [
+        "mega_menu_images_dJq4WJ"
+      ],
       "settings": {
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
