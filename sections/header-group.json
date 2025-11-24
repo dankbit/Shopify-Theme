@@ -44,8 +44,10 @@
             "menu_trigger": "Home",
             "image_1": "shopify://shop_images/any-landscape-image-of-a-perfume-bottle-with-scenery.png",
             "link_1": "shopify://products/the-collection-snowboard-hydrogen",
-            "link_2": "",
-            "link_3": ""
+            "image_2": "shopify://shop_images/Main_d624f226-0a89-4fe1-b333-0d1548b43c06.jpg",
+            "link_2": "shopify://products/the-collection-snowboard-oxygen",
+            "image_3": "shopify://shop_images/Main_f44a9605-cd62-464d-b095-d45cdaa0d0d7.jpg",
+            "link_3": "shopify://products/the-3p-fulfilled-snowboard"
           }
         }
       },
