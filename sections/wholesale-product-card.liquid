@@ -324,14 +324,14 @@
         <div class="product-sku">SKU: {{ product_target.selected_or_first_available_variant.sku }}</div>
       {% endif %}
 
-      <!-- Wholesale Banner -->
-      <div class="wholesale-banner">
-        <div class="wholesale-banner-title">📦 Wholesale Product</div>
-        <div class="wholesale-banner-text">
-          {{ section.settings.banner_text }}
-        </div>
-      </div>
-
+     
+     <!-- Wholesale Banner -->
+<div class="wholesale-banner">
+  <div class="wholesale-banner-title">📦 Wholesale Product</div>
+  <div class="wholesale-banner-text">
+    Minimum order <strong>{{ section.settings.minimum_qty }}</strong> units. Choose quantity and add to cart.
+  </div>
+</div>
       <!-- Mode Info (shown when both enabled) -->
       {% if section.settings.enable_minimum and section.settings.enable_box %}
         <div class="wholesale-mode-info show">
