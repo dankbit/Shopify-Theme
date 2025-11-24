@@ -103,6 +103,7 @@
       padding: 16px;
       background: #fafafa;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .quantity-control-box:hover {
@@ -324,14 +325,14 @@
         <div class="product-sku">SKU: {{ product_target.selected_or_first_available_variant.sku }}</div>
       {% endif %}
 
-     
-     <!-- Wholesale Banner -->
-<div class="wholesale-banner">
-  <div class="wholesale-banner-title">📦 Wholesale Product</div>
-  <div class="wholesale-banner-text">
-    Select your desired quantity below and add to cart.
-  </div>
-</div>
+      <!-- Wholesale Banner -->
+      <div class="wholesale-banner">
+        <div class="wholesale-banner-title">📦 Wholesale Product</div>
+        <div class="wholesale-banner-text">
+          {{ section.settings.banner_text }}
+        </div>
+      </div>
+
       <!-- Mode Info (shown when both enabled) -->
       {% if section.settings.enable_minimum and section.settings.enable_box %}
         <div class="wholesale-mode-info show">
@@ -438,8 +439,7 @@
         "boxQty": {{ section.settings.box_qty }},
         "minStep": {{ section.settings.min_step }},
         "boxStep": {{ section.settings.box_step }},
-        "price": {{ product_target.selected_or_first_available_variant.price }},
-        "productTitle": "{{ product_target.title | escape }}"
+        "price": {{ product_target.selected_or_first_available_variant.price }}
       }
     </script>
 
@@ -461,9 +461,9 @@
       "label": "Select Product"
     },
     {
-      "type": "text",
+      "type": "richtext",
       "id": "banner_text",
-      "default": "Minimum order {{ min_qty }} units. Choose quantity and add to cart.",
+      "default": "<p>Select your desired quantity below and add to cart.</p>",
       "label": "Wholesale Banner Text"
     },
     {
@@ -622,11 +622,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const sectionId = config.sectionId;
   const section = document.getElementById(`wholesale-${sectionId}`);
 
-  const minInput = section?.querySelector('.qty-min-input');
-  const boxInput = section?.querySelector('.qty-box-input');
-  const qtyHidden = section?.querySelector(`#qty-hidden-${sectionId}`);
-  const submitBtn = section?.querySelector(`#btn-submit-${sectionId}`);
-  const form = section?.querySelector('.wholesale-form');
+  if (!section) return;
+
+  const minInput = section.querySelector('.qty-min-input');
+  const boxInput = section.querySelector('.qty-box-input');
+  const qtyHidden = section.querySelector(`#qty-hidden-${sectionId}`);
+  const submitBtn = section.querySelector(`#btn-submit-${sectionId}`);
 
   let selectedMode = config.enableMin ? 'min' : 'box';
 
@@ -638,18 +639,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const minVal = minInput ? parseInt(minInput.value) || config.minimumQty : 0;
     const boxVal = boxInput ? parseInt(boxInput.value) || config.boxQty : 0;
     const finalQty = selectedMode === 'min' ? minVal : boxVal;
-    const totalPrice = (config.price * finalQty) / 100;
+    const totalPrice = config.price * finalQty;
 
     qtyHidden.value = finalQty;
     
     const displayEl = section.querySelector(`#final-quantity-display-${sectionId}`);
     const priceEl = section.querySelector(`#final-price-display-${sectionId}`);
     displayEl.textContent = `Total: ${finalQty} units`;
-    priceEl.textContent = `${formatPrice(config.price * finalQty)}`;
+    priceEl.textContent = formatPrice(totalPrice);
     
     submitBtn.textContent = `Add ${finalQty} to Cart`;
 
-    // Update box info
     if (boxInput) {
       section.querySelector(`#box-total-${sectionId}`).textContent = boxVal;
     }
@@ -658,7 +658,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Min qty controls
   if (minInput) {
     section.querySelectorAll('[data-type="min"]').forEach(btn => {
       btn.addEventListener('click', function(e) {
@@ -675,7 +674,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Box qty controls
   if (boxInput) {
     section.querySelectorAll('[data-type="box"]').forEach(btn => {
       btn.addEventListener('click', function(e) {
@@ -693,8 +691,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateControlBoxes() {
-    const minBox = section?.querySelector(`#min-qty-box-${sectionId}`);
-    const boxBox = section?.querySelector(`#box-qty-box-${sectionId}`);
+    const minBox = section.querySelector(`#min-qty-box-${sectionId}`);
+    const boxBox = section.querySelector(`#box-qty-box-${sectionId}`);
     
     if (minBox) minBox.classList.toggle('active', selectedMode === 'min');
     if (boxBox) boxBox.classList.toggle('active', selectedMode === 'box');
