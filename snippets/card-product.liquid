@@ -46,6 +46,10 @@
     font-size: 1rem;
     border-radius: 4px;
     transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .quantity-button:hover {
@@ -68,6 +72,13 @@
   .quantity-input:focus {
     outline: none;
     border-color: #333;
+  }
+
+  .card-quantity-selector * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 </style>
 
