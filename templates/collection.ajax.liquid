@@ -1,0 +1,52 @@
+{%- if collection.products.size > 0 -%}
+  {%- liquid
+    assign per_row = section.settings.products_per_row | default: section.settings.grid_product_rows_desktop | default: 4
+    assign products_per_row_mobile = section.settings.products_per_row_mobile | default: section.settings.mobile_product_rows | default: 2
+    assign column_width_mobile = 'small--one-half'
+    case products_per_row_mobile
+      when 1
+        assign column_width_mobile = 'small--one-whole'
+      when 2
+        assign column_width_mobile = 'small--one-half'
+      when 3
+        assign column_width_mobile = 'small--one-third medium-down--one-half'
+      when 4
+        assign column_width_mobile = 'small--one-half'
+    endcase
+
+    assign column_width = 'one-whole'
+    case per_row
+      when 1
+        assign column_width = 'medium-up--one-whole'
+      when 2
+        assign column_width = 'medium-up--one-half'
+      when 3
+        assign column_width = 'medium-up--one-third'
+      when 4
+        assign column_width = 'medium-up--one-quarter'
+      when 5
+        assign column_width = 'medium-up--one-fifth'
+    endcase
+  -%}
+  
+  {%- capture grid_row_class -%}
+    grid grid--{{ per_row }}-col-desktop grid--{{ products_per_row_mobile }}-col-tablet-down
+  {%- endcapture -%}
+  
+  <div class="{{ grid_row_class }} infinite-scroll-products">
+    {%- for product in collection.products -%}
+      {%- render 'card-product',
+        card_product: product,
+        media_aspect_ratio: section.settings.image_ratio,
+        show_secondary_image: section.settings.show_secondary_image,
+        show_vendor: section.settings.show_vendor,
+        show_rating: section.settings.show_rating,
+        lazy_load: true,
+        column_width: column_width,
+        column_width_mobile: column_width_mobile
+      -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  {%- render 'no-products-found' -%}
+{%- endif -%}
