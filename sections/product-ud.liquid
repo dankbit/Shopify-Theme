@@ -650,7 +650,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const fieldsets = Array.from(section.querySelectorAll('.js-product-option'));
       return fieldsets.map(fieldset => {
         const checkedRadio = fieldset.querySelector('input:checked');
-        // Fix type mismatch by converting to string
         return checkedRadio ? checkedRadio.value.toString() : null;
       });
     }
@@ -666,6 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentUnitPrice = currentVariant.price;
         updateTotalPrice();
 
+        // Update compare price
         if (currentVariant.compare_at_price > currentVariant.price) {
             if(priceCompare) {
                 priceCompare.textContent = formatMoney(currentVariant.compare_at_price);
@@ -675,21 +675,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if(priceCompare) priceCompare.classList.add('hidden');
         }
 
+        // ALWAYS ENABLE ADD TO CART (Remove sold out check)
         if (addToCartBtn) {
-            if (currentVariant.available) {
-              addToCartBtn.textContent = 'Add to cart';
-              // FORCEFULLY ENABLE
-              addToCartBtn.disabled = false;
-              addToCartBtn.removeAttribute('disabled');
-              addToCartBtn.classList.remove('disabled');
-            } else {
-              addToCartBtn.textContent = 'Sold Out';
-              // FORCEFULLY DISABLE
-              addToCartBtn.disabled = true;
-              addToCartBtn.setAttribute('disabled', 'disabled');
-            }
+          addToCartBtn.textContent = 'Add to cart';
+          addToCartBtn.disabled = false;
+          addToCartBtn.removeAttribute('disabled');
+          addToCartBtn.classList.remove('disabled');
         }
 
+        // Update featured media if available
         if (currentVariant.featured_media) {
           const mediaId = currentVariant.featured_media.id;
           const slideIndex = Array.from(slides).findIndex(slide => slide.dataset.mediaId == mediaId);
@@ -701,10 +695,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.history.replaceState({}, '', `?variant=${currentVariant.id}`);
       } else {
+        // Fallback: still enable the button
         if (addToCartBtn) {
-            addToCartBtn.textContent = 'Unavailable';
-            addToCartBtn.disabled = true;
-            addToCartBtn.setAttribute('disabled', 'disabled');
+            addToCartBtn.textContent = 'Add to cart';
+            addToCartBtn.disabled = false;
+            addToCartBtn.removeAttribute('disabled');
         }
       }
     }
@@ -712,6 +707,9 @@ document.addEventListener('DOMContentLoaded', function() {
     variantRadios.forEach(radio => {
       radio.addEventListener('change', updateProductInfo);
     });
+
+    // Initialize on page load
+    updateProductInfo();
   }
 });
 </script>
