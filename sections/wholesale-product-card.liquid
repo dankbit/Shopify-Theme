@@ -4,7 +4,6 @@
   {% style %}
     .wholesale-product-section {
       background: #ffffff;
-      border-radius: 12px;
       padding: {{ section.settings.padding_top_mobile }}px {{ section.settings.padding_right_mobile }}px {{ section.settings.padding_bottom_mobile }}px {{ section.settings.padding_left_mobile }}px;
     }
 
@@ -16,22 +15,29 @@
 
     .wholesale-container {
       display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: 40px;
-      align-items: start;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 990px) {
       .wholesale-container {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 40px;
       }
     }
 
-    /* Left Column - Image */
+    /* LEFT COLUMN - Image */
+    .product-image-section {
+      display: flex;
+      justify-content: center;
+    }
+
     .product-image-wrapper {
       width: 100%;
-      max-width: 300px;
+      max-width: 500px;
       aspect-ratio: 1;
       border-radius: 8px;
       overflow: hidden;
@@ -44,25 +50,35 @@
       object-fit: cover;
     }
 
-    /* Right Column - Info */
-    .product-info {
+    /* RIGHT COLUMN - Info */
+    .product-info-section {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
     .product-title {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 700;
       color: #000;
-      line-height: 1.3;
+      line-height: 1.2;
       margin: 0;
     }
 
     .product-price {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
-      color: #d90429;
+      color: #000;
+    }
+
+    .product-meta {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .product-meta a {
+      color: #0066cc;
+      text-decoration: underline;
     }
 
     /* Wholesale Banner */
@@ -89,7 +105,7 @@
       margin: 0;
     }
 
-    /* Step 1: Selection */
+    /* STEP 1: Selection */
     .wholesale-selection {
       display: flex;
       flex-direction: column;
@@ -106,7 +122,7 @@
     .option-box {
       border: 2px solid #e5e5e5;
       border-radius: 8px;
-      padding: 20px;
+      padding: 18px;
       background: #fafafa;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -126,30 +142,29 @@
 
     .option-icon {
       font-size: 32px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .option-title {
       font-size: 14px;
       font-weight: 700;
       color: #000;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .option-description {
       font-size: 12px;
       color: #666;
-      line-height: 1.4;
+      margin-bottom: 6px;
     }
 
     .option-highlight {
       font-size: 16px;
       font-weight: 700;
       color: #0066cc;
-      margin-top: 8px;
     }
 
-    /* Step 2: Quantity Selector (Hidden by default) */
+    /* STEP 2: Quantity Selector (Hidden by default) */
     .quantity-section {
       display: none;
       animation: slideIn 0.3s ease;
@@ -177,14 +192,20 @@
       margin-bottom: 16px;
       padding-bottom: 16px;
       border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .quantity-section-header .change-btn {
       color: #0066cc;
       cursor: pointer;
       text-decoration: underline;
-      margin-left: 8px;
       font-weight: 700;
+      font-size: 13px;
+      background: none;
+      border: none;
+      padding: 0;
     }
 
     .quantity-control {
@@ -206,6 +227,7 @@
       overflow: hidden;
       height: 48px;
       background: #fff;
+      width: fit-content;
     }
 
     .qty-spinner button {
@@ -232,7 +254,7 @@
     }
 
     .qty-spinner input {
-      flex: 1;
+      width: 80px;
       border: none;
       text-align: center;
       font-size: 18px;
@@ -251,20 +273,16 @@
     .qty-info {
       font-size: 12px;
       color: #666;
-      margin-top: 8px;
       padding: 8px;
-      background: #f9f9f9;
-      border-radius: 4px;
     }
 
     .qty-info strong {
       color: #333;
+      font-weight: 600;
     }
 
-    /* Step 3: Add to Cart */
+    /* STEP 3: Add to Cart */
     .add-to-cart-section {
-      border-top: 1px solid #f0f0f0;
-      padding-top: 20px;
       display: none;
     }
 
@@ -299,6 +317,7 @@
       cursor: pointer;
       transition: all 0.3s;
       letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
 
     .btn-add-to-cart:hover {
@@ -309,25 +328,47 @@
       transform: scale(0.98);
     }
 
+    .trust-badge {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #2e7d32;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trust-badge-icon {
+      font-size: 16px;
+    }
+
     @media (max-width: 640px) {
       .product-title {
-        font-size: 22px;
+        font-size: 24px;
       }
 
       .product-price {
-        font-size: 24px;
+        font-size: 22px;
       }
 
       .wholesale-container {
         grid-template-columns: 1fr;
+        gap: 24px;
       }
 
       .product-image-wrapper {
         max-width: 100%;
       }
 
-      .option-box {
-        padding: 16px;
+      .qty-spinner {
+        width: 100%;
+      }
+
+      .qty-spinner input {
+        width: auto;
+        flex: 1;
       }
     }
   {% endstyle %}
@@ -336,20 +377,21 @@
     <div class="wholesale-container">
       
       <!-- LEFT: Image -->
-      <div>
+      <div class="product-image-section">
         {% if product_target.featured_image %}
           <div class="product-image-wrapper">
-            <img src="{{ product_target.featured_image | image_url: width: 300 }}" alt="{{ product_target.title }}" loading="lazy">
+            <img src="{{ product_target.featured_image | image_url: width: 600 }}" alt="{{ product_target.title }}" loading="lazy">
           </div>
         {% endif %}
       </div>
 
       <!-- RIGHT: Info & Controls -->
-      <div class="product-info">
+      <div class="product-info-section">
         <form id="wholesale-form-{{ section.id }}" method="post" action="/cart/add">
           
           <h1 class="product-title">{{ product_target.title }}</h1>
           <div class="product-price">{{ product_target.selected_or_first_available_variant.price | money }}</div>
+          <div class="product-meta">Tax included. <a href="#">Shipping</a> calculated at checkout.</div>
 
           <!-- Wholesale Banner -->
           <div class="wholesale-banner">
@@ -383,8 +425,8 @@
           <!-- STEP 2: Quantity Selector -->
           <div class="quantity-section" id="quantity-section-{{ section.id }}">
             <div class="quantity-section-header">
-              <span id="selected-mode-{{ section.id }}">Minimum Order - {{ section.settings.minimum_qty }} units</span>
-              <span class="change-btn" id="change-btn-{{ section.id }}">Change</span>
+              <span id="selected-mode-{{ section.id }}">Minimum Order</span>
+              <button type="button" class="change-btn" id="change-btn-{{ section.id }}">Change</button>
             </div>
 
             <div class="quantity-control">
@@ -406,17 +448,17 @@
 
           <!-- STEP 3: Add to Cart -->
           <div class="add-to-cart-section" id="add-to-cart-section-{{ section.id }}">
-            <div class="add-to-cart-info">
-              <strong id="final-qty-{{ section.id }}">Total: {{ section.settings.minimum_qty }} units</strong>
-              <span id="final-price-{{ section.id }}">{{ product_target.selected_or_first_available_variant.price | money }}</span>
-            </div>
-
             <input type="hidden" name="id" value="{{ product_target.selected_or_first_available_variant.id }}">
             <input type="hidden" name="quantity" id="qty-final-{{ section.id }}" value="{{ section.settings.minimum_qty }}">
 
             <button type="submit" class="btn-add-to-cart" id="btn-submit-{{ section.id }}">
               Add to Cart
             </button>
+
+            <div class="trust-badge">
+              <span class="trust-badge-icon">🔒</span>
+              <span>100% Secure Checkout · 30 Days Risk-Free Trial</span>
+            </div>
           </div>
 
         </form>
@@ -456,9 +498,6 @@
           
           document.querySelector(`#qty-display-${sectionId}`).textContent = qty + ' units';
           document.querySelector(`#total-price-${sectionId}`).textContent = formatPrice(price * qty);
-          document.querySelector(`#final-qty-${sectionId}`).textContent = `Total: ${qty} units`;
-          document.querySelector(`#final-price-${sectionId}`).textContent = formatPrice(price * qty);
-          document.querySelector(`#unit-price-${sectionId}`).textContent = formatPrice(price);
           
           qtyFinal.value = qty;
         }
