@@ -1,0 +1,661 @@
+{% assign product_target = section.settings.featured_product | default: product %}
+
+<div class="wholesale-quantity-section" id="wholesale-{{ section.id }}">
+  {% style %}
+    .wholesale-quantity-section {
+      padding: {{ section.settings.padding_top_mobile }}px {{ section.settings.padding_right_mobile }}px {{ section.settings.padding_bottom_mobile }}px {{ section.settings.padding_left_mobile }}px;
+      background-color: {{ section.settings.background_color }};
+      border-radius: {{ section.settings.border_radius }}px;
+      margin-bottom: {{ section.settings.margin_bottom }}px;
+    }
+
+    @media (min-width: 768px) {
+      .wholesale-quantity-section {
+        padding: {{ section.settings.padding_top_desktop }}px {{ section.settings.padding_right_desktop }}px {{ section.settings.padding_bottom_desktop }}px {{ section.settings.padding_left_desktop }}px;
+      }
+    }
+
+    .wholesale-header {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: {{ section.settings.heading_color }};
+    }
+
+    .wholesale-info {
+      background-color: {{ section.settings.info_box_bg }};
+      border-left: 4px solid {{ section.settings.info_box_border }};
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: {{ section.settings.text_color }};
+      line-height: 1.6;
+    }
+
+    .quantity-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .quantity-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quantity-label {
+      font-weight: 600;
+      font-size: 14px;
+      color: {{ section.settings.label_color }};
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quantity-label .info-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      cursor: help;
+      position: relative;
+    }
+
+    .quantity-label .info-icon:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 10;
+      font-weight: 400;
+    }
+
+    .quantity-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quantity-spinbox {
+      display: flex;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 48px;
+    }
+
+    .quantity-spinbox button {
+      width: 48px;
+      height: 100%;
+      border: none;
+      background: #f5f5f5;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      transition: background 0.2s;
+    }
+
+    .quantity-spinbox button:hover {
+      background: #eee;
+    }
+
+    .quantity-spinbox input {
+      flex: 1;
+      border: none;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      -moz-appearance: textfield;
+    }
+
+    .quantity-spinbox input::-webkit-outer-spin-button,
+    .quantity-spinbox input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .quantity-error {
+      font-size: 13px;
+      color: #d32f2f;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .quantity-error.show {
+      display: block;
+    }
+
+    .quantity-success {
+      font-size: 13px;
+      color: #388e3c;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .quantity-success.show {
+      display: block;
+    }
+
+    .box-quantity-info {
+      background-color: #f9f9f9;
+      border: 1px solid #e5e5e5;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .available-options {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .available-options strong {
+      color: #333;
+    }
+
+    @media (max-width: 640px) {
+      .wholesale-header {
+        font-size: 16px;
+      }
+
+      .quantity-spinbox button {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+      }
+
+      .quantity-spinbox input {
+        font-size: 14px;
+      }
+
+      .quantity-input-wrapper {
+        flex-direction: column;
+      }
+    }
+  {% endstyle %}
+
+  {% if product_target != blank %}
+    <div class="wholesale-header">{{ section.settings.heading }}</div>
+
+    {% if section.settings.show_info_box %}
+      <div class="wholesale-info">
+        {{ section.settings.info_text }}
+      </div>
+    {% endif %}
+
+    <div class="quantity-input-group">
+      
+      {% if section.settings.enable_minimum_quantity %}
+        <div class="quantity-field">
+          <label class="quantity-label" for="min-quantity-{{ section.id }}">
+            Minimum Quantity
+            <span class="info-icon" data-tooltip="Minimum number of items you can order">?</span>
+          </label>
+          <div class="quantity-input-wrapper">
+            <div class="quantity-spinbox">
+              <button type="button" class="qty-minus" data-field="min-qty">−</button>
+              <input 
+                type="number" 
+                id="min-quantity-{{ section.id }}"
+                class="min-qty-input"
+                value="{{ section.settings.minimum_quantity }}"
+                min="{{ section.settings.minimum_quantity }}"
+                readonly
+              >
+              <button type="button" class="qty-plus" data-field="min-qty">+</button>
+            </div>
+          </div>
+          <div class="quantity-error min-qty-error"></div>
+        </div>
+      {% endif %}
+
+      {% if section.settings.enable_box_quantity %}
+        <div class="quantity-field">
+          <label class="quantity-label" for="box-quantity-{{ section.id }}">
+            Box Quantity
+            <span class="info-icon" data-tooltip="You can only order multiples of this number">?</span>
+          </label>
+          <div class="quantity-input-wrapper">
+            <div class="quantity-spinbox">
+              <button type="button" class="qty-minus" data-field="box-qty">−</button>
+              <input 
+                type="number" 
+                id="box-quantity-{{ section.id }}"
+                class="box-qty-input"
+                value="{{ section.settings.box_quantity }}"
+                min="{{ section.settings.box_quantity }}"
+                step="{{ section.settings.box_quantity }}"
+                readonly
+              >
+              <button type="button" class="qty-plus" data-field="box-qty">+</button>
+            </div>
+          </div>
+          <div class="box-quantity-info">
+            <strong>Only multiples of {{ section.settings.box_quantity }}:</strong>
+            <div class="available-options">
+              <span id="available-multiples-{{ section.id }}"></span>
+            </div>
+          </div>
+          <div class="quantity-error box-qty-error"></div>
+        </div>
+      {% endif %}
+
+      {% if section.settings.enable_both %}
+        <div class="quantity-field">
+          <label class="quantity-label">
+            Final Order Quantity
+            <span class="info-icon" data-tooltip="Must meet both minimum and box quantity requirements">?</span>
+          </label>
+          <div class="quantity-spinbox">
+            <button type="button" class="qty-minus" data-field="final-qty">−</button>
+            <input 
+              type="number" 
+              id="final-quantity-{{ section.id }}"
+              class="final-qty-input"
+              value="{{ section.settings.minimum_quantity }}"
+              min="{{ section.settings.minimum_quantity }}"
+            >
+            <button type="button" class="qty-plus" data-field="final-qty">+</button>
+          </div>
+          <div class="quantity-success final-qty-success"></div>
+          <div class="quantity-error final-qty-error"></div>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <script type="application/json" id="wholesale-config-{{ section.id }}">
+      {
+        "sectionId": "{{ section.id }}",
+        "enableMinimum": {{ section.settings.enable_minimum_quantity | default: false }},
+        "enableBox": {{ section.settings.enable_box_quantity | default: false }},
+        "enableBoth": {{ section.settings.enable_both | default: false }},
+        "minimumQty": {{ section.settings.minimum_quantity | default: 1 }},
+        "boxQty": {{ section.settings.box_quantity | default: 1 }},
+        "minIncrease": {{ section.settings.min_qty_increase | default: 1 }},
+        "boxIncrease": {{ section.settings.box_qty_increase | default: section.settings.box_quantity | default: 1 }}
+      }
+    </script>
+
+  {% else %}
+    <div style="text-align: center; padding: 40px; background: #f5f5f5; border-radius: 4px;">
+      <p style="color: #666;">Please select a product in section settings</p>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Wholesale Quantity",
+  "settings": [
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Select Product",
+      "info": "If blank, uses the product assigned to the page."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Wholesale Pricing",
+      "label": "Heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_info_box",
+      "default": true,
+      "label": "Show Info Box"
+    },
+    {
+      "type": "richtext",
+      "id": "info_text",
+      "default": "<p>Select your desired quantity below. Please note our minimum order requirements and box quantities.</p>",
+      "label": "Info Box Text"
+    },
+    {
+      "type": "header",
+      "content": "Minimum Quantity Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_minimum_quantity",
+      "default": true,
+      "label": "Enable Minimum Quantity"
+    },
+    {
+      "type": "range",
+      "id": "minimum_quantity",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "label": "Minimum Quantity",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "min_qty_increase",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Increase Amount (Min Qty Buttons)",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Box Quantity Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_box_quantity",
+      "default": true,
+      "label": "Enable Box Quantity"
+    },
+    {
+      "type": "range",
+      "id": "box_quantity",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "label": "Box Quantity (e.g., 6)",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "box_qty_increase",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Increase Amount (Box Qty Buttons)",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_both",
+      "default": true,
+      "label": "Show Final Quantity Field (Combines Both Rules)"
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "info_box_bg",
+      "label": "Info Box Background",
+      "default": "#f0f7ff"
+    },
+    {
+      "type": "color",
+      "id": "info_box_border",
+      "label": "Info Box Border Color",
+      "default": "#0066cc"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Border Radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Top Padding (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom Padding (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Left Padding (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Right Padding (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Left Padding (Mobile)",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Right Padding (Mobile)",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wholesale Quantity"
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const configScript = document.currentScript.previousElementSibling;
+  if (!configScript || configScript.id.indexOf('wholesale-config') === -1) return;
+  
+  const config = JSON.parse(configScript.textContent);
+  const sectionId = config.sectionId;
+  const section = document.getElementById(`wholesale-${sectionId}`);
+  
+  const minQtyInput = section.querySelector('.min-qty-input');
+  const boxQtyInput = section.querySelector('.box-qty-input');
+  const finalQtyInput = section.querySelector('.final-qty-input');
+  const minQtyError = section.querySelector('.min-qty-error');
+  const boxQtyError = section.querySelector('.box-qty-error');
+  const finalQtyError = section.querySelector('.final-qty-error');
+  const finalQtySuccess = section.querySelector('.final-qty-success');
+  const availableMultiples = document.getElementById(`available-multiples-${sectionId}`);
+
+  // Update available multiples display
+  function updateAvailableMultiples() {
+    if (!availableMultiples) return;
+    const boxQty = parseInt(boxQtyInput.value) || config.boxQty;
+    const multiples = [];
+    for (let i = 1; i <= 5; i++) {
+      multiples.push(boxQty * i);
+    }
+    availableMultiples.textContent = multiples.join(', ') + '...';
+  }
+
+  // Validate final quantity
+  function validateFinalQty() {
+    if (!finalQtyInput) return true;
+    
+    const minQty = parseInt(minQtyInput?.value) || config.minimumQty;
+    const boxQty = parseInt(boxQtyInput?.value) || config.boxQty;
+    const finalQty = parseInt(finalQtyInput.value) || 0;
+
+    finalQtyError.classList.remove('show');
+    finalQtySuccess.classList.remove('show');
+
+    // Check minimum
+    if (finalQty < minQty) {
+      finalQtyError.textContent = `Must be at least ${minQty}`;
+      finalQtyError.classList.add('show');
+      return false;
+    }
+
+    // Check box multiple
+    if (finalQty % boxQty !== 0) {
+      finalQtyError.textContent = `Must be a multiple of ${boxQty}`;
+      finalQtyError.classList.add('show');
+      return false;
+    }
+
+    finalQtySuccess.textContent = '✓ Valid quantity';
+    finalQtySuccess.classList.add('show');
+    return true;
+  }
+
+  // Min qty buttons
+  section.querySelectorAll('[data-field="min-qty"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const isPlus = this.classList.contains('qty-plus');
+      const step = config.minIncrease;
+      const currentVal = parseInt(minQtyInput.value) || config.minimumQty;
+      const newVal = isPlus ? currentVal + step : Math.max(config.minimumQty, currentVal - step);
+      minQtyInput.value = newVal;
+      
+      if (finalQtyInput) {
+        finalQtyInput.value = newVal;
+        validateFinalQty();
+      }
+    });
+  });
+
+  // Box qty buttons
+  section.querySelectorAll('[data-field="box-qty"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const isPlus = this.classList.contains('qty-plus');
+      const step = config.boxIncrease;
+      const currentVal = parseInt(boxQtyInput.value) || config.boxQty;
+      const newVal = isPlus ? currentVal + step : Math.max(config.boxQty, currentVal - step);
+      boxQtyInput.value = newVal;
+      updateAvailableMultiples();
+      
+      if (finalQtyInput) {
+        validateFinalQty();
+      }
+    });
+  });
+
+  // Final qty buttons & input
+  if (finalQtyInput) {
+    section.querySelectorAll('[data-field="final-qty"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const isPlus = this.classList.contains('qty-plus');
+        const boxQty = parseInt(boxQtyInput?.value) || config.boxQty;
+        const minQty = parseInt(minQtyInput?.value) || config.minimumQty;
+        const currentVal = parseInt(finalQtyInput.value) || minQty;
+        const newVal = isPlus ? currentVal + boxQty : Math.max(minQty, currentVal - boxQty);
+        finalQtyInput.value = newVal;
+        validateFinalQty();
+      });
+    });
+
+    finalQtyInput.addEventListener('input', validateFinalQty);
+    finalQtyInput.addEventListener('change', validateFinalQty);
+  }
+
+  updateAvailableMultiples();
+});
+</script>
