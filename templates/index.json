@@ -198,12 +198,46 @@
         "padding_left_mobile": 20,
         "padding_right_mobile": 20
       }
+    },
+    "wholesale_quantity_YHNaQG": {
+      "type": "wholesale-quantity",
+      "name": "Wholesale Quantity",
+      "settings": {
+        "featured_product": "the-collection-snowboard-hydrogen",
+        "heading": "Wholesale Pricing",
+        "show_info_box": true,
+        "info_text": "<p>Select your desired quantity below. Please note our minimum order requirements and box quantities.</p>",
+        "enable_minimum_quantity": true,
+        "minimum_quantity": 6,
+        "min_qty_increase": 1,
+        "enable_box_quantity": true,
+        "box_quantity": 6,
+        "box_qty_increase": 6,
+        "enable_both": true,
+        "background_color": "#ffffff",
+        "heading_color": "#000000",
+        "label_color": "#333333",
+        "text_color": "#666666",
+        "info_box_bg": "#f0f7ff",
+        "info_box_border": "#0066cc",
+        "border_radius": 8,
+        "padding_top_desktop": 30,
+        "padding_bottom_desktop": 30,
+        "padding_left_desktop": 30,
+        "padding_right_desktop": 30,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "padding_left_mobile": 15,
+        "padding_right_mobile": 15,
+        "margin_bottom": 30
+      }
     }
   },
   "order": [
     "image_banner",
     "slideshow_LGJh3n",
     "announcement_ud_DgdWjQ",
-    "product_ud_KBgTgt"
+    "product_ud_KBgTgt",
+    "wholesale_quantity_YHNaQG"
   ]
 }
