@@ -28,6 +28,66 @@
   {{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
   {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
 {%- endunless -%}
+
+<style>
+  .card-quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+  }
+
+  .quantity-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: auto;
+    position: relative;
+    z-index: 11;
+  }
+
+  .quantity-button:hover {
+    background-color: #e0e0e0;
+  }
+
+  .quantity-button:active {
+    transform: scale(0.95);
+  }
+
+  .quantity-input {
+    width: 60px;
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: auto;
+    position: relative;
+    z-index: 11;
+  }
+
+  .quantity-input:focus {
+    outline: none;
+    border-color: #333;
+  }
+</style>
+
 {%- if card_product and card_product != empty -%}
   {%- liquid
     assign ratio = 1
@@ -156,6 +216,7 @@
               id="CardLink-{{ section_id }}-{{ card_product.id }}"
               class="full-unstyled-link"
               aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }} Badge-{{ section_id }}-{{ card_product.id }}"
+              style="pointer-events: none;"
             >
               {{ card_product.title | escape }}
             </a>
@@ -205,6 +266,7 @@
             {%- endif -%}
 
             {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                 {% liquid
@@ -286,9 +348,83 @@
                 </quantity-popover>
               {% endif %}
             {%- endif -%}
+
+            <!-- QUANTITY SELECTOR WITH ADD TO CART -->
+            <div style="position: relative; z-index: 20; pointer-events: auto;">
+              <div class="card-quantity-selector">
+                <button
+                  class="quantity-button"
+                  type="button"
+                  onclick="decreaseQuantity('qty-{{ card_product.id }}-{{ section_id }}')"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  id="qty-{{ card_product.id }}-{{ section_id }}"
+                  class="quantity-input"
+                  value="1"
+                  min="1"
+                  max="999"
+                >
+                <button
+                  class="quantity-button"
+                  type="button"
+                  onclick="increaseQuantity('qty-{{ card_product.id }}-{{ section_id }}')"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
+            <product-form data-section-id="{{ section.id }}">
+              {%- form 'product', card_product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+                <input
+                  type="hidden"
+                  name="id"
+                  value="{{ card_product.selected_or_first_available_variant.id }}"
+                  class="product-variant-id"
+                  {% if card_product.selected_or_first_available_variant.available == false %}
+                    disabled
+                  {% endif %}
+                >
+                <input
+                  type="hidden"
+                  name="quantity"
+                  id="quantity-hidden-{{ card_product.id }}-{{ section_id }}"
+                  value="1"
+                >
+                <button
+                  type="submit"
+                  name="add"
+                  class="button button--primary button--full-width"
+                  onclick="updateQuantityField('qty-{{ card_product.id }}-{{ section_id }}', 'quantity-hidden-{{ card_product.id }}-{{ section_id }}')"
+                  aria-labelledby="title-{{ section_id }}-{{ card_product.id }}"
+                  aria-live="polite"
+                  data-sold-out-message="true"
+                  {% if card_product.selected_or_first_available_variant.available == false %}
+                    disabled
+                  {% endif %}
+                >
+                  <span>
+                    {%- if card_product.selected_or_first_available_variant.available -%}
+                      {{ 'products.product.add_to_cart' | t }}
+                    {%- else -%}
+                      {{ 'products.product.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                  <span class="sold-out-message hidden">
+                    {{ 'products.product.sold_out' | t }}
+                  </span>
+                  {%- render 'loading-spinner' -%}
+                </button>
+              {%- endform -%}
+            </product-form>
           </div>
         </div>
-        {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
         {% if quick_add == 'standard' %}
           <div class="quick-add no-js-hidden">
             {%- liquid
@@ -388,7 +524,7 @@
               </product-form>
             {%- endif -%}
           </div>
-         
+
         {% elsif quick_add == 'bulk' %}
           {% if card_product.variants_count == 1 %}
             <quick-add-bulk
@@ -427,7 +563,7 @@
               -%}
               <modal-opener
                 id="QuickBulk-{{ card_product.id }}-{{ section_id }}"
-                data-modal="#QuickAddBulk-{{ card_product.id }}-{{ section.id }}"
+                data-modal="#QuickAddBulk-{{ card_product.id }}-{{ section_id }}"
               >
                 <button
                   id="{{ product_form_id }}-submit"
@@ -623,3 +759,23 @@
     </div>
   </div>
 {%- endif -%}
+
+<script>
+  function increaseQuantity(inputId) {
+    const input = document.getElementById(inputId);
+    input.value = parseInt(input.value) + 1;
+  }
+
+  function decreaseQuantity(inputId) {
+    const input = document.getElementById(inputId);
+    if (parseInt(input.value) > 1) {
+      input.value = parseInt(input.value) - 1;
+    }
+  }
+
+  function updateQuantityField(sourceId, targetId) {
+    const sourceInput = document.getElementById(sourceId);
+    const targetInput = document.getElementById(targetId);
+    targetInput.value = sourceInput.value;
+  }
+</script>
