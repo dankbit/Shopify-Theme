@@ -1,5 +1,3 @@
-
-
 {%- assign product_target = section.settings.featured_product | default: product -%}
 
 <div class="custom-product-section" 
@@ -50,10 +48,10 @@
             </div>
 
             <!-- Navigation Arrows -->
-            <button class="slider-arrow prev-btn" aria-label="Previous image">
+            <button class="slider-arrow prev-btn" aria-label="Previous image" type="button">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
-            <button class="slider-arrow next-btn" aria-label="Next image">
+            <button class="slider-arrow next-btn" aria-label="Next image" type="button">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
 
@@ -66,7 +64,7 @@
           <!-- Thumbnails -->
           <div class="thumbnails-wrapper">
             {% for media in product_target.media %}
-              <button class="thumbnail-btn {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+              <button class="thumbnail-btn {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" type="button">
                 <img src="{{ media | image_url: width: 150, height: 150, crop: 'center' }}" alt="{{ media.alt }}">
               </button>
             {% endfor %}
@@ -142,7 +140,7 @@
 
                 {% when 'buy_buttons' %}
                   <div class="product-actions">
-                    <button type="submit" name="add" class="btn-add-to-cart">
+                    <button type="submit" name="add" class="btn-add-to-cart" value="Add to cart">
                       Add to cart
                     </button>
                     {% if block.settings.show_dynamic_checkout %}
@@ -612,6 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const minusBtn = section.querySelector('.qty-btn.minus');
   const priceRegular = section.querySelector('.price-regular');
   const priceCompare = section.querySelector('.price-compare');
+  const productForm = section.querySelector('.product-form');
   
   let currentUnitPrice = {{ product_target.selected_or_first_available_variant.price }};
 
@@ -644,7 +643,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const productVariants = JSON.parse(jsonScript.textContent);
     const variantRadios = section.querySelectorAll('.variant-radio');
     const hiddenInput = section.querySelector('input[name="id"]');
-    const addToCartBtn = section.querySelector('.btn-add-to-cart');
 
     function getSelectedOptions() {
       const fieldsets = Array.from(section.querySelectorAll('.js-product-option'));
@@ -673,14 +671,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             if(priceCompare) priceCompare.classList.add('hidden');
-        }
-
-        // Always show Add to cart button (no availability check)
-        if (addToCartBtn) {
-          addToCartBtn.textContent = 'Add to cart';
-          addToCartBtn.disabled = false;
-          addToCartBtn.removeAttribute('disabled');
-          addToCartBtn.classList.remove('disabled');
         }
 
         // Update featured media if available
