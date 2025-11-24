@@ -1330,3 +1330,75 @@ class CartPerformance {
     );
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Target all product cards in collections/grids
+  const productCards = document.querySelectorAll('.product-item, .grid-product, .product-card, .collection-product, [data-product-id]');
+  
+  productCards.forEach(card => {
+    // Skip if button already exists
+    if (card.querySelector('.add-to-cart-btn')) return;
+    
+    const productHandle = card.dataset.productHandle || 
+                         card.querySelector('a[href*="/products/"]')?.href.split('/products/')[1]?.split('?')[0] ||
+                         card.querySelector('[data-product-id]')?.dataset.productId;
+    
+    const priceElement = card.querySelector('.price, .product-price, .money');
+    if (!priceElement || !productHandle) return;
+    
+    // Create Add to Cart button
+    const btn = document.createElement('button');
+    btn.className = 'add-to-cart-btn';
+    btn.innerHTML = 'Add to Cart';
+    btn.dataset.productHandle = productHandle;
+    
+    // Insert after price
+    priceElement.parentNode.insertBefore(btn, priceElement.nextSibling);
+    
+    // Add click handler
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      addToCart(this.dataset.productHandle, this);
+    });
+  });
+});
+
+async function addToCart(productHandle, button) {
+  button.classList.add('loading');
+  button.innerHTML = 'Adding...';
+  
+  try {
+    const response = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: getVariantId(productHandle),
+        quantity: 1
+      })
+    });
+    
+    if (response.ok) {
+      // Trigger cart update event
+      document.dispatchEvent(new CustomEvent('cart:updated'));
+      button.innerHTML = 'Added! ✓';
+      setTimeout(() => {
+        button.innerHTML = 'Add to Cart';
+        button.classList.remove('loading');
+      }, 1500);
+    }
+  } catch (error) {
+    button.innerHTML = 'Error';
+    setTimeout(() => {
+      button.innerHTML = 'Add to Cart';
+      button.classList.remove('loading');
+    }, 1500);
+  }
+}
+
+function getVariantId(productHandle) {
+  // Get first available variant - customize as needed
+  const variantSelect = document.querySelector(`[data-product-handle="${productHandle}"] select`);
+  return variantSelect?.value || 'DEFAULT_VARIANT_ID';
+}
