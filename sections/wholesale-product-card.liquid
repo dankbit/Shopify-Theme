@@ -1,0 +1,706 @@
+{%- assign product_target = section.settings.featured_product | default: product -%}
+
+<div class="wholesale-product-section" id="wholesale-{{ section.id }}">
+  {% style %}
+    .wholesale-product-section {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: {{ section.settings.padding_top_mobile }}px {{ section.settings.padding_right_mobile }}px {{ section.settings.padding_bottom_mobile }}px {{ section.settings.padding_left_mobile }}px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    @media (min-width: 768px) {
+      .wholesale-product-section {
+        padding: {{ section.settings.padding_top_desktop }}px {{ section.settings.padding_right_desktop }}px {{ section.settings.padding_bottom_desktop }}px {{ section.settings.padding_left_desktop }}px;
+      }
+    }
+
+    /* Product Image */
+    .product-image-wrapper {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f5f5f5;
+      margin-bottom: 24px;
+    }
+
+    .product-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Product Info */
+    .product-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #000;
+      line-height: 1.3;
+    }
+
+    .product-price {
+      font-size: 24px;
+      font-weight: 700;
+      color: #d90429;
+      margin-bottom: 20px;
+    }
+
+    .product-sku {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Wholesale Info Banner */
+    .wholesale-banner {
+      background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+      border-left: 4px solid #0066cc;
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .wholesale-banner-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #0066cc;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .wholesale-banner-text {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    /* Quantity Controls Container */
+    .wholesale-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .wholesale-controls {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    /* Individual Control Box */
+    .quantity-control-box {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 16px;
+      background: #fafafa;
+      transition: all 0.3s ease;
+    }
+
+    .quantity-control-box:hover {
+      border-color: #d0d0d0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .quantity-control-box.active {
+      border-color: #0066cc;
+      background: #f0f7ff;
+      box-shadow: 0 2px 8px rgba(0,102,204,0.15);
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0066cc;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-description {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    /* Spinner Control */
+    .qty-spinner {
+      display: flex;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 44px;
+      background: #fff;
+    }
+
+    .qty-spinner button {
+      width: 44px;
+      height: 100%;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-weight: 700;
+    }
+
+    .qty-spinner button:hover {
+      background: #f0f0f0;
+    }
+
+    .qty-spinner input {
+      flex: 1;
+      border: none;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+      -moz-appearance: textfield;
+    }
+
+    .qty-spinner input::-webkit-outer-spin-button,
+    .qty-spinner input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Display Info Under Spinner */
+    .control-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .control-info strong {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .box-options {
+      font-size: 11px;
+      color: #888;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+
+    /* Error & Success Messages */
+    .control-message {
+      font-size: 12px;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .control-message.error {
+      background: #ffebee;
+      color: #c62828;
+      display: block;
+    }
+
+    .control-message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      display: block;
+    }
+
+    /* Add to Cart Section */
+    .add-to-cart-section {
+      border-top: 1px solid #f0f0f0;
+      padding-top: 24px;
+    }
+
+    .add-to-cart-info {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .add-to-cart-info strong {
+      color: #000;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .btn-add-to-cart {
+      width: 100%;
+      padding: 16px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-add-to-cart:hover:not(:disabled) {
+      background: #0052a3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+    }
+
+    .btn-add-to-cart:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn-add-to-cart:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    /* Mode Toggle (if showing both) */
+    .wholesale-mode-info {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #856404;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .wholesale-mode-info.show {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .product-title {
+        font-size: 18px;
+      }
+
+      .product-price {
+        font-size: 20px;
+      }
+
+      .btn-add-to-cart {
+        padding: 14px;
+        font-size: 14px;
+      }
+    }
+  {% endstyle %}
+
+  {% if product_target != blank %}
+    <form id="wholesale-form-{{ section.id }}" class="wholesale-form" method="post" action="/cart/add">
+      
+      <!-- Product Image -->
+      {% if product_target.featured_image %}
+        <div class="product-image-wrapper">
+          <img src="{{ product_target.featured_image | image_url: width: 600 }}" alt="{{ product_target.title }}" loading="lazy">
+        </div>
+      {% endif %}
+
+      <!-- Product Info -->
+      <h2 class="product-title">{{ product_target.title }}</h2>
+      <div class="product-price">{{ product_target.selected_or_first_available_variant.price | money }}</div>
+      {% if product_target.selected_or_first_available_variant.sku %}
+        <div class="product-sku">SKU: {{ product_target.selected_or_first_available_variant.sku }}</div>
+      {% endif %}
+
+      <!-- Wholesale Banner -->
+      <div class="wholesale-banner">
+        <div class="wholesale-banner-title">📦 Wholesale Product</div>
+        <div class="wholesale-banner-text">
+          {{ section.settings.banner_text }}
+        </div>
+      </div>
+
+      <!-- Mode Info (shown when both enabled) -->
+      {% if section.settings.enable_minimum and section.settings.enable_box %}
+        <div class="wholesale-mode-info show">
+          💡 Choose either minimum quantity OR box multiples below
+        </div>
+      {% endif %}
+
+      <!-- Quantity Controls -->
+      <div class="wholesale-controls">
+        
+        <!-- Minimum Quantity Control -->
+        {% if section.settings.enable_minimum %}
+          <div class="quantity-control-box" id="min-qty-box-{{ section.id }}">
+            <div class="control-label">
+              📍 Minimum Order
+            </div>
+            <div class="control-description">
+              Order at least {{ section.settings.minimum_qty }} units
+            </div>
+            
+            <div class="qty-spinner">
+              <button type="button" class="btn-minus" data-type="min">−</button>
+              <input 
+                type="number" 
+                class="qty-min-input"
+                value="{{ section.settings.minimum_qty }}"
+                min="{{ section.settings.minimum_qty }}"
+                data-min="{{ section.settings.minimum_qty }}"
+                data-step="{{ section.settings.min_step }}"
+              >
+              <button type="button" class="btn-plus" data-type="min">+</button>
+            </div>
+
+            <div class="control-info">
+              <strong id="min-total-{{ section.id }}">{{ section.settings.minimum_qty }}</strong> units selected
+            </div>
+
+            <div class="control-message" id="min-message-{{ section.id }}"></div>
+          </div>
+        {% endif %}
+
+        <!-- Box Quantity Control -->
+        {% if section.settings.enable_box %}
+          <div class="quantity-control-box" id="box-qty-box-{{ section.id }}">
+            <div class="control-label">
+              📦 Box Order
+            </div>
+            <div class="control-description">
+              Order in multiples of {{ section.settings.box_qty }}
+            </div>
+            
+            <div class="qty-spinner">
+              <button type="button" class="btn-minus" data-type="box">−</button>
+              <input 
+                type="number" 
+                class="qty-box-input"
+                value="{{ section.settings.box_qty }}"
+                min="{{ section.settings.box_qty }}"
+                data-box="{{ section.settings.box_qty }}"
+                data-step="{{ section.settings.box_step }}"
+              >
+              <button type="button" class="btn-plus" data-type="box">+</button>
+            </div>
+
+            <div class="control-info">
+              <strong id="box-total-{{ section.id }}">{{ section.settings.box_qty }}</strong> units selected
+              <div class="box-options" id="box-options-{{ section.id }}">
+                ✓ Multiples: {{ section.settings.box_qty }}, {{ section.settings.box_qty | times: 2 }}, {{ section.settings.box_qty | times: 3 }}...
+              </div>
+            </div>
+
+            <div class="control-message" id="box-message-{{ section.id }}"></div>
+          </div>
+        {% endif %}
+
+      </div>
+
+      <!-- Hidden Input for Variant -->
+      <input type="hidden" name="id" value="{{ product_target.selected_or_first_available_variant.id }}">
+      
+      <!-- Hidden Input for Quantity -->
+      <input type="hidden" name="quantity" id="qty-hidden-{{ section.id }}" value="{{ section.settings.minimum_qty }}">
+
+      <!-- Add to Cart Section -->
+      <div class="add-to-cart-section">
+        <div class="add-to-cart-info">
+          <strong id="final-quantity-display-{{ section.id }}">Total: {{ section.settings.minimum_qty }} units</strong>
+          <span id="final-price-display-{{ section.id }}"></span>
+        </div>
+
+        <button type="submit" class="btn-add-to-cart" id="btn-submit-{{ section.id }}">
+          Add {{ section.settings.minimum_qty }} to Cart
+        </button>
+      </div>
+
+    </form>
+
+    <script type="application/json" id="wholesale-config-{{ section.id }}">
+      {
+        "sectionId": "{{ section.id }}",
+        "enableMin": {{ section.settings.enable_minimum }},
+        "enableBox": {{ section.settings.enable_box }},
+        "minimumQty": {{ section.settings.minimum_qty }},
+        "boxQty": {{ section.settings.box_qty }},
+        "minStep": {{ section.settings.min_step }},
+        "boxStep": {{ section.settings.box_step }},
+        "price": {{ product_target.selected_or_first_available_variant.price }},
+        "productTitle": "{{ product_target.title | escape }}"
+      }
+    </script>
+
+  {% else %}
+    <div style="text-align: center; padding: 60px 20px; background: #f5f5f5; border-radius: 12px;">
+      <p style="font-size: 16px; color: #666; margin: 0;">Please select a product in section settings</p>
+    </div>
+  {% endif %}
+
+</div>
+
+{% schema %}
+{
+  "name": "Wholesale Product Card",
+  "settings": [
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Select Product"
+    },
+    {
+      "type": "text",
+      "id": "banner_text",
+      "default": "Minimum order {{ min_qty }} units. Choose quantity and add to cart.",
+      "label": "Wholesale Banner Text"
+    },
+    {
+      "type": "header",
+      "content": "Minimum Quantity Mode"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_minimum",
+      "default": true,
+      "label": "Enable Minimum Quantity Option"
+    },
+    {
+      "type": "range",
+      "id": "minimum_qty",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "label": "Minimum Quantity",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "min_step",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Increase/Decrease Step",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Box Quantity Mode"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_box",
+      "default": true,
+      "label": "Enable Box Quantity Option"
+    },
+    {
+      "type": "range",
+      "id": "box_qty",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "label": "Box Quantity",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "box_step",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Increase/Decrease Step (Multiples of Box)",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "px",
+      "label": "Top Padding (Desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom Padding (Desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "px",
+      "label": "Left Padding (Desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "px",
+      "label": "Right Padding (Desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Left Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Right Padding (Mobile)",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wholesale Product Card"
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const configEl = document.currentScript.previousElementSibling;
+  const config = JSON.parse(configEl.textContent);
+  const sectionId = config.sectionId;
+  const section = document.getElementById(`wholesale-${sectionId}`);
+
+  const minInput = section?.querySelector('.qty-min-input');
+  const boxInput = section?.querySelector('.qty-box-input');
+  const qtyHidden = section?.querySelector(`#qty-hidden-${sectionId}`);
+  const submitBtn = section?.querySelector(`#btn-submit-${sectionId}`);
+  const form = section?.querySelector('.wholesale-form');
+
+  let selectedMode = config.enableMin ? 'min' : 'box';
+
+  function formatPrice(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function updateDisplay() {
+    const minVal = minInput ? parseInt(minInput.value) || config.minimumQty : 0;
+    const boxVal = boxInput ? parseInt(boxInput.value) || config.boxQty : 0;
+    const finalQty = selectedMode === 'min' ? minVal : boxVal;
+    const totalPrice = (config.price * finalQty) / 100;
+
+    qtyHidden.value = finalQty;
+    
+    const displayEl = section.querySelector(`#final-quantity-display-${sectionId}`);
+    const priceEl = section.querySelector(`#final-price-display-${sectionId}`);
+    displayEl.textContent = `Total: ${finalQty} units`;
+    priceEl.textContent = `${formatPrice(config.price * finalQty)}`;
+    
+    submitBtn.textContent = `Add ${finalQty} to Cart`;
+
+    // Update box info
+    if (boxInput) {
+      section.querySelector(`#box-total-${sectionId}`).textContent = boxVal;
+    }
+    if (minInput) {
+      section.querySelector(`#min-total-${sectionId}`).textContent = minVal;
+    }
+  }
+
+  // Min qty controls
+  if (minInput) {
+    section.querySelectorAll('[data-type="min"]').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        selectedMode = 'min';
+        updateControlBoxes();
+        const isPlus = this.classList.contains('btn-plus');
+        const step = config.minStep;
+        const current = parseInt(minInput.value) || config.minimumQty;
+        const newVal = isPlus ? current + step : Math.max(config.minimumQty, current - step);
+        minInput.value = newVal;
+        updateDisplay();
+      });
+    });
+  }
+
+  // Box qty controls
+  if (boxInput) {
+    section.querySelectorAll('[data-type="box"]').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        selectedMode = 'box';
+        updateControlBoxes();
+        const isPlus = this.classList.contains('btn-plus');
+        const step = config.boxStep * config.boxQty;
+        const current = parseInt(boxInput.value) || config.boxQty;
+        const newVal = isPlus ? current + step : Math.max(config.boxQty, current - step);
+        boxInput.value = newVal;
+        updateDisplay();
+      });
+    });
+  }
+
+  function updateControlBoxes() {
+    const minBox = section?.querySelector(`#min-qty-box-${sectionId}`);
+    const boxBox = section?.querySelector(`#box-qty-box-${sectionId}`);
+    
+    if (minBox) minBox.classList.toggle('active', selectedMode === 'min');
+    if (boxBox) boxBox.classList.toggle('active', selectedMode === 'box');
+  }
+
+  updateControlBoxes();
+  updateDisplay();
+});
+</script>
