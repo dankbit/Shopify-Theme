@@ -16,7 +16,7 @@
 
     .wholesale-container {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 300px 1fr;
       gap: 40px;
       align-items: start;
     }
@@ -31,6 +31,7 @@
     /* Left Column - Image */
     .product-image-wrapper {
       width: 100%;
+      max-width: 300px;
       aspect-ratio: 1;
       border-radius: 8px;
       overflow: hidden;
@@ -88,55 +89,116 @@
       margin: 0;
     }
 
-    /* Quantity Controls */
-    .wholesale-controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    /* Step 1: Selection */
+    .wholesale-selection {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    @media (max-width: 640px) {
-      .wholesale-controls {
-        grid-template-columns: 1fr;
-      }
+    .selection-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
     }
 
-    .quantity-control-box {
-      border: 1px solid #e5e5e5;
+    .option-box {
+      border: 2px solid #e5e5e5;
       border-radius: 8px;
-      padding: 16px;
+      padding: 20px;
       background: #fafafa;
-      transition: all 0.3s ease;
       cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
     }
 
-    .quantity-control-box:hover {
+    .option-box:hover {
       border-color: #d0d0d0;
+      background: #f5f5f5;
     }
 
-    .quantity-control-box.active {
+    .option-box.selected {
       border-color: #0066cc;
       background: #f0f7ff;
-      box-shadow: 0 2px 8px rgba(0,102,204,0.15);
+      box-shadow: 0 4px 12px rgba(0,102,204,0.15);
     }
 
-    .control-label {
-      font-size: 13px;
+    .option-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .option-title {
+      font-size: 14px;
       font-weight: 700;
-      text-transform: uppercase;
-      color: #0066cc;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
+      color: #000;
+      margin-bottom: 6px;
     }
 
-    .control-description {
+    .option-description {
       font-size: 12px;
       color: #666;
-      margin-bottom: 12px;
       line-height: 1.4;
     }
 
-    /* Spinner */
+    .option-highlight {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0066cc;
+      margin-top: 8px;
+    }
+
+    /* Step 2: Quantity Selector (Hidden by default) */
+    .quantity-section {
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    .quantity-section.show {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .quantity-section-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .quantity-section-header .change-btn {
+      color: #0066cc;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-left: 8px;
+      font-weight: 700;
+    }
+
+    .quantity-control {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .qty-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
     .qty-spinner {
       display: flex;
       border: 1px solid #ddd;
@@ -186,29 +248,28 @@
       margin: 0;
     }
 
-    .control-info {
+    .qty-info {
       font-size: 12px;
       color: #666;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #e5e5e5;
+      margin-top: 8px;
+      padding: 8px;
+      background: #f9f9f9;
+      border-radius: 4px;
     }
 
-    .control-info strong {
+    .qty-info strong {
       color: #333;
-      font-weight: 600;
     }
 
-    .box-options {
-      font-size: 11px;
-      color: #888;
-      margin-top: 6px;
-    }
-
-    /* Add to Cart Section */
+    /* Step 3: Add to Cart */
     .add-to-cart-section {
       border-top: 1px solid #f0f0f0;
       padding-top: 20px;
+      display: none;
+    }
+
+    .add-to-cart-section.show {
+      display: block;
     }
 
     .add-to-cart-info {
@@ -258,7 +319,15 @@
       }
 
       .wholesale-container {
-        gap: 24px;
+        grid-template-columns: 1fr;
+      }
+
+      .product-image-wrapper {
+        max-width: 100%;
+      }
+
+      .option-box {
+        padding: 16px;
       }
     }
   {% endstyle %}
@@ -270,7 +339,7 @@
       <div>
         {% if product_target.featured_image %}
           <div class="product-image-wrapper">
-            <img src="{{ product_target.featured_image | image_url: width: 600 }}" alt="{{ product_target.title }}" loading="lazy">
+            <img src="{{ product_target.featured_image | image_url: width: 300 }}" alt="{{ product_target.title }}" loading="lazy">
           </div>
         {% endif %}
       </div>
@@ -288,50 +357,55 @@
             <p class="wholesale-banner-text">{{ section.settings.banner_text }}</p>
           </div>
 
-          <!-- Quantity Controls -->
-          <div class="wholesale-controls">
+          <!-- STEP 1: Selection -->
+          <div class="wholesale-selection" id="selection-{{ section.id }}">
+            <div class="selection-label">How would you like to order?</div>
             
-            <!-- Minimum Quantity -->
             {% if section.settings.enable_minimum %}
-              <div class="quantity-control-box active" id="min-qty-box-{{ section.id }}">
-                <div class="control-label">📍 Minimum Order</div>
-                <div class="control-description">Order at least {{ section.settings.minimum_qty }} units</div>
-                
-                <div class="qty-spinner">
-                  <button type="button" class="qty-minus" data-field="min">−</button>
-                  <input type="number" class="qty-input-min" value="{{ section.settings.minimum_qty }}" min="{{ section.settings.minimum_qty }}" readonly>
-                  <button type="button" class="qty-plus" data-field="min">+</button>
-                </div>
-
-                <div class="control-info">
-                  <strong id="min-display-{{ section.id }}">{{ section.settings.minimum_qty }}</strong> units
-                </div>
+              <div class="option-box" data-mode="min">
+                <div class="option-icon">📍</div>
+                <div class="option-title">Minimum Order</div>
+                <div class="option-description">Order at least</div>
+                <div class="option-highlight">{{ section.settings.minimum_qty }} units</div>
               </div>
             {% endif %}
 
-            <!-- Box Quantity -->
             {% if section.settings.enable_box %}
-              <div class="quantity-control-box" id="box-qty-box-{{ section.id }}">
-                <div class="control-label">📦 Box Order</div>
-                <div class="control-description">Order in multiples of {{ section.settings.box_qty }}</div>
-                
-                <div class="qty-spinner">
-                  <button type="button" class="qty-minus" data-field="box">−</button>
-                  <input type="number" class="qty-input-box" value="{{ section.settings.box_qty }}" min="{{ section.settings.box_qty }}" readonly>
-                  <button type="button" class="qty-plus" data-field="box">+</button>
-                </div>
-
-                <div class="control-info">
-                  <strong id="box-display-{{ section.id }}">{{ section.settings.box_qty }}</strong> units
-                  <div class="box-options">✓ {{ section.settings.box_qty }}, {{ section.settings.box_qty | times: 2 }}, {{ section.settings.box_qty | times: 3 }}...</div>
-                </div>
+              <div class="option-box" data-mode="box">
+                <div class="option-icon">📦</div>
+                <div class="option-title">Box Order</div>
+                <div class="option-description">Order in multiples of</div>
+                <div class="option-highlight">{{ section.settings.box_qty }} units</div>
               </div>
             {% endif %}
-
           </div>
 
-          <!-- Add to Cart -->
-          <div class="add-to-cart-section">
+          <!-- STEP 2: Quantity Selector -->
+          <div class="quantity-section" id="quantity-section-{{ section.id }}">
+            <div class="quantity-section-header">
+              <span id="selected-mode-{{ section.id }}">Minimum Order - {{ section.settings.minimum_qty }} units</span>
+              <span class="change-btn" id="change-btn-{{ section.id }}">Change</span>
+            </div>
+
+            <div class="quantity-control">
+              <div class="qty-label">Select Quantity:</div>
+              
+              <div class="qty-spinner">
+                <button type="button" class="qty-minus" id="qty-minus-{{ section.id }}">−</button>
+                <input type="number" class="qty-input" id="qty-input-{{ section.id }}" value="{{ section.settings.minimum_qty }}" min="{{ section.settings.minimum_qty }}" readonly>
+                <button type="button" class="qty-plus" id="qty-plus-{{ section.id }}">+</button>
+              </div>
+
+              <div class="qty-info">
+                <strong id="qty-display-{{ section.id }}">{{ section.settings.minimum_qty }} units</strong> × 
+                <span id="unit-price-{{ section.id }}">{{ product_target.selected_or_first_available_variant.price | money }}</span> = 
+                <strong id="total-price-{{ section.id }}">{{ product_target.selected_or_first_available_variant.price | money }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Add to Cart -->
+          <div class="add-to-cart-section" id="add-to-cart-section-{{ section.id }}">
             <div class="add-to-cart-info">
               <strong id="final-qty-{{ section.id }}">Total: {{ section.settings.minimum_qty }} units</strong>
               <span id="final-price-{{ section.id }}">{{ product_target.selected_or_first_available_variant.price | money }}</span>
@@ -355,10 +429,15 @@
         const sectionId = "{{ section.id }}";
         const section = document.getElementById('wholesale-{{ section.id }}');
         
-        const minInput = section.querySelector('.qty-input-min');
-        const boxInput = section.querySelector('.qty-input-box');
+        const selectionDiv = section.querySelector(`#selection-${sectionId}`);
+        const quantitySection = section.querySelector(`#quantity-section-${sectionId}`);
+        const addToCartSection = section.querySelector(`#add-to-cart-section-${sectionId}`);
+        
+        const qtyInput = section.querySelector(`#qty-input-${sectionId}`);
+        const qtyPlus = section.querySelector(`#qty-plus-${sectionId}`);
+        const qtyMinus = section.querySelector(`#qty-minus-${sectionId}`);
+        const changeBtn = section.querySelector(`#change-btn-${sectionId}`);
         const qtyFinal = section.querySelector(`#qty-final-${sectionId}`);
-        const submitBtn = section.querySelector(`#btn-submit-${sectionId}`);
         
         const minQty = {{ section.settings.minimum_qty }};
         const boxQty = {{ section.settings.box_qty }};
@@ -366,64 +445,90 @@
         const boxStep = {{ section.settings.box_step }};
         const price = {{ product_target.selected_or_first_available_variant.price }};
         
-        let selectedMode = 'min';
+        let selectedMode = null;
+
+        function formatPrice(cents) {
+          return '$' + (cents / 100).toFixed(2);
+        }
 
         function updateDisplay() {
-          const minVal = minInput ? parseInt(minInput.value) : minQty;
-          const boxVal = boxInput ? parseInt(boxInput.value) : boxQty;
-          const finalQty = selectedMode === 'min' ? minVal : boxVal;
-
-          qtyFinal.value = finalQty;
-          document.querySelector(`#final-qty-${sectionId}`).textContent = `Total: ${finalQty} units`;
-          document.querySelector(`#final-price-${sectionId}`).textContent = '$' + ((price * finalQty) / 100).toFixed(2);
+          const qty = parseInt(qtyInput.value);
           
-          if (minInput) document.querySelector(`#min-display-${sectionId}`).textContent = minVal;
-          if (boxInput) document.querySelector(`#box-display-${sectionId}`).textContent = boxVal;
+          document.querySelector(`#qty-display-${sectionId}`).textContent = qty + ' units';
+          document.querySelector(`#total-price-${sectionId}`).textContent = formatPrice(price * qty);
+          document.querySelector(`#final-qty-${sectionId}`).textContent = `Total: ${qty} units`;
+          document.querySelector(`#final-price-${sectionId}`).textContent = formatPrice(price * qty);
+          document.querySelector(`#unit-price-${sectionId}`).textContent = formatPrice(price);
+          
+          qtyFinal.value = qty;
         }
 
-        function updateBoxes() {
-          const minBox = section.querySelector(`#min-qty-box-${sectionId}`);
-          const boxBox = section.querySelector(`#box-qty-box-${sectionId}`);
-          
-          if (minBox) minBox.classList.toggle('active', selectedMode === 'min');
-          if (boxBox) boxBox.classList.toggle('active', selectedMode === 'box');
+        function showQuantityStep() {
+          selectionDiv.style.display = 'none';
+          quantitySection.classList.add('show');
+          addToCartSection.classList.add('show');
+          updateDisplay();
         }
 
-        // Minimum qty buttons
-        if (minInput) {
-          section.querySelectorAll('[data-field="min"]').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-              e.preventDefault();
-              selectedMode = 'min';
-              updateBoxes();
-              
-              const isPlus = this.classList.contains('qty-plus');
-              const current = parseInt(minInput.value);
-              const newVal = isPlus ? current + minStep : Math.max(minQty, current - minStep);
-              minInput.value = newVal;
-              updateDisplay();
-            });
+        function resetSelection() {
+          selectedMode = null;
+          selectionDiv.style.display = 'flex';
+          quantitySection.classList.remove('show');
+          addToCartSection.classList.remove('show');
+          
+          section.querySelectorAll('.option-box').forEach(box => {
+            box.classList.remove('selected');
           });
         }
 
-        // Box qty buttons
-        if (boxInput) {
-          section.querySelectorAll('[data-field="box"]').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-              e.preventDefault();
-              selectedMode = 'box';
-              updateBoxes();
-              
-              const isPlus = this.classList.contains('qty-plus');
-              const current = parseInt(boxInput.value);
-              const newVal = isPlus ? current + (boxStep * boxQty) : Math.max(boxQty, current - (boxStep * boxQty));
-              boxInput.value = newVal;
-              updateDisplay();
-            });
-          });
-        }
+        // Option selection
+        section.querySelectorAll('.option-box').forEach(box => {
+          box.addEventListener('click', function() {
+            const mode = this.dataset.mode;
+            selectedMode = mode;
+            
+            section.querySelectorAll('.option-box').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
 
-        updateDisplay();
+            if (mode === 'min') {
+              qtyInput.value = minQty;
+              qtyInput.min = minQty;
+              document.querySelector(`#selected-mode-${sectionId}`).textContent = `Minimum Order - ${minQty} units`;
+            } else {
+              qtyInput.value = boxQty;
+              qtyInput.min = boxQty;
+              document.querySelector(`#selected-mode-${sectionId}`).textContent = `Box Order - ${boxQty} units`;
+            }
+
+            setTimeout(showQuantityStep, 300);
+          });
+        });
+
+        // Change selection
+        changeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          resetSelection();
+        });
+
+        // Quantity controls
+        qtyPlus.addEventListener('click', function(e) {
+          e.preventDefault();
+          const current = parseInt(qtyInput.value);
+          const step = selectedMode === 'min' ? minStep : (boxStep * boxQty);
+          qtyInput.value = current + step;
+          updateDisplay();
+        });
+
+        qtyMinus.addEventListener('click', function(e) {
+          e.preventDefault();
+          const current = parseInt(qtyInput.value);
+          const min = selectedMode === 'min' ? minQty : boxQty;
+          const step = selectedMode === 'min' ? minStep : (boxStep * boxQty);
+          qtyInput.value = Math.max(min, current - step);
+          updateDisplay();
+        });
+
+        qtyInput.addEventListener('input', updateDisplay);
       });
     </script>
 
@@ -447,7 +552,7 @@
     {
       "type": "richtext",
       "id": "banner_text",
-      "default": "<p>Select your desired quantity below and add to cart.</p>",
+      "default": "<p>Select your ordering method below.</p>",
       "label": "Wholesale Banner Text"
     },
     {
