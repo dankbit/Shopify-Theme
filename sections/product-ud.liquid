@@ -675,19 +675,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if(priceCompare) priceCompare.classList.add('hidden');
         }
 
-        // Check if variant is actually available in stock
+        // Always show Add to cart button (no availability check)
         if (addToCartBtn) {
-          if (currentVariant.available) {
-            addToCartBtn.textContent = 'Add to cart';
-            addToCartBtn.disabled = false;
-            addToCartBtn.removeAttribute('disabled');
-            addToCartBtn.classList.remove('disabled');
-          } else {
-            addToCartBtn.textContent = 'Sold Out';
-            addToCartBtn.disabled = true;
-            addToCartBtn.setAttribute('disabled', 'disabled');
-            addToCartBtn.classList.add('disabled');
-          }
+          addToCartBtn.textContent = 'Add to cart';
+          addToCartBtn.disabled = false;
+          addToCartBtn.removeAttribute('disabled');
+          addToCartBtn.classList.remove('disabled');
         }
 
         // Update featured media if available
@@ -701,12 +694,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         window.history.replaceState({}, '', `?variant=${currentVariant.id}`);
-      } else {
-        if (addToCartBtn) {
-            addToCartBtn.textContent = 'Unavailable';
-            addToCartBtn.disabled = true;
-            addToCartBtn.setAttribute('disabled', 'disabled');
-        }
       }
     }
 
