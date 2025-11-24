@@ -675,12 +675,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if(priceCompare) priceCompare.classList.add('hidden');
         }
 
-        // ALWAYS ENABLE ADD TO CART (Remove sold out check)
+        // Check if variant is actually available in stock
         if (addToCartBtn) {
-          addToCartBtn.textContent = 'Add to cart';
-          addToCartBtn.disabled = false;
-          addToCartBtn.removeAttribute('disabled');
-          addToCartBtn.classList.remove('disabled');
+          if (currentVariant.available) {
+            addToCartBtn.textContent = 'Add to cart';
+            addToCartBtn.disabled = false;
+            addToCartBtn.removeAttribute('disabled');
+            addToCartBtn.classList.remove('disabled');
+          } else {
+            addToCartBtn.textContent = 'Sold Out';
+            addToCartBtn.disabled = true;
+            addToCartBtn.setAttribute('disabled', 'disabled');
+            addToCartBtn.classList.add('disabled');
+          }
         }
 
         // Update featured media if available
@@ -695,11 +702,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.history.replaceState({}, '', `?variant=${currentVariant.id}`);
       } else {
-        // Fallback: still enable the button
         if (addToCartBtn) {
-            addToCartBtn.textContent = 'Add to cart';
-            addToCartBtn.disabled = false;
-            addToCartBtn.removeAttribute('disabled');
+            addToCartBtn.textContent = 'Unavailable';
+            addToCartBtn.disabled = true;
+            addToCartBtn.setAttribute('disabled', 'disabled');
         }
       }
     }
@@ -713,4 +719,3 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-```
