@@ -1,0 +1,99 @@
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<div class="page-width wishlist-page-section">
+  <h1 class="main-page-title page-title h0">
+    {{ page.title | escape }}
+  </h1>
+
+  <div class="wishlist-grid grid grid--2-col grid--3-col-tablet grid--4-col-desktop" id="wishlist-grid">
+    {% comment %} Javascript will inject products here {% endcomment %}
+  </div>
+
+  <div id="wishlist-empty" class="center" style="display:none; margin-top: 3rem;">
+    <h2>Your wishlist is empty</h2>
+    <a href="{{ routes.all_products_collection_url }}" class="button button--primary">
+      Continue Shopping
+    </a>
+  </div>
+
+  <div id="wishlist-loader" class="center">
+    <div class="loading-overlay__spinner">
+      <svg aria-hidden="true" focusable="false" role="presentation" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+        <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const grid = document.getElementById('wishlist-grid');
+  const emptyMsg = document.getElementById('wishlist-empty');
+  const loader = document.getElementById('wishlist-loader');
+  
+  // 1. Read Local Storage
+  const wishlist = JSON.parse(localStorage.getItem('user_wishlist') || '[]');
+
+  if (wishlist.length === 0) {
+    loader.style.display = 'none';
+    emptyMsg.style.display = 'block';
+    return;
+  }
+
+  // 2. Fetch Product Cards
+  const fetchPromises = wishlist.map(handle => 
+    fetch(`/products/${handle}?section_id=wishlist-card-endpoint`)
+      .then(response => {
+        if (!response.ok) throw new Error('Product not found');
+        return response.text();
+      })
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        // This class must match the wrapper in sections/wishlist-card-endpoint.liquid
+        const card = doc.querySelector('.wishlist-card-wrapper');
+        
+        if (card) {
+            const li = document.createElement('div');
+            li.className = 'grid__item';
+            li.innerHTML = card.innerHTML;
+            return li;
+        }
+        return null;
+      })
+      .catch(err => {
+        console.warn(`Failed to load ${handle}`, err);
+        return null;
+      })
+  );
+
+  // 3. Render to DOM
+  const results = await Promise.all(fetchPromises);
+  loader.style.display = 'none';
+  
+  let hasProducts = false;
+  results.forEach(node => {
+    if (node) {
+      grid.appendChild(node);
+      hasProducts = true;
+    }
+  });
+
+  if (!hasProducts) {
+    emptyMsg.style.display = 'block';
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Wishlist Page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Wishlist Page"
+    }
+  ]
+}
+{% endschema %}
