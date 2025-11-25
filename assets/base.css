@@ -100,37 +100,7 @@ body:has(.section-header .drawer-menu) .announcement-bar-section .page-width {
   padding-right: 3rem;
 }
 
-.product-item .add-to-cart-btn,
-.collection .add-to-cart-btn,
-.product-grid-item .add-to-cart-btn {
-  display: block !important;
-  margin: 8px auto 0;
-  padding: 10px 20px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
-  text-align: center;
-}
 
-.add-to-cart-btn:hover {
-  background: #333;
-  transform: translateY(-1px);
-}
-
-.add-to-cart-btn.loading {
-  background: #666;
-  cursor: not-allowed;
-}
-
-.add-to-cart-btn.loading::after {
-  content: " ⏳";
-}
 
 @media screen and (min-width: 750px) {
   .page-width {
@@ -180,6 +150,83 @@ body:has(.section-header .drawer-menu) .announcement-bar-section .page-width {
 
 .section + .section {
   margin-top: var(--spacing-sections-mobile);
+}
+
+/* --- Global Sticky Widget (Middle Left) --- */
+.wishlist-sticky-container {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  padding: 10px;
+}
+
+.wishlist-sticky-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  position: relative;
+}
+
+.wishlist-count-bubble {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Product Card Heart Button --- */
+.wishlist-card-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 2;
+  background: #fff;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.wishlist-card-btn:hover {
+  transform: scale(1.1);
+}
+
+.wishlist-card-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Active State (Filled Heart) --- */
+.js-wishlist-btn.active .icon-heart-empty {
+  display: none;
+}
+
+.js-wishlist-btn.active .icon-heart-filled {
+  display: block !important;
+  fill: red; /* Change this color to match your branding */
+  color: red;
 }
 
 @media screen and (min-width: 750px) {
