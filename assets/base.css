@@ -3721,3 +3721,45 @@ details-disclosure > details {
     transform: translateX(100%) scaleX(0);
   }
 }
+
+
+
+/* --- Card Add to Cart & Quantity Styles --- */
+.card-actions-container {
+  margin-top: 1rem;
+  /* Ensure this sits ABOVE the clickable card link */
+  position: relative; 
+  z-index: 20; 
+}
+
+.card-atc-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.card-qty-input {
+  width: 70px; /* Width of quantity box */
+  height: 40px; /* Height to match button */
+  padding: 5px;
+  text-align: center;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-radius: var(--button-radius-outset);
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  -moz-appearance: textfield; /* Remove spinner arrows on Firefox */
+}
+
+/* Remove spinner arrows on Chrome/Safari */
+.card-qty-input::-webkit-outer-spin-button,
+.card-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.card-atc-btn {
+  flex-grow: 1; /* Button takes remaining space */
+  height: 40px;
+  min-height: unset !important; /* Override Dawn's tall default buttons */
+  padding: 0 1.5rem;
+}
