@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     saveWishlist(wishlist);
   };
 
-  // UI Update Function (Runs on load and change)
+  // UI Update Function
   const updateWishlistUI = () => {
     const wishlist = getWishlist();
     
-    // 1. Update all heart buttons across the site
+    // 1. Update all heart buttons
     document.querySelectorAll('.js-wishlist-btn').forEach(btn => {
       const handle = btn.dataset.productHandle;
       if (wishlist.includes(handle)) {
@@ -39,19 +39,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 2. Update the global sticky counter (optional logic)
+    // 2. Update the global sticky counter
     const countElement = document.querySelector('.wishlist-count-bubble');
     if (countElement) countElement.innerText = wishlist.length;
   };
 
- // Event Delegation for clicks
+  // Event Delegation for clicks
   document.body.addEventListener('click', (e) => {
+    // Look for the closest button with our class
     const btn = e.target.closest('.js-wishlist-btn');
     if (!btn) return;
     
-    // Stop the link from firing
+    // --- VITAL FIX: STOP THE LINK FROM OPENING ---
     e.preventDefault(); 
     e.stopPropagation(); 
+    // ---------------------------------------------
     
     const handle = btn.dataset.productHandle;
     toggleWishlist(handle);
