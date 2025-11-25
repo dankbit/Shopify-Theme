@@ -1,0 +1,14 @@
+{% comment %}
+  This is the API endpoint. JS fetches this to get the HTML for one card.
+{% endcomment %}
+<div class="wishlist-card-wrapper">
+  {% render 'card-product',
+    card_product: product,
+    media_aspect_ratio: settings.image_ratio,
+    show_secondary_image: settings.show_secondary_image,
+    show_vendor: settings.show_vendor,
+    show_rating: settings.show_rating,
+    lazy_load: false,
+    section_id: 'wishlist-endpoint'
+  %}
+</div>
