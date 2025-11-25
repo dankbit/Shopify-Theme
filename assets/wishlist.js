@@ -44,12 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (countElement) countElement.innerText = wishlist.length;
   };
 
-  // Event Delegation for clicks (Better performance than individual listeners)
+ // Event Delegation for clicks
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest('.js-wishlist-btn');
     if (!btn) return;
     
-    e.preventDefault();
+    // Stop the link from firing
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    
     const handle = btn.dataset.productHandle;
     toggleWishlist(handle);
   });
