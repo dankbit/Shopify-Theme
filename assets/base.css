@@ -3727,30 +3727,57 @@ details-disclosure > details {
 /* --- Card Add to Cart & Quantity Styles --- */
 .card-actions-container {
   margin-top: 1rem;
-  /* Ensure this sits ABOVE the clickable card link */
-  position: relative; 
-  z-index: 20; 
+  position: relative;
+  z-index: 20;
 }
 
-.card-atc-row {
+.card-form-inner {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  flex-direction: column; /* Stack vertically */
+  gap: 10px;
 }
 
-.card-qty-input {
-  width: 70px; /* Width of quantity box */
-  height: 40px; /* Height to match button */
-  padding: 5px;
-  text-align: center;
+/* Quantity Wrapper (Capsule Style) */
+.card-quantity-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%; /* Or set a fixed width like 120px if preferred */
+  height: 40px;
   border: 1px solid rgba(var(--color-foreground), 0.2);
   border-radius: var(--button-radius-outset);
   background: rgb(var(--color-background));
-  color: rgb(var(--color-foreground));
-  -moz-appearance: textfield; /* Remove spinner arrows on Firefox */
+  overflow: hidden;
 }
 
-/* Remove spinner arrows on Chrome/Safari */
+.card-qty-btn {
+  width: 40px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--color-foreground));
+  transition: background 0.1s;
+}
+
+.card-qty-btn:hover {
+  background: rgba(var(--color-foreground), 0.05);
+}
+
+.card-qty-input {
+  width: calc(100% - 80px);
+  height: 100%;
+  border: none;
+  text-align: center;
+  background: transparent;
+  color: rgb(var(--color-foreground));
+  font-weight: bold;
+  -moz-appearance: textfield;
+}
+
 .card-qty-input::-webkit-outer-spin-button,
 .card-qty-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -3758,8 +3785,7 @@ details-disclosure > details {
 }
 
 .card-atc-btn {
-  flex-grow: 1; /* Button takes remaining space */
-  height: 40px;
-  min-height: unset !important; /* Override Dawn's tall default buttons */
-  padding: 0 1.5rem;
+  width: 100%;
+  height: 44px;
+  min-height: unset !important;
 }
