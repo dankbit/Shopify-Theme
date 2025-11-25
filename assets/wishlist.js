@@ -47,10 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event Delegation for clicks
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest('.js-wishlist-btn');
-    if (!btn) return; // If clicked elsewhere, do nothing
+    if (!btn) return;
     
-    e.preventDefault(); // Stop default button behavior
-    e.stopPropagation(); // Stop the event from bubbling up to the product link
+    // VITAL: Prevent the link click
+    e.preventDefault(); 
+    e.stopPropagation(); 
     
     const handle = btn.dataset.productHandle;
     toggleWishlist(handle);
@@ -58,4 +59,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Init
   updateWishlistUI();
-}); 
+});
