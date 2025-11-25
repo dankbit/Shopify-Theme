@@ -1,0 +1,21 @@
+<section class="wishlist-page">
+  {{ 'wishlist-page.css' | asset_url | stylesheet_tag }}
+
+  <div class="page-width">
+    <div class="wishlist-header">
+      <h1>My Wishlist</h1>
+      <p id="wishlist-count" class="wishlist-count"></p>
+    </div>
+
+    <div id="wishlist-container" class="wishlist-grid">
+      <!-- Products will be rendered here by JS -->
+    </div>
+
+    <div id="empty-wishlist" class="empty-state">
+      <p>Your wishlist is empty</p>
+      <a href="{{ routes.all_products_url }}" class="button">Continue Shopping</a>
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'wishlist-page.js' | asset_url }}" defer="defer"></script>
