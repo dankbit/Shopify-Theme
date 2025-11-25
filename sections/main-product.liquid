@@ -721,6 +721,7 @@
     {%- endif -%}
 
     {%- if first_3d_model -%}
+      <script src="{{ 'wishlist.js' | asset_url }}" defer="defer"></script>
       <script type="application/json" id="ProductJSON-{{ product.id }}">
         {{ product.media | where: 'media_type', 'model' | json }}
       </script>
