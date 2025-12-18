@@ -48,34 +48,6 @@
         "show_text_below": false
       }
     },
-    "slideshow_LGJh3n": {
-      "type": "slideshow",
-      "name": "Image Slider",
-      "settings": {
-        "title": "Customer Favs",
-        "collection": "automated-collection",
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40,
-        "padding_left_desktop": 40,
-        "padding_right_desktop": 40,
-        "padding_top_mobile": 20,
-        "padding_bottom_mobile": 20,
-        "padding_left_mobile": 20,
-        "padding_right_mobile": 20,
-        "title_font_size_desktop": 32,
-        "title_font_size_mobile": 20,
-        "product_title_font_size_desktop": 16,
-        "product_title_font_size_mobile": 12,
-        "price_font_size_desktop": 14,
-        "price_font_size_mobile": 12,
-        "title_color": "#000000",
-        "product_title_color": "#000000",
-        "price_color": "#000000",
-        "arrow_color": "#000000",
-        "show_title": true,
-        "show_price": true
-      }
-    },
     "announcement_ud_DgdWjQ": {
       "type": "announcement-ud",
       "disabled": true,
@@ -86,190 +58,28 @@
         "text_color": "#ffffff"
       }
     },
-    "product_ud_KBgTgt": {
-      "type": "product-ud",
+    "17660559813d507622": {
+      "type": "apps",
       "blocks": {
-        "title_FLDpw4": {
-          "type": "title",
+        "hotspot_editor_hotspot_banner_gXQHe3": {
+          "type": "shopify://apps/hotspot-editor/blocks/hotspot-banner/019b3093-4447-73f0-b94c-bbe5cdc88567",
           "settings": {
-            "font_size_desktop": 32,
-            "font_size_mobile": 24,
-            "margin_top": 0,
-            "margin_bottom": 10
-          }
-        },
-        "price_qBjMHB": {
-          "type": "price",
-          "settings": {
-            "font_size_desktop": 24,
-            "font_size_mobile": 20,
-            "margin_top": 0,
-            "margin_bottom": 10
-          }
-        },
-        "quantity_selector_BjMbVC": {
-          "type": "quantity_selector",
-          "settings": {
-            "font_size_desktop": 16,
-            "font_size_mobile": 16,
-            "margin_top": 0,
-            "margin_bottom": 20
-          }
-        },
-        "rating_WbJaj7": {
-          "type": "rating",
-          "settings": {
-            "font_size_desktop": 14,
-            "font_size_mobile": 14,
-            "margin_top": 0,
-            "margin_bottom": 10
-          }
-        },
-        "variant_picker_cP6TJg": {
-          "type": "variant_picker",
-          "settings": {
-            "font_size_desktop": 12,
-            "font_size_mobile": 13,
-            "margin_top": 10,
-            "margin_bottom": 20
-          }
-        },
-        "description_4DnCKT": {
-          "type": "description",
-          "settings": {
-            "font_size_desktop": 16,
-            "font_size_mobile": 15,
-            "margin_top": 0,
-            "margin_bottom": 20
-          }
-        },
-        "text_zHXVmV": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Share information about your brand.{{ section.settings.featured_product.metafields.test_data.snowboard_length | metafield_tag }}</p>",
-            "text_color": "#000000",
-            "font_size_desktop": 16,
-            "font_size_mobile": 14,
-            "margin_top": 0,
-            "margin_bottom": 15
-          }
-        },
-        "buy_buttons_FQhryY": {
-          "type": "buy_buttons",
-          "settings": {
-            "show_dynamic_checkout": true,
-            "font_size_desktop": 14,
-            "font_size_mobile": 14,
-            "margin_top": 0,
-            "margin_bottom": 20
-          }
-        },
-        "trust_badge_3GzXGi": {
-          "type": "trust_badge",
-          "settings": {
-            "text": "100% Secure Checkout · 30 Days Risk-Free Trial",
-            "font_size_desktop": 13,
-            "font_size_mobile": 12,
-            "margin_top": 20,
-            "margin_bottom": 20
+            "hotspot_entry": "hotspot-data-a34pdvsc",
+            "dot_size": 32
           }
         }
       },
       "block_order": [
-        "title_FLDpw4",
-        "price_qBjMHB",
-        "quantity_selector_BjMbVC",
-        "rating_WbJaj7",
-        "variant_picker_cP6TJg",
-        "description_4DnCKT",
-        "text_zHXVmV",
-        "buy_buttons_FQhryY",
-        "trust_badge_3GzXGi"
+        "hotspot_editor_hotspot_banner_gXQHe3"
       ],
-      "name": "Custom Product Main",
       "settings": {
-        "featured_product": "the-3p-fulfilled-snowboard",
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40,
-        "padding_left_desktop": 40,
-        "padding_right_desktop": 40,
-        "padding_top_mobile": 20,
-        "padding_bottom_mobile": 20,
-        "padding_left_mobile": 20,
-        "padding_right_mobile": 20
-      }
-    },
-    "wholesale_product_card_qEqMWN": {
-      "type": "wholesale-product-card",
-      "name": "Wholesale Product Card",
-      "settings": {
-        "featured_product": "the-collection-snowboard-hydrogen",
-        "banner_text": "<p>Select your desired quantity below and add to cart.</p>",
-        "content_gap": 16,
-        "enable_minimum": true,
-        "minimum_qty": 6,
-        "min_step": 1,
-        "enable_box": true,
-        "box_qty": 6,
-        "box_step": 1,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40,
-        "padding_left_desktop": 40,
-        "padding_right_desktop": 40,
-        "padding_top_mobile": 20,
-        "padding_bottom_mobile": 20,
-        "padding_left_mobile": 20,
-        "padding_right_mobile": 20
-      }
-    },
-    "collection_list_zLghUR": {
-      "type": "collection-list",
-      "blocks": {
-        "featured_collection_fHeF3r": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "new-collection"
-          }
-        },
-        "featured_collection_ki3Van": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": ""
-          }
-        },
-        "featured_collection_qFarnm": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": ""
-          }
-        }
-      },
-      "block_order": [
-        "featured_collection_fHeF3r",
-        "featured_collection_ki3Van",
-        "featured_collection_qFarnm"
-      ],
-      "name": "t:sections.collection-list.presets.name",
-      "settings": {
-        "title": "Collections",
-        "heading_size": "h1",
-        "image_ratio": "square",
-        "columns_desktop": 3,
-        "color_scheme": "",
-        "show_view_all": false,
-        "columns_mobile": "1",
-        "swipe_on_mobile": false,
-        "padding_top": 36,
-        "padding_bottom": 36
+        "include_margins": true
       }
     }
   },
   "order": [
     "image_banner",
-    "slideshow_LGJh3n",
     "announcement_ud_DgdWjQ",
-    "product_ud_KBgTgt",
-    "wholesale_product_card_qEqMWN",
-    "collection_list_zLghUR"
+    "17660559813d507622"
   ]
 }
