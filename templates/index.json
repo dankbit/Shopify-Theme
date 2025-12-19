@@ -75,11 +75,30 @@
       "settings": {
         "include_margins": true
       }
+    },
+    "1766143305fb4431ae": {
+      "type": "apps",
+      "blocks": {
+        "monogramming_star_rating_f8hcRe": {
+          "type": "shopify://apps/monogramming/blocks/star_rating/019b3575-b394-7a37-8ca7-42be97ab0442",
+          "settings": {
+            "product": "",
+            "colour": "#ff0000"
+          }
+        }
+      },
+      "block_order": [
+        "monogramming_star_rating_f8hcRe"
+      ],
+      "settings": {
+        "include_margins": true
+      }
     }
   },
   "order": [
     "image_banner",
     "announcement_ud_DgdWjQ",
-    "176614326073f41de2"
+    "176614326073f41de2",
+    "1766143305fb4431ae"
   ]
 }
