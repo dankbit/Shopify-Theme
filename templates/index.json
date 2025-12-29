@@ -75,11 +75,23 @@
       "settings": {
         "include_margins": true
       }
+    },
+    "featured_collection_8HMGMK": {
+      "type": "featured-collection",
+      "name": "Featured Collection",
+      "settings": {
+        "collection": "hydrogen",
+        "products_limit": 8,
+        "title": "Featured Collection",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
     "image_banner",
     "announcement_ud_DgdWjQ",
-    "17661436282f1f3d61"
+    "17661436282f1f3d61",
+    "featured_collection_8HMGMK"
   ]
 }
