@@ -60,18 +60,6 @@
     },
     "17661436282f1f3d61": {
       "type": "apps",
-      "blocks": {
-        "hotspot_editor_hotspot_banner_zNJCUL": {
-          "type": "shopify://apps/hotspot-editor/blocks/hotspot-banner/019b3093-4447-73f0-b94c-bbe5cdc88567",
-          "settings": {
-            "hotspot_entry": "hotspot-data-a34pdvsc",
-            "dot_size": 32
-          }
-        }
-      },
-      "block_order": [
-        "hotspot_editor_hotspot_banner_zNJCUL"
-      ],
       "settings": {
         "include_margins": true
       }
@@ -86,12 +74,31 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "1767959843afc6f483": {
+      "type": "apps",
+      "blocks": {
+        "hotspot_editor_hotspot_banner_7dgUmd": {
+          "type": "shopify://apps/hotspot-editor/blocks/hotspot-banner/019ba299-2dd5-7e47-a5ce-6a3f3a6031d9",
+          "settings": {
+            "hotspot_entry": "hotspot-data-mfbdnnng",
+            "dot_size": 32
+          }
+        }
+      },
+      "block_order": [
+        "hotspot_editor_hotspot_banner_7dgUmd"
+      ],
+      "settings": {
+        "include_margins": true
+      }
     }
   },
   "order": [
     "image_banner",
     "announcement_ud_DgdWjQ",
     "17661436282f1f3d61",
-    "featured_collection_8HMGMK"
+    "featured_collection_8HMGMK",
+    "1767959843afc6f483"
   ]
 }
