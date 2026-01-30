@@ -1,0 +1,231 @@
+{% comment %}
+  Law Firm Change Kit Form – Shopify Section
+{% endcomment %}
+
+<style>
+/* Container */
+.change-kit-form-wrapper {
+    background: #ffffff;
+    padding: 25px;
+    max-width: 520px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Heading */
+.change-kit-form-wrapper h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form group */
+.change-kit-form-group {
+    margin-bottom: 15px;
+}
+
+.change-kit-form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+.change-kit-form-group input,
+.change-kit-form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.change-kit-form-group input:focus,
+.change-kit-form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Radio */
+.change-kit-radio-group label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    font-weight: normal;
+}
+
+/* Errors */
+.change-kit-error {
+    color: #d8000c;
+    font-size: 13px;
+    margin-top: 4px;
+    display: none;
+}
+
+/* Success */
+.change-kit-success {
+    margin-top: 15px;
+    color: #0a7a0a;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Button */
+.change-kit-submit {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.change-kit-submit:hover {
+    background: #0056b3;
+}
+</style>
+
+<div class="change-kit-form-wrapper">
+
+  {% if section.settings.page_title != blank %}
+    <h2>{{ section.settings.page_title }}</h2>
+  {% endif %}
+
+  <form id="changeKitForm-{{ section.id }}" novalidate>
+
+      <div class="change-kit-form-group">
+          <label>First Name *</label>
+          <input type="text" id="ck_firstName_{{ section.id }}">
+          <div class="change-kit-error" id="err_firstName_{{ section.id }}"></div>
+      </div>
+
+      <div class="change-kit-form-group">
+          <label>Last Name *</label>
+          <input type="text" id="ck_lastName_{{ section.id }}">
+          <div class="change-kit-error" id="err_lastName_{{ section.id }}"></div>
+      </div>
+
+      <div class="change-kit-form-group">
+          <label>Email *</label>
+          <input type="email" id="ck_email_{{ section.id }}">
+          <div class="change-kit-error" id="err_email_{{ section.id }}"></div>
+      </div>
+
+      <div class="change-kit-form-group">
+          <label>Phone *</label>
+          <input type="tel" id="ck_phone_{{ section.id }}" maxlength="10">
+          <div class="change-kit-error" id="err_phone_{{ section.id }}"></div>
+      </div>
+
+      <div class="change-kit-form-group">
+          <label>Address *</label>
+          <input type="text" id="ck_address_{{ section.id }}">
+          <div class="change-kit-error" id="err_address_{{ section.id }}"></div>
+      </div>
+
+      <div class="change-kit-form-group">
+          <label>State *</label>
+          <select id="ck_state_{{ section.id }}">
+              <option value="">Select State</option>
+              <option value="CA">California</option>
+              <option value="NY">New York</option>
+              <option value="TX">Texas</option>
+          </select>
+          <div class="change-kit-error" id="err_state_{{ section.id }}"></div>
+      </div>
+
+      <div class="change-kit-form-group">
+          <label>Kit Type *</label>
+          <div class="change-kit-radio-group">
+              <label><input type="radio" name="kitType_{{ section.id }}" value="physical"> Physical</label>
+              <label><input type="radio" name="kitType_{{ section.id }}" value="digital"> Digital</label>
+          </div>
+          <div class="change-kit-error" id="err_kitType_{{ section.id }}"></div>
+      </div>
+
+      <button type="submit" class="change-kit-submit">Submit</button>
+      <div class="change-kit-success" id="ck_success_{{ section.id }}"></div>
+
+  </form>
+</div>
+
+<script>
+(function () {
+    var form = document.getElementById('changeKitForm-{{ section.id }}');
+
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearErrors();
+
+        var valid = true;
+
+        function val(id) {
+            return document.getElementById(id).value.trim();
+        }
+
+        var firstName = val('ck_firstName_{{ section.id }}');
+        var lastName  = val('ck_lastName_{{ section.id }}');
+        var email     = val('ck_email_{{ section.id }}');
+        var phone     = val('ck_phone_{{ section.id }}');
+        var address   = val('ck_address_{{ section.id }}');
+        var state     = document.getElementById('ck_state_{{ section.id }}').value;
+        var kitType   = document.querySelector('input[name="kitType_{{ section.id }}"]:checked');
+
+        if (!firstName) error('err_firstName_{{ section.id }}', 'First name is required');
+        if (!lastName)  error('err_lastName_{{ section.id }}', 'Last name is required');
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+            error('err_email_{{ section.id }}', 'Valid email is required');
+        if (!/^[0-9]{10}$/.test(phone))
+            error('err_phone_{{ section.id }}', 'Enter a 10 digit phone number');
+        if (!address) error('err_address_{{ section.id }}', 'Address is required');
+        if (!state)   error('err_state_{{ section.id }}', 'Please select a state');
+        if (!kitType) error('err_kitType_{{ section.id }}', 'Please select a kit type');
+
+        if (valid) {
+            document.getElementById('ck_success_{{ section.id }}').innerText =
+                'Your request has been submitted successfully!';
+            form.reset();
+        }
+
+        function error(id, msg) {
+            valid = false;
+            var el = document.getElementById(id);
+            el.innerText = msg;
+            el.style.display = 'block';
+        }
+    });
+
+    function clearErrors() {
+        document.querySelectorAll('#changeKitForm-{{ section.id }} .change-kit-error')
+            .forEach(function (el) {
+                el.innerText = '';
+                el.style.display = 'none';
+            });
+        document.getElementById('ck_success_{{ section.id }}').innerText = '';
+    }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Law Firm Change Kit Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "page_title",
+      "label": "Page Title",
+      "default": "Order Your Name Change Kit"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Law Firm Change Kit Form"
+    }
+  ]
+}
+{% endschema %}
