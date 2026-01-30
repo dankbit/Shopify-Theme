@@ -10,7 +10,7 @@
 
     <!-- PRODUCT DROPDOWN -->
     <div class="custom-select-wrapper">
-      {% assign product_list = collections['bag'].products | where: "available", true | slice: 0, 5 %}
+      {% assign product_list = collections['new-collection'].products | where: "available", true | slice: 0, 5 %}
       {% assign first_product = product_list.first %}
 
       <div class="custom-select-trigger">
