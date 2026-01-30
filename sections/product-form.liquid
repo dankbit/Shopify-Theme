@@ -1,0 +1,216 @@
+<section class="custom-product-form">
+
+  <form id="productCheckoutForm">
+
+    <!-- CUSTOMER FIELDS -->
+    <input type="text" name="first_name" placeholder="First Name" required>
+    <input type="text" name="last_name" placeholder="Last Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="tel" name="phone" placeholder="Phone Number" required>
+
+    <!-- PRODUCT DROPDOWN -->
+    <div class="custom-select-wrapper">
+      {% assign product_list = collections['bag'].products | where: "available", true | slice: 0, 5 %}
+      {% assign first_product = product_list.first %}
+
+      <div class="custom-select-trigger">
+        <img src="{{ first_product.featured_image | img_url: '50x' }}" alt="{{ first_product.title }}" class="trigger-img">
+        <span class="trigger-title">{{ first_product.title }}</span>
+      </div>
+
+      <div class="custom-options">
+        {% for product in product_list %}
+          <div class="custom-option" data-value="{{ product.variants.first.id }}">
+            <img src="{{ product.featured_image | img_url: '100x' }}" alt="{{ product.title }}" class="option-img">
+            <span>{{ product.title }}</span>
+          </div>
+        {% endfor %}
+      </div>
+
+      <input type="hidden" name="id" id="variantSelect" value="{{ first_product.variants.first.id }}" required>
+    </div>
+
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit">submit</button>
+
+  </form>
+
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const selectWrapper = document.querySelector(".custom-select-wrapper");
+  const trigger = selectWrapper.querySelector(".custom-select-trigger");
+  const options = selectWrapper.querySelectorAll(".custom-option");
+  const hiddenInput = selectWrapper.querySelector("input[name='id']");
+  const form = document.getElementById("productCheckoutForm");
+
+  // Dropdown toggle
+  trigger.addEventListener("click", () => {
+    selectWrapper.querySelector(".custom-options").classList.toggle("show");
+  });
+
+  // Option select
+  options.forEach(option => {
+    option.addEventListener("click", () => {
+      hiddenInput.value = option.dataset.value;
+      const imgSrc = option.querySelector("img").src;
+      const title = option.querySelector("span").textContent;
+      trigger.innerHTML = `<img src="${imgSrc}" alt="${title}" class="trigger-img"> <span class="trigger-title">${title}</span>`;
+      selectWrapper.querySelector(".custom-options").classList.remove("show");
+    });
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!selectWrapper.contains(e.target)) {
+      selectWrapper.querySelector(".custom-options").classList.remove("show");
+    }
+  });
+
+  // Form submit
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const variantId = hiddenInput.value;
+    if(!variantId){
+      alert("Please select a product");
+      return;
+    }
+
+    const firstName = form.querySelector("input[name='first_name']").value;
+    const lastName = form.querySelector("input[name='last_name']").value;
+    const email = form.querySelector("input[name='email']").value;
+    const phone = form.querySelector("input[name='phone']").value;
+
+    const payload = {
+      items: [{
+        id: variantId,
+        quantity: 1,
+        properties: {
+          "_first_name": firstName,
+          "_last_name": lastName,
+          "_email": email,
+          "_phone": phone
+        }
+      }]
+    };
+
+    try {
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      window.location.href = '/checkout';
+    } catch(err){
+      console.error(err);
+      alert("Something went wrong, please try again.");
+    }
+  });
+});
+</script>
+
+
+
+<style>
+/* -------- CUSTOM PRODUCT FORM -------- */
+.custom-product-form {
+  max-width: 400px;
+  margin: 20px auto;
+  font-family: sans-serif;
+}
+
+.custom-product-form input[type="text"],
+.custom-product-form input[type="email"],
+.custom-product-form input[type="tel"],
+.custom-product-form button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.custom-product-form button {
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.custom-product-form button:hover {
+  background-color: #333;
+}
+
+/* -------- CUSTOM SELECT DROPDOWN -------- */
+.custom-select-wrapper {
+  position: relative;
+  user-select: none;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.custom-select-trigger {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.custom-select-trigger .trigger-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.custom-select-trigger .trigger-title {
+  font-size: 14px;
+}
+
+.custom-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 250px;
+  overflow-y: auto;
+  display: none;
+  z-index: 100;
+}
+
+.custom-options.show {
+  display: block;
+}
+
+.custom-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.custom-option:hover {
+  background: #f0f0f0;
+}
+
+.custom-option img.option-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+</style>
