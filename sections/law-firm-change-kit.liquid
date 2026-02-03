@@ -637,6 +637,56 @@
   box-shadow: none !important;
 }
 
+/* ======================================================
+   SECTION TITLE SPACING FIX
+   ====================================================== */
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  margin: 24px 0 12px;   /* top | bottom */
+  padding: 0;            /* remove padding-bottom */
+}
+
+/* First section title should not have extra top gap */
+.sectionTitle:first-child {
+  margin-top: 0;
+}
+
+/* ======================================================
+   ROW GAP NORMALIZATION
+   ====================================================== */
+
+/* Reduce excessive vertical gaps */
+.from_grid_wpr {
+  row-gap: 20px;
+}
+
+.this_row {
+  row-gap: 20px;
+}
+
+/* Avoid extra space when title is inside a row */
+.this_row > .sectionTitle {
+  margin-bottom: 10px;
+}
+
+/* ======================================================
+   MOBILE TWEAK
+   ====================================================== */
+@media (max-width: 767px) {
+  .sectionTitle {
+    margin: 20px 0 10px;
+    font-size: 17px;
+  }
+
+  .from_grid_wpr,
+  .this_row {
+    row-gap: 16px;
+  }
+}
+
 
 </style>
 
