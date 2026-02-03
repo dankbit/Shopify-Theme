@@ -608,7 +608,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("nameChangeForm");
   const submitBtn = form.querySelector("button[type='submit'], #submitFormBtn");
 
-  /* ---------------- VISIBILITY ---------------- */
+  /* ---------------- VISIBILITY CHECK ---------------- */
   function isVisible(el) {
     return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
   }
@@ -622,12 +622,15 @@ document.addEventListener("DOMContentLoaded", function () {
     el.classList.add("error");
   }
 
-  /* ---------------- TOGGLES ---------------- */
+  /* ---------------- SECTION TOGGLES ---------------- */
+
+  // Birth name toggle
   document.getElementById('sameBirthName')?.addEventListener('change', e => {
     document.getElementById('birthNameFields').style.display =
       e.target.checked ? 'none' : 'block';
   });
 
+  // Driver license state toggle
   document.querySelectorAll('[name="_Change_Driver_License"]').forEach(el => {
     el.addEventListener('change', e => {
       const dl = document.getElementById('dlstate');
@@ -642,6 +645,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Passport fields toggle
   document.querySelectorAll('[name="_Passport_Apply"]').forEach(el => {
     el.addEventListener('change', e => {
       document.getElementById('passportFields').style.display =
@@ -652,10 +656,10 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ---------------- VALIDATION ---------------- */
   function validateForm() {
     let valid = true;
-
     clearErrors();
 
-    const requiredFields = [
+    /* ---- BASE REQUIRED FIELDS ---- */
+    const baseRequired = [
       "#productSelect",
       "input[name='_Customer_Email']",
       "input[name='_Current_First_Name']",
@@ -673,16 +677,39 @@ document.addEventListener("DOMContentLoaded", function () {
       "input[name='_Address_Postal_Code']"
     ];
 
-    requiredFields.forEach(selector => {
+    baseRequired.forEach(selector => {
       const field = form.querySelector(selector);
       if (!field || !isVisible(field) || field.disabled) return;
 
-      if (!field.value || !field.value.trim()) {
+      if (!field.value.trim()) {
         markError(field);
         valid = false;
       }
     });
 
+    /* ---- CONDITIONAL SECTIONS ---- */
+    const conditionalSections = [
+      "#birthNameFields",
+      "#passportFields",
+      "#dlState"
+    ];
+
+    conditionalSections.forEach(sectionSelector => {
+      const section = form.querySelector(sectionSelector);
+      if (!section || !isVisible(section)) return;
+
+      section.querySelectorAll("input, select, textarea").forEach(field => {
+        if (!isVisible(field) || field.disabled) return;
+        if (field.type === "radio" || field.type === "checkbox") return;
+
+        if (!field.value.trim()) {
+          markError(field);
+          valid = false;
+        }
+      });
+    });
+
+    /* ---- RADIO GROUPS ---- */
     const radioGroups = [
       "_Applicant_Sex",
       "_Change_Driver_License",
@@ -704,7 +731,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return valid;
   }
 
-  /* ---------------- SUBMIT (AJAX ONLY) ---------------- */
+  /* ---------------- AJAX SUBMIT ---------------- */
   submitBtn.addEventListener("click", function (e) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -732,7 +759,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(() => {
       window.location.href = '/checkout';
     })
-    .catch(console.error);
+    .catch(err => console.error(err));
   });
 
   /* ---------------- LIVE ERROR CLEAR ---------------- */
@@ -761,6 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
 });
 </script>
+
 
 
 
