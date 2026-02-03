@@ -599,6 +599,43 @@
   border: 1px solid red !important;
 }
 
+/* ======================================================
+   RADIO GROUP ERROR FIX (CLEAN BOX)
+   ====================================================== */
+
+/* Normal radio group baseline */
+.lawfirm-form-wrapper .radio-group {
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+/* Error state */
+.lawfirm-form-wrapper .radio-group.error {
+  border-color: #e00000;
+  background-color: #fff5f5;
+}
+
+/* Label above radios */
+.lawfirm-form-wrapper .radio-group .label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Keep radio options aligned nicely */
+.lawfirm-form-wrapper .radio-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 24px;
+}
+
+/* Do NOT style individual radio buttons */
+.lawfirm-form-wrapper input[type="radio"].error {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
 
 
 </style>
