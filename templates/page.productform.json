@@ -18,12 +18,12 @@
     },
     "product_form_brkRNx": {
       "type": "product-form",
-      "disabled": true,
       "name": "Custom Product Form",
       "settings": {}
     },
     "law_firm_change_kit_h3NLGa": {
       "type": "law-firm-change-kit",
+      "disabled": true,
       "name": "Law Firm Name Change Form",
       "settings": {
         "page_title": "Name Change Application Form"
