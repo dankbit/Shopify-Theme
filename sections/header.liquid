@@ -565,35 +565,62 @@
   </script>
 {%- endif -%}
 <style>
-.custom-mega-menu{
-  background:#fff;
-  width:100%;
-  border-top:1px solid #eee;
+/* Parent menu item */
+.mega-parent{
+  position:relative;
 }
 
+/* Mega menu container */
+.custom-mega-menu{
+  position:absolute;
+  left:0;
+  top:100%;
+  width:100%;
+  background:#ffffff;
+  padding:40px 30px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  z-index:99;
+
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(20px);
+  transition:all .3s ease;
+}
+
+/* Show on hover */
+.mega-parent:hover .custom-mega-menu{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+
+/* Wrapper */
 .mega-menu-wrapper{
   display:flex;
   gap:40px;
 }
 
+/* Menu block */
 .mega-menu-block{
   flex:1;
 }
 
+/* Title */
 .mega-menu-title{
   font-size:18px;
   font-weight:600;
   margin-bottom:15px;
 }
 
+/* Grid layout */
 .mega-menu-grid{
   display:grid;
-  grid-template-columns: 1fr 200px 200px;
-  gap:25px;
+  grid-template-columns: 200px 200px 200px;
+  gap:30px;
+  align-items:start;
 }
 
-/* LINKS */
-
+/* Menu links */
 .mega-menu-links ul{
   list-style:none;
   padding:0;
@@ -606,19 +633,18 @@
 
 .mega-menu-links a{
   text-decoration:none;
-  color:#333;
   font-size:14px;
+  color:#333;
 }
 
 .mega-menu-links a:hover{
   color:#000;
 }
 
-/* SUBMENU */
-
+/* Submenu */
 .mega-submenu{
-  padding-left:15px;
   margin-top:6px;
+  padding-left:12px;
 }
 
 .mega-submenu li{
@@ -630,15 +656,13 @@
   color:#777;
 }
 
-/* IMAGE */
-
+/* Image */
 .mega-menu-image img{
   width:100%;
   border-radius:6px;
 }
 
-/* PRODUCT */
-
+/* Product */
 .mega-menu-product{
   text-align:center;
 }
