@@ -194,91 +194,101 @@
         endif
       endif
     %}  
+    <ul class="header-menu">
 
-    <div class="custom-mega-menu">
-  <div class="page-width">
-    <div class="mega-menu-wrapper">
+{% for link in section.settings.menu.links %}
 
-      {% for block in section.blocks %}
-      {% assign menu = linklists[block.settings.select_menu] %}
+<li class="mega-parent">
 
-      <div class="mega-menu-block" {{ block.shopify_attributes }}>
+  <a href="{{ link.url }}">
+    {{ link.title }}
+  </a>
 
-        {% if block.settings.menu_title != blank %}
-        <h3 class="mega-menu-title" style="color: {{ block.settings.text_color }}">
-          {{ block.settings.menu_title }}
-        </h3>
-        {% endif %}
+  {% if link.title == 'Collection' %}
+  
+  <!-- MEGA MENU -->
+  <div class="custom-mega-menu">
+    <div class="page-width">
+      <div class="mega-menu-wrapper">
 
-        <div class="mega-menu-grid">
+        {% for block in section.blocks %}
+        {% assign menu = linklists[block.settings.select_menu] %}
 
-          <!-- MENU LINKS -->
-          {% if menu.links != blank %}
-          <div class="mega-menu-links">
-            <ul>
-              {% for link in menu.links %}
-              <li>
-                <a href="{{ link.url }}">{{ link.title }}</a>
+        <div class="mega-menu-block" {{ block.shopify_attributes }}>
 
-                {% if link.links != blank and block.settings.show_child %}
-                <ul class="mega-submenu">
-                  {% for childlink in link.links %}
-                  <li>
-                    <a href="{{ childlink.url }}">{{ childlink.title }}</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-                {% endif %}
-
-              </li>
-              {% endfor %}
-            </ul>
-          </div>
+          {% if block.settings.menu_title != blank %}
+          <h3 class="mega-menu-title" style="color: {{ block.settings.text_color }}">
+            {{ block.settings.menu_title }}
+          </h3>
           {% endif %}
 
-          <!-- IMAGE -->
-          {% if block.settings.menu_image != blank %}
-          <div class="mega-menu-image">
-            <img
-              src="{{ block.settings.menu_image | image_url: width: 400 }}"
-              alt="{{ block.settings.menu_title }}"
-              loading="lazy">
+          <div class="mega-menu-grid">
+
+            <!-- MENU LINKS -->
+            {% if menu.links != blank %}
+            <div class="mega-menu-links">
+              <ul>
+                {% for link in menu.links %}
+                <li>
+                  <a href="{{ link.url }}">{{ link.title }}</a>
+
+                  {% if link.links != blank and block.settings.show_child %}
+                  <ul class="mega-submenu">
+                    {% for childlink in link.links %}
+                    <li>
+                      <a href="{{ childlink.url }}">{{ childlink.title }}</a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                  {% endif %}
+
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+
+            <!-- IMAGE -->
+            {% if block.settings.menu_image != blank %}
+            <div class="mega-menu-image">
+              <img src="{{ block.settings.menu_image | image_url: width: 400 }}">
+            </div>
+            {% endif %}
+
+            <!-- PRODUCT -->
+            {% if block.settings.menu_product != blank %}
+            {% assign product = all_products[block.settings.menu_product] %}
+            <div class="mega-menu-product">
+
+              <a href="{{ product.url }}">
+                <img src="{{ product.featured_image | image_url: width: 300 }}">
+              </a>
+
+              <h4>{{ product.title }}</h4>
+
+              <span class="price">
+                {{ product.price | money }}
+              </span>
+
+            </div>
+            {% endif %}
+
           </div>
-          {% endif %}
-
-          <!-- PRODUCT -->
-          {% if block.settings.menu_product != blank %}
-          {% assign product = all_products[block.settings.menu_product] %}
-          <div class="mega-menu-product">
-
-            <a href="{{ product.url }}">
-              <img
-                src="{{ product.featured_image | image_url: width: 300 }}"
-                alt="{{ product.title }}">
-            </a>
-
-            <h4>{{ product.title }}</h4>
-
-            <span class="price">
-              {{ product.price | money }}
-            </span>
-
-            <a href="{{ product.url }}" class="mega-product-btn">
-              View Product
-            </a>
-
-          </div>
-          {% endif %}
 
         </div>
+        {% endfor %}
 
       </div>
-      {% endfor %}
-
     </div>
   </div>
-</div>
 
+  {% endif %}
+
+</li>
+
+{% endfor %}
+
+</ul>
     {%- if section.settings.logo_position == 'middle-center' -%}
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
