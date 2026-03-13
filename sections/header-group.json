@@ -38,6 +38,16 @@
     "header": {
       "type": "header",
       "blocks": {
+        "custom_mega_menu_jwhYXA": {
+          "type": "custom_mega_menu",
+          "settings": {
+            "select_menu": "collection",
+            "menu_title": "Collection",
+            "text_color": "#000000",
+            "menu_collection": "",
+            "show_parent": true
+          }
+        },
         "mega_menu_images_Wrr8bg": {
           "type": "mega_menu_images",
           "settings": {
@@ -61,6 +71,7 @@
         }
       },
       "block_order": [
+        "custom_mega_menu_jwhYXA",
         "mega_menu_images_Wrr8bg",
         "mega_menu_images_dJq4WJ"
       ],
