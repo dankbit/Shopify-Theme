@@ -195,6 +195,74 @@
       endif
     %}  
 
+    <div class="custom-mega-menu">
+  <div class="page-width">
+    <div class="mega-menu-wrapper">
+
+      {% for block in section.blocks %}
+        <div class="mega-menu-block" {{ block.shopify_attributes }}>
+
+          {% assign menu = linklists[block.settings.select_menu] %}
+
+          {% if block.settings.show_parent %}
+            <h3 class="mega-menu-title" style="color: {{ block.settings.text_color }};">
+              {{ block.settings.menu_title }}
+            </h3>
+          {% endif %}
+
+          <div class="mega-menu-content">
+
+            <!-- Menu Links -->
+            {% if menu.links != blank %}
+              <ul class="mega-menu-links">
+                {% for link in menu.links %}
+                  <li>
+                    <a href="{{ link.url }}">{{ link.title }}</a>
+
+                    {% if link.links != blank %}
+                      <ul class="mega-submenu">
+                        {% for childlink in link.links %}
+                          <li>
+                            <a href="{{ childlink.url }}">{{ childlink.title }}</a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <!-- Image -->
+            {% if block.settings.menu_image != blank %}
+              <div class="mega-menu-image">
+                <img 
+                  src="{{ block.settings.menu_image | image_url: width: 400 }}" 
+                  alt="{{ block.settings.menu_title }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            <!-- Collection -->
+            {% if block.settings.menu_collection != blank %}
+              <div class="mega-menu-collection">
+                <a href="{{ block.settings.menu_collection.url }}">
+                  <h4>{{ block.settings.menu_collection.title }}</h4>
+                </a>
+              </div>
+            {% endif %}
+
+          </div>
+
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>s
+
     {%- if section.settings.logo_position == 'middle-center' -%}
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
