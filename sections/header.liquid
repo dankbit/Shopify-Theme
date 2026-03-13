@@ -200,63 +200,79 @@
     <div class="mega-menu-wrapper">
 
       {% for block in section.blocks %}
-        <div class="mega-menu-block" {{ block.shopify_attributes }}>
+      {% assign menu = linklists[block.settings.select_menu] %}
 
-          {% assign menu = linklists[block.settings.select_menu] %}
+      <div class="mega-menu-block" {{ block.shopify_attributes }}>
 
-          {% if block.settings.show_parent %}
-            <h3 class="mega-menu-title" style="color: {{ block.settings.text_color }};">
-              {{ block.settings.menu_title }}
-            </h3>
+        {% if block.settings.menu_title != blank %}
+        <h3 class="mega-menu-title" style="color: {{ block.settings.text_color }}">
+          {{ block.settings.menu_title }}
+        </h3>
+        {% endif %}
+
+        <div class="mega-menu-grid">
+
+          <!-- MENU LINKS -->
+          {% if menu.links != blank %}
+          <div class="mega-menu-links">
+            <ul>
+              {% for link in menu.links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+
+                {% if link.links != blank and block.settings.show_child %}
+                <ul class="mega-submenu">
+                  {% for childlink in link.links %}
+                  <li>
+                    <a href="{{ childlink.url }}">{{ childlink.title }}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
           {% endif %}
 
-          <div class="mega-menu-content">
+          <!-- IMAGE -->
+          {% if block.settings.menu_image != blank %}
+          <div class="mega-menu-image">
+            <img
+              src="{{ block.settings.menu_image | image_url: width: 400 }}"
+              alt="{{ block.settings.menu_title }}"
+              loading="lazy">
+          </div>
+          {% endif %}
 
-            <!-- Menu Links -->
-            {% if menu.links != blank %}
-              <ul class="mega-menu-links">
-                {% for link in menu.links %}
-                  <li>
-                    <a href="{{ link.url }}">{{ link.title }}</a>
+          <!-- PRODUCT -->
+          {% if block.settings.menu_product != blank %}
+          {% assign product = all_products[block.settings.menu_product] %}
+          <div class="mega-menu-product">
 
-                    {% if link.links != blank %}
-                      <ul class="mega-submenu">
-                        {% for childlink in link.links %}
-                          <li>
-                            <a href="{{ childlink.url }}">{{ childlink.title }}</a>
-                          </li>
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
+            <a href="{{ product.url }}">
+              <img
+                src="{{ product.featured_image | image_url: width: 300 }}"
+                alt="{{ product.title }}">
+            </a>
 
-                  </li>
-                {% endfor %}
-              </ul>
-            {% endif %}
+            <h4>{{ product.title }}</h4>
 
-            <!-- Image -->
-            {% if block.settings.menu_image != blank %}
-              <div class="mega-menu-image">
-                <img 
-                  src="{{ block.settings.menu_image | image_url: width: 400 }}" 
-                  alt="{{ block.settings.menu_title }}"
-                  loading="lazy"
-                >
-              </div>
-            {% endif %}
+            <span class="price">
+              {{ product.price | money }}
+            </span>
 
-            <!-- Collection -->
-            {% if block.settings.menu_collection != blank %}
-              <div class="mega-menu-collection">
-                <a href="{{ block.settings.menu_collection.url }}">
-                  <h4>{{ block.settings.menu_collection.title }}</h4>
-                </a>
-              </div>
-            {% endif %}
+            <a href="{{ product.url }}" class="mega-product-btn">
+              View Product
+            </a>
 
           </div>
+          {% endif %}
 
         </div>
+
+      </div>
       {% endfor %}
 
     </div>
