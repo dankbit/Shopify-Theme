@@ -38,6 +38,15 @@
     "header": {
       "type": "header",
       "blocks": {
+        "mega_menu_images_Wrr8bg": {
+          "type": "mega_menu_images",
+          "settings": {
+            "menu_trigger": "Collection",
+            "link_1": "",
+            "link_2": "",
+            "link_3": ""
+          }
+        },
         "mega_menu_images_dJq4WJ": {
           "type": "mega_menu_images",
           "settings": {
@@ -52,12 +61,13 @@
         }
       },
       "block_order": [
+        "mega_menu_images_Wrr8bg",
         "mega_menu_images_dJq4WJ"
       ],
       "settings": {
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
-        "menu": "main-menu",
+        "menu": "collection",
         "menu_type_desktop": "mega",
         "mega_menu_columns": 3,
         "sticky_header_type": "on-scroll-up",
