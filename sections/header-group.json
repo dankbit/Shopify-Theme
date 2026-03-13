@@ -44,8 +44,9 @@
             "select_menu": "collection",
             "menu_title": "Collection",
             "text_color": "#000000",
-            "menu_collection": "",
-            "show_parent": false
+            "menu_image": "shopify://shop_images/product_30_image3.jpg",
+            "menu_prodocut": "adidas-classic-backpack-legend-ink-multicolour",
+            "show_child": false
           }
         },
         "mega_menu_images_Wrr8bg": {
@@ -78,7 +79,7 @@
       "settings": {
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
-        "menu": "collection",
+        "menu": "",
         "menu_type_desktop": "dropdown",
         "mega_menu_columns": 3,
         "sticky_header_type": "on-scroll-up",
