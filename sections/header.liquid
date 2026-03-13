@@ -545,12 +545,12 @@
   </script>
 {%- endif -%}
 <style>
+/* NAV */
+
 .custom-mega-nav{
   display:flex;
   gap:30px;
   list-style:none;
-  padding:0;
-  margin:0;
 }
 
 .mega-parent{
@@ -558,12 +558,12 @@
 }
 
 .mega-parent-link{
-  text-decoration:none;
   font-weight:600;
-  color:#000;
+  text-decoration:none;
+  cursor:pointer;
 }
 
-/* MEGA MENU */
+/* DROPDOWN */
 
 .custom-mega-menu{
   position:absolute;
@@ -571,13 +571,13 @@
   top:100%;
   width:100%;
   background:#fff;
-  padding:40px;
+  padding:40px 0;
   box-shadow:0 10px 30px rgba(0,0,0,0.08);
 
   opacity:0;
   visibility:hidden;
-  transform:translateY(20px);
-  transition:0.3s;
+  transform:translateY(15px);
+  transition:.3s;
 }
 
 .mega-parent:hover .custom-mega-menu{
@@ -586,37 +586,75 @@
   transform:translateY(0);
 }
 
-.mega-menu-grid{
+/* GRID */
+
+.mega-container{
   display:grid;
-  grid-template-columns: 1fr 250px 250px;
-  gap:30px;
+  grid-template-columns: 1fr 350px 250px;
+  gap:40px;
+  align-items:start;
 }
 
 /* LINKS */
 
-.mega-menu-links ul{
+.mega-links ul{
   list-style:none;
   padding:0;
 }
 
-.mega-menu-links li{
-  margin-bottom:8px;
+.mega-links li{
+  margin-bottom:10px;
 }
 
-.mega-submenu{
-  padding-left:15px;
+.mega-links a{
+  text-decoration:none;
+  color:#333;
+  font-size:15px;
+}
+
+.mega-links a:hover{
+  color:#000;
 }
 
 /* IMAGE */
 
-.mega-menu-image img{
+.mega-image img{
   width:100%;
+  border-radius:6px;
 }
 
 /* PRODUCT */
 
-.mega-menu-product img{
+.mega-product{
+  text-align:center;
+}
+
+.mega-product img{
   width:100%;
+  margin-bottom:10px;
+}
+
+.mega-product h4{
+  font-size:15px;
+  margin:5px 0;
+}
+
+.mega-product .price{
+  font-weight:600;
+  display:block;
+  margin-bottom:8px;
+}
+
+.mega-btn{
+  background:#000;
+  color:#fff;
+  padding:8px 16px;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.mega-btn:hover{
+  background:#333;
 }
 </style>
 
