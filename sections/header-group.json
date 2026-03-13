@@ -67,7 +67,7 @@
       "settings": {
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
-        "menu": "collection",
+        "menu": "",
         "menu_type_desktop": "mega",
         "mega_menu_columns": 3,
         "sticky_header_type": "on-scroll-up",
